@@ -53,6 +53,10 @@ def login_usuario(request):
             except Exception as ex:
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
+
+def paginaweb(request):
+    return render(request, "baseweb.html")
+
 @login_required(redirect_field_name='next', login_url='/login')
 @transaction.atomic()
 def dashboard(request):

@@ -1,7 +1,8 @@
 import os
 import sys
 from io import StringIO
-
+import datetime
+from datetime import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.contrib.staticfiles import finders
@@ -139,7 +140,7 @@ def view_docente(request):
                         usuario = User.objects.create_user(username, email, password)
                         usuario.save()
 
-                        grupo = Group.objects.get(pk=4)  # PACIENTE
+                        grupo = Group.objects.get(pk=2)  # PACIENTE
                         grupo.user_set.add(usuario)
 
                         persona = Persona(
@@ -166,7 +167,7 @@ def view_docente(request):
 
                         persona_perfil.save(request)
 
-                        newdocente = Docente(
+                        newdocente = Docente(fechaingreso=datetime.now().date(),
                             persona=persona
                         )
                         newdocente.save(request)
@@ -242,7 +243,7 @@ def view_docente(request):
                     data['peticion'] = 'add_docente'
                     form = PersonaForm()
                     data['form'] = form
-                    return render(request, "paciente/add_docente.html", data)
+                    return render(request, "administrativo/docente/add_docente.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -257,7 +258,7 @@ def view_docente(request):
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
-                    return render(request, "paciente/consultas_realizadas.html", data)
+                    return render(request, "docente/consultas_realizadas.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -267,7 +268,7 @@ def view_docente(request):
                     data['titulo'] = 'Historial clínico'
                     data['paciente_id'] = paciente_id = request.GET['id']
                     data['datos_docente'] = Docente.objects.get(id=paciente_id)
-                    return render(request, "paciente/menu_historial_clinico/datos_docente.html", data)
+                    return render(request, "docente/menu_historial_clinico/datos_docente.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -282,7 +283,7 @@ def view_docente(request):
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
-                    return render(request, "paciente/menu_historial_clinico/consultas_realizadas.html", data)
+                    return render(request, "docente/menu_historial_clinico/consultas_realizadas.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -298,7 +299,7 @@ def view_docente(request):
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
-                    return render(request, "paciente/menu_historial_clinico/tratamientos_realizados.html", data)
+                    return render(request, "docente/menu_historial_clinico/tratamientos_realizados.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -309,7 +310,7 @@ def view_docente(request):
                     data['paciente_id'] = paciente_id = request.GET['id']
                     data['consulta'] = consulta = Consulta.objects.get(pk=request.GET['idconsulta'])
                     data['histoColores'] = odontograma = consulta.odontograma
-                    return render(request, "paciente/menu_historial_clinico/consulta_odontograma.html", data)
+                    return render(request, "docente/menu_historial_clinico/consulta_odontograma.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -323,7 +324,7 @@ def view_docente(request):
                     if odontograma:
                         data['histoColores'] = odontograma[0]
                         data['tieneodontogramaprincipal'] = True
-                    return render(request, "paciente/menu_historial_clinico/odontograma_general.html", data)
+                    return render(request, "docente/menu_historial_clinico/odontograma_general.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -338,7 +339,7 @@ def view_docente(request):
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
-                    return render(request, "paciente/menu_historial_clinico/documentos.html", data)
+                    return render(request, "docente/menu_historial_clinico/documentos.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -349,15 +350,15 @@ def view_docente(request):
                     data['paciente_id'] = paciente_id = int(request.GET['paciente_id'])
                     data['form'] = form
                     data['peticion'] = 'add_documento'
-                    template = get_template('paciente/menu_historial_clinico/modal/formadddocumento.html')
+                    template = get_template('docente/menu_historial_clinico/modal/formadddocumento.html')
                     return JsonResponse({"result": True, 'data': template.render(data)})
                 except Exception as ex:
                     pass
 
             if peticion == 'edit_docente':
                 try:
-                    data['titulo'] = 'Editar cliente'
-                    data['titulo_formulario'] = 'Edición de cliente'
+                    data['titulo'] = 'Editar docente'
+                    data['titulo_formulario'] = 'Edición de docente'
                     data['peticion'] = 'edit_docente'
                     data['paciente'] = paciente = Docente.objects.get(pk=request.GET['id'])
                     form = PersonaForm(initial={
@@ -374,7 +375,7 @@ def view_docente(request):
                     })
                     form.editar()
                     data['form'] = form
-                    return render(request, "paciente/edit_docente.html", data)
+                    return render(request, "administrativo/docente/edit_docente.html", data)
                 except Exception as ex:
                     pass
 
@@ -385,7 +386,7 @@ def view_docente(request):
                     data['consulta'] = consulta = Consulta.objects.get(pk=request.GET['id'])
                     data['histoColores'] = odontograma= consulta.odontograma
 
-                    return render(request, "paciente/ver_consulta.html", data)
+                    return render(request, "docente/ver_consulta.html", data)
                 except Exception as ex:
                     pass
 
@@ -394,7 +395,7 @@ def view_docente(request):
                     data['titulo'] = 'Ver factura'
                     data['factura'] = factura = Consulta.objects.get(pk=request.GET['id'])
 
-                    return render(request, "paciente/ver_factura.html", data)
+                    return render(request, "docente/ver_factura.html", data)
                 except Exception as ex:
                     pass
 
@@ -403,7 +404,7 @@ def view_docente(request):
                     data['titulo'] = 'factura'
                     data['factura'] = factura = Consulta.objects.get(pk=request.GET['id'])
 
-                    return render_pdf_view('paciente/factura_pdf.html', data)
+                    return render_pdf_view('docente/factura_pdf.html', data)
                 except Exception as ex:
                     pass
 
@@ -412,7 +413,7 @@ def view_docente(request):
                     # data['titulo'] = 'factura'
                     # data['factura'] = factura = Consulta.objects.get(pk=request.GET['id'])
 
-                    return render_pdf_view('paciente/certificado_medico.html', data)
+                    return render_pdf_view('docente/certificado_medico.html', data)
                 except Exception as ex:
                     pass
 
@@ -445,7 +446,7 @@ def view_docente(request):
                     data['consulta'] = consulta = Consulta.objects.get(pk=request.GET['id'])
                     data['histoColores'] = odontograma = consulta.odontograma
 
-                    return render(request, 'paciente/odontograma_pdf.html', data)
+                    return render(request, 'docente/odontograma_pdf.html', data)
                 except Exception as ex:
                     pass
 
@@ -453,7 +454,7 @@ def view_docente(request):
                 try:
                     data['historial_abono'] = historial_abono = AbonoPago.objects.filter(status=True,consulta_id= request.GET['id'])
                     data['consulta'] = Consulta.objects.get(pk= request.GET['id'])
-                    template = get_template("paciente/modal/historial_abono.html")
+                    template = get_template("docente/modal/historial_abono.html")
                     return JsonResponse({"respuesta": True, 'data': template.render(data)})
                 except Exception as ex:
                     pass
@@ -464,7 +465,7 @@ def view_docente(request):
                     form = AbonarCuotaForm()
                     data['form'] = form
                     data['peticion'] = 'abonar_cuota'
-                    template = get_template("paciente/modal/formAbonarCuota.html")
+                    template = get_template("docente/modal/formAbonarCuota.html")
                     return JsonResponse({"respuesta": True, 'data': template.render(data)})
                 except Exception as ex:
                     pass
@@ -511,14 +512,14 @@ def view_docente(request):
 
         else:
             try:
-                data['titulo'] = 'Clientes'
-                data['titulo_tabla'] = 'Lista  de Clientes'
+                data['titulo'] = 'Docentes'
+                data['titulo_tabla'] = 'Lista  de Docentes'
                 data['persona_logeado'] = persona_logeado
                 lista = Docente.objects.filter(status=True).order_by('id')
                 paginator = Paginator(lista, 15)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj
-                return render(request, "paciente/view.html", data)
+                return render(request, "administrativo/docente/view.html", data)
             except Exception as ex:
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))

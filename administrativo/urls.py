@@ -30,4 +30,5 @@ path(r'', dashboard, name='dashboard'),
     path(r'finanzas/',view_finanzas ,name='finanzas'),
     path(r'mis_finanzas/',view_mis_finanzas ,name='mis_finanzas'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
+    path(r'CAM/', paginaweb, name='paginaweb'),
 ]

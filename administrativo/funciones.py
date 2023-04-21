@@ -22,7 +22,7 @@ class ModeloBase(models.Model):
         models.Model.save(self)
 
 def add_data_aplication(request,data):
-    from odontologico.models import Modulo
+    from administrativo.models import Modulo
     if 'lista_url_ruta' not in request.session:
         request.session['lista_url_ruta'] = [['/', 'Inicio']]
     lista_url_ruta = request.session['lista_url_ruta']
