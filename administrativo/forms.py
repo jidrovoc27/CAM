@@ -186,7 +186,7 @@ class CursoForm(forms.Form):
     periodo = forms.ModelChoiceField(label=u"Periodo", required=True, queryset=Periodo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     docente = forms.ModelChoiceField(label=u"Docente a cargo", required=True, queryset=Docente.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
-    tiporubro = forms.ModelChoiceField(label=u"Tipo rubro", required=True, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    tiporubro = forms.ModelChoiceField(label=u"Tipo rubro", required=False, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     costo = forms.CharField(label=u"Costo", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
     fechainicio = forms.DateTimeField(label='Fecha inicio', input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}))
     fechafin = forms.DateTimeField(label='Fecha fin', input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d',attrs={'class': 'form-control','type': 'date'}))
@@ -211,6 +211,8 @@ class CursoForm(forms.Form):
     contenido = forms.CharField(label='Contenido', required=True, widget=forms.TextInput(attrs={'class': ' form-control', }))
     publicarcurso = forms.BooleanField(label='Publicar curso', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
     planificacion = ExtFileField(label=u'Planificación', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png, pdf', ext_whitelist=(".jpg", ".png", ".pdf"), max_upload_size=2621440)
+    imagen = ExtFileField(label=u'Imagen del curso', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png', ext_whitelist=(".jpg", ".png"), max_upload_size=2621440)
+    imagenweb = ExtFileField(label=u'Imagen del curso para web', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png', ext_whitelist=(".jpg", ".png"), max_upload_size=2621440)
 
 
 class DoctorForm(forms.Form):

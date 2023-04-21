@@ -2,6 +2,7 @@
 {% load static %}
 {% block head %}
     <script>
+        var fila = 0;
     </script>
 {% endblock %}
 {% block contenido_extra %}
@@ -17,7 +18,36 @@
 {% endblock %}
 
 {% block news_inputs_form %}
+    <div class="row">
+        <a id="adicionarcuotas" style="cursor: pointer;">
+            <li class="fa fa-plus"></li>
+        </a>
+        <div class="table-responsive-lg">
+            <table class="table table-striped table-hover align-items-center mb-0 " id="listadocuotas">
+                <thead>
+                <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolde text-center">Inicio
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">
+                        Fin
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">
+                        Valor
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">
 
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <br>
+    <br>
+    <br>
 {% endblock %}
 {% block nombre_boton_submit %}Guardar{% endblock %}
 {% block location_href_destino %}{% url 'periodo' %}{% endblock %}
@@ -35,8 +65,25 @@
 
     <script>
 
-        var mask = IMask(document.getElementById('id_telefono_movil'), {mask: '00 000 0000'});
-        var mask = IMask(document.getElementById('id_telefono_convencional'), {mask: '000 000 0000'});
+        function solicitudaajax(boton) {
+            Swal.fire({
+                title: `Está seguro de eliminar la cuota?`,
+                text: "Esta acción es irreversible",
+                type: 'info',
+                showCancelButton: true,
+                allowOutsideClick: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, deseo hacerlo',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.value) {
+
+                setTimeout($.unblockUI, 1);
+                var fila = boton.parentNode.parentNode; // Obtiene la fila actual
+                fila.parentNode.removeChild(fila);
+                }
+            })}
     </script>
 
     <script>
@@ -76,6 +123,58 @@
                 $("#id_tiporubroinscripcion, #id_costoinscripcion").removeAttr("required");
             }
         })
+        $("#id_matricula").click(function () {
+            var miCheckbox = document.getElementById("id_matricula");
+            if (miCheckbox.checked) {
+                $("#id_tiporubromatricula, #id_costomatricula").removeAttr('disabled');
+                $("#id_tiporubromatricula, #id_costomatricula").attr({'required': 'required'});
+            } else {
+                $("#id_tiporubromatricula, #id_costomatricula").attr({'disabled': 'disabled'});
+                $("#id_tiporubromatricula, #id_costomatricula").removeAttr("required");
+            }
+        })
+        $("#id_oferta").click(function () {
+            var miCheckbox = document.getElementById("id_oferta");
+            if (miCheckbox.checked) {
+                $("#id_costooferta").removeAttr('disabled');
+                $("#id_costooferta").attr({'required': 'required'});
+            } else {
+                $("#id_costooferta").attr({'disabled': 'disabled'});
+                $("#id_costooferta").removeAttr("required");
+            }
+        })
+        $("#id_gcuotas").click(function () {
+            var miCheckbox = document.getElementById("id_gcuotas");
+            if (miCheckbox.checked) {
+                $("#id_cuotas, #adicionarcuotas").removeAttr('disabled');
+                $("#id_cuotas, #adicionarcuotas").attr({'required': 'required'});
+            } else {
+                $("#id_cuotas, #adicionarcuotas").attr({'disabled': 'disabled'});
+                $("#id_cuotas, #adicionarcuotas").removeAttr("required");
+            }
+        })
+        $("#adicionarcuotas").click(function () {
+            var estado = $("#adicionarcuotas").attr('required');
+            var hola = "h"
+            fila = parseInt(fila) + 1;
+            if (estado == 'required') {
+                $("#listadocuotas").append('<tr class="registro">' +
+                    {#'<td style="text-align: center" class="itemstime">' + itemstime + '</td>' +#}
+                    '<td style="text-align: center" class="inicio"><input type="date" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;"></td>' +
+                    '<td style="text-align: center" class="fin"><input type="date" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;"></td>' +
+                    '<td style="text-align: center" class="valor"><input type="number" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;width:30%"></td>' +
+                    '<td style="text-align: center" class="valor"><a class="btn btn-tini btn-danger tu eliminar" onclick="solicitudaajax(this)" fila="' + fila + '" title="Eliminar"><i class="fa fa-remove"></i></a></td>' +
+                    '</tr>');
+            }
+
+        })
+
+        $(".eliminar").click(function () {
+            var tabla = document.getElementById("listadocuotas");
+            var indice = event.target.parentNode.parentNode.rowIndex; // Obtiene el índice de la fila actual
+            tabla.deleteRow(indice);
+        })
+
     </script>
 
 

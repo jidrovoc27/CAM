@@ -1,4 +1,19 @@
 from django.db import models
+import datetime
+from datetime import datetime
+
+def quitar_caracteres(cadena):
+    return cadena.replace(u'ñ', u'n').replace(u'Ñ', u'N').replace(u'Á', u'A').replace(u'á', u'a').replace(u'É',u'E').replace(u'é', u'e').replace(u'Í', u'I').replace(u'í', u'i').replace(u'Ó', u'O').replace(u'ó', u'o').replace(u'Ú',u'U').replace(u'ú', u'u')
+
+def nuevo_nombre(nombre, original):
+    nombre = quitar_caracteres(nombre).lower().replace(' ', '_')
+    ext = ""
+    if original.find(".") > 0:
+        ext = original[original.rfind("."):]
+    fecha = datetime.now().date()
+    hora = datetime.now().time()
+    return nombre + fecha.year.__str__() + fecha.month.__str__() + fecha.day.__str__() + hora.hour.__str__() + hora.minute.__str__() + hora.second.__str__() + ext.lower()
+
 
 class ModeloBase(models.Model):
     from django.contrib.auth.models import User

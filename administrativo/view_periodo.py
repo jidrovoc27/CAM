@@ -15,9 +15,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 
 from CAM import settings
-from CAM.settings import BASE_DIR
+from CAM.settings import BASE_DIR, MEDIA_ROOT
 from administrativo.forms import *
-from administrativo.funciones import add_data_aplication
+from administrativo.funciones import *
 from administrativo.models import *
 
 def create_mail(user_mail, subject, template_name, context):
@@ -88,7 +88,20 @@ def render_pdf_view(template_paths,data):
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
 
+def redimenzionar_imagen(ruta_original, ruta_a_guardar, ancho, alto):
+    from PIL import Image
 
+    # Abre la imagen que quieres redimensionar
+    imagen = Image.open(ruta_original)
+
+    # Define el nuevo tamaño deseado para la imagen
+    nuevo_tamaño = (ancho, alto)  # (ancho, alto)
+
+    # Redimensiona la imagen con el nuevo tamaño
+    imagen_redimensionada = imagen.resize(nuevo_tamaño)
+
+    # Guarda la nueva imagen redimensionada
+    imagen_redimensionada.save(ruta_a_guardar)
 
 @login_required(redirect_field_name='next', login_url='/login')
 @transaction.atomic()
@@ -155,6 +168,82 @@ def view_periodo(request):
                 except Exception as ex:
                     transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+
+            elif peticion == 'add_curso':
+                try:
+                    form = CursoForm(request.POST, request.FILES)
+                    if form.is_valid():
+
+                        periodo = form.cleaned_data['periodo']
+                        docente = form.cleaned_data['docente']
+                        nombre = form.cleaned_data['nombre']
+                        tiporubro = form.cleaned_data['tiporubro']
+                        costo = form.cleaned_data['costo']
+                        fechainicio = form.cleaned_data['fechainicio']
+                        fechafin = form.cleaned_data['fechafin']
+                        fechainicioinscripcion = form.cleaned_data['fechainicio']
+                        fechafininscripcion = form.cleaned_data['fechainicio']
+                        inscripcion = form.cleaned_data['inscripcion']
+                        matricula = form.cleaned_data['matricula']
+                        horasvirtual = form.cleaned_data['horasvirtual']
+                        minasistencia = form.cleaned_data['minasistencia']
+                        minnota = form.cleaned_data['minnota']
+                        cupo = form.cleaned_data['cupo']
+                        observacion = form.cleaned_data['observacion']
+                        objetivo = form.cleaned_data['objetivo']
+                        contenido = form.cleaned_data['contenido']
+                        publicarcurso = form.cleaned_data['publicarcurso']
+                        planificacion = request.FILES['planificacion']
+                        imagen = request.FILES['imagen']
+                        imagenweb = request.FILES['imagenweb']
+
+                        curso = Curso(periodo=periodo, docente=docente, nombre=nombre, tiporubro=tiporubro, costo=costo,
+                                      fechainicio=fechainicio, fechafin=fechafin, fechainicioinscripcion=fechainicioinscripcion, fechafininscripcion=fechafininscripcion,
+                                      horasvirtual=horasvirtual, minasistencia=minasistencia, minnota=minnota, cupo=cupo,
+                                      observacion=observacion, objetivo=objetivo, contenido=contenido, publicarcurso=publicarcurso)
+
+                        #VERIFICA SI EL CURSO APLICA INSCRIPCIÓN
+                        if inscripcion:
+                            curso.inscripcion = True
+                            curso.tiporubroinscripcion = form.cleaned_data['tiporubroinscripcion']
+                            curso.costoinscripcion = form.cleaned_data['costoinscripcion']
+
+                        # VERIFICA SI EL CURSO APLICA MATRÍCULA
+                        if matricula:
+                            curso.matricula = True
+                            curso.tiporubromatricula = form.cleaned_data['tiporubromatricula']
+                            curso.costomatricula = form.cleaned_data['costomatricula']
+
+                        curso.save(request)
+
+                        #GUARDA LA PLANIFICACIÓN DEL CURSO
+                        if 'planificacion' in request.FILES:
+                            newfile = request.FILES['planificacion']
+                            newfile._name = nuevo_nombre("planificacion", newfile._name)
+                            curso.planificacion = newfile
+                            curso.save(request)
+
+                        #GUARDA LA IMAGEN DEL CURSO QUE SIRVE PARA LA PÁGINA WEB
+                        if 'imagenweb' in request.FILES:
+                            newfile = request.FILES['imagenweb']
+                            newfile._name = nuevo_nombre("imagenweb", newfile._name)
+                            curso.fondoweb = newfile
+                            curso.save(request)
+                            rutaweb = MEDIA_ROOT + '/media/fondoweb/' + newfile._name
+                            ruta_a_guardar_web = MEDIA_ROOT + '/media/fondoweb/' + newfile._name
+                            redimenzionar_imagen(rutaweb, ruta_a_guardar_web, 693, 843)
+
+                        # GUARDA LA IMAGEN DEL CURSO QUE SIRVE PARA LA PARTE ACADÉMICA
+                        if 'imagen' in request.FILES:
+                            newfile = request.FILES['imagen']
+                            newfile._name = nuevo_nombre("imagen", newfile._name)
+                            curso.fondocursos = newfile
+                            curso.save(request)
+                            rutacursos = MEDIA_ROOT + '/media/fondocursos/' + newfile._name
+                            ruta_a_guardar_cursos = MEDIA_ROOT + '/media/fondocursos/' + newfile._name
+                            redimenzionar_imagen(rutacursos, ruta_a_guardar_cursos, 825, 490)
+                except Exception as ex:
+                    pass
 
             if peticion == 'eliminar_alumno':
                 try:
