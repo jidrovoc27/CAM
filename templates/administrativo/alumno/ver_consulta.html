@@ -1,18 +1,32 @@
-{% extends 'paciente/historial_clinico.html' %}
-{% block subbody %}
+{% extends 'baseapp.html' %}
+{% block contenido %}
     <div class="mx-auto {% block class_extra_card_formulario %}{% endblock %} ">
 
-        <div class="container-fluid py-1 px-5 ">
+        <div class="card ">
             <div class="card-body ">
+                <h5 class="font-weight-bolder">{{ consulta.paciente | upper }} - {{ consulta.fecha }}</h5>
 
                 <div class="">
-                    <div style="position: relative;float: right;">
-                        <a class="  me-sm-1 btn-tooltip" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Retroceder a la consulta" data-container="body" data-animation="true" href="javascript:history.back()" data-bs-original-title="Atrás" aria-label="Atrás"><span class="fa fa-arrow-left" aria-hidden="true"></span></a>
+                    <h5 class="mt-3">DIAGNOSTICO PREVIO</h5>
+                    <div class="input-group input-group-static my-3  ">
+                        <textarea type="text" name="" class="form-control" readonly, disabled
+                                  placeholder="{{ consulta.diagnostico_previo }}"></textarea>
                     </div>
-                    <h5 class="mt-3">ODONTOGRAMA</h5>
-                    <h6 class="mt-1">Consulta: {{ consulta.motivo_consulta }}</h6>
-                    <h6 class="mt-1">Fecha: {{ consulta.fecha }}</h6>
 
+                    <hr class="dropdown-divider">
+
+                    <h5 class="mt-3">TRATAMIENTOS</h5>
+                    <div class="input-group input-group-static my-3  ">
+                        {% for foo in  consulta.tratamientos.all %}
+                            <input type="text" name="" class="form-control" readonly, disabled
+                                   value="{{ foo |upper }}">
+                        {% endfor %}
+
+                    </div>
+
+                    <hr class="dropdown-divider">
+
+                    <h5 class="mt-3">ODONTOGRAMA</h5>
                     <div class="row container-fluid ">
                         <div id="opcionesOdontograma">
                             <div class="btn-group" data-toggle="buttons">
@@ -1443,6 +1457,18 @@
                             </div>
                         </div>
                         <div class="col"></div>
+                    </div>
+
+                    <br>
+                    <hr class="dropdown-divider">
+                    <h5 class="mt-3">OBSERVACIÓN</h5>
+                    <div class="input-group input-group-static my-3  ">
+                        <textarea type="text" name="" class="form-control" readonly, disabled
+                                  placeholder="{{ consulta.observacion }}"></textarea>
+                    </div>
+
+                    <div class="row">
+                                  <a href="javascript:history.back()" name="button" class="btn btn-danger m-0">Regresar</a>
                     </div>
                 </div>
 

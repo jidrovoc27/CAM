@@ -1,0 +1,83 @@
+{% extends 'formularioBase.html' %}
+{% load static %}
+{% block head %}
+    <script>
+    </script>
+{% endblock %}
+{% block contenido_extra %}
+
+{% endblock %}
+{% block lista_de_items_many_to_many %}
+{% endblock %}
+{% block titulo %}{{ titulo_formulario }}{% endblock %}
+{% block class_extra_card_formulario %}col-lg-8 col-md-10{% endblock %}
+{% block inputs_extras %}
+    <input type="hidden" name="peticion" value="{{ peticion }}">
+    <input type="hidden" name="periodo" value="{{ periodo.id }}">
+{% endblock %}
+
+{% block news_inputs_form %}
+
+{% endblock %}
+{% block nombre_boton_submit %}Guardar{% endblock %}
+{% block location_href_destino %}{% url 'periodo' %}{% endblock %}
+{% block botones_extras %}{% endblock %}
+
+{% block modals %}
+    <!-- Modal -->
+
+{% endblock %}
+
+
+
+
+{% block js %}
+
+    <script>
+
+        var mask = IMask(document.getElementById('id_telefono_movil'), {mask: '00 000 0000'});
+        var mask = IMask(document.getElementById('id_telefono_convencional'), {mask: '000 000 0000'});
+    </script>
+
+    <script>
+
+        function mensajeSuccess(mensaje) {
+            Swal.fire('', mensaje, 'success')
+        }
+
+        function mensajeWarning(mensaje) {
+            Swal.fire('', mensaje, 'warning')
+        }
+
+        function mensajeDanger(mensaje) {
+            Swal.fire('', mensaje, 'error')
+        }
+
+        $(document).ready(function () {
+            $("#id_periodo").val({{ periodo.id }});
+            $("#id_periodo").attr({'disabled': 'disabled'});
+
+            // DESACTIVAR OPCIONES DE INSCRIPCIÓN
+            $("#id_tiporubroinscripcion, #id_costoinscripcion").attr({'disabled': 'disabled'});
+            // DESACTIVAR OPCIONES DE MATRÍCULA
+            $("#id_tiporubromatricula, #id_costomatricula").attr({'disabled': 'disabled'});
+            // DESACTIVAR OPCIONES DE GENERA CUOTAS
+            $("#id_cuotas").attr({'disabled': 'disabled'});
+            // DESACTIVAR OPCIONES DE APLICA OFERTA
+            $("#id_costooferta").attr({'disabled': 'disabled'});
+        })
+        $("#id_inscripcion").click(function () {
+            var miCheckbox = document.getElementById("id_inscripcion");
+            if (miCheckbox.checked) {
+                $("#id_tiporubroinscripcion, #id_costoinscripcion").removeAttr('disabled');
+                $("#id_tiporubroinscripcion, #id_costoinscripcion").attr({'required': 'required'});
+            } else {
+                $("#id_tiporubroinscripcion, #id_costoinscripcion").attr({'disabled': 'disabled'});
+                $("#id_tiporubroinscripcion, #id_costoinscripcion").removeAttr("required");
+            }
+        })
+    </script>
+
+
+{% endblock %}
+

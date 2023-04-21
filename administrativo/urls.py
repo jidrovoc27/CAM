@@ -13,6 +13,7 @@ from administrativo.views import *
 from administrativo.view_finanzas import *
 from administrativo.view_mis_finanzas import *
 from administrativo.view_docente import *
+from administrativo.view_periodo import *
 from administrativo.view_alumno import *
 
 urlpatterns = [
@@ -27,6 +28,7 @@ path(r'', dashboard, name='dashboard'),
     path(r'conf_sistemas/usuarios/', view_usuario, name='conf_usuario'),
     path(r'docentes/', view_docente, name='docentes'),
     path(r'alumnos/', view_alumno, name='alumnos'),
+    path(r'periodo/', view_periodo, name='periodo'),
     path(r'finanzas/',view_finanzas ,name='finanzas'),
     path(r'mis_finanzas/',view_mis_finanzas ,name='mis_finanzas'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),

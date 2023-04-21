@@ -151,6 +151,136 @@ class Alumno(ModeloBase):
             tienevalorapagar = True
         return tienevalorapagar
 
+class Periodo(ModeloBase):
+    nombre = models.CharField(default='', max_length=200, verbose_name=u'Nombre')
+    descripcion = models.CharField(default='', max_length=200, verbose_name=u'Descripción')
+    inicio = models.DateField(verbose_name=u'Fecha inicio')
+    fin = models.DateField(verbose_name=u'Fecha fin')
+    activo = models.BooleanField(default=True, verbose_name=u'Visible')
+
+    def __str__(self):
+        return u'%s: %s a %s' % (self.nombre, self.inicio.strftime('%d-%m-%Y'), self.fin.strftime('%d-%m-%Y'))
+
+    class Meta:
+        verbose_name = u"Periodo de cursos"
+        verbose_name_plural = u"Periodos de cursos"
+        ordering = ['-id']
+
+ESTADO_CURSO = (
+    (1, u'CREADO'),
+    (2, u'APERTURADO'),
+    (3, u'CERRADO'),
+    (4, u'CANCELADO'),
+)
+
+TIPO_RUBRO = (
+    (1, u'SERVICIO'),
+    (2, u'BIEN'),
+    (3, u'RENTA INVERSIONES'),
+)
+
+MODALIDAD_CAPACITACION = (
+    (1, u'VIRTUAL'),
+    (2, u'PRESENCIAL'),
+)
+
+class TipoOtroRubro(ModeloBase):
+    nombre = models.CharField(default='', max_length=300, verbose_name=u'Nombre')
+    valor = models.DecimalField(default=0, max_digits=30, decimal_places=2, verbose_name=u'Valor')
+    activo = models.BooleanField(default=True, verbose_name=u'Activo')
+    tiporubro = models.IntegerField(choices=TIPO_RUBRO, default=1, verbose_name=u"Tipo de Rubro")
+
+    def __str__(self):
+        return u'%s: %s - %s' % (self.nombre, self.valor, self.tiporubro)
+
+    class Meta:
+        verbose_name = u"Tipo otro rubro"
+        verbose_name_plural = u"Tipo otros rubros"
+        ordering = ['-id']
+
+class ModeloEvaluativo(ModeloBase):
+    nombre = models.CharField(default='', max_length=100, verbose_name=u"Nombre")
+    fecha = models.DateField(verbose_name=u"Fecha")
+    principal = models.BooleanField(default=False, verbose_name=u"Principal")
+    notamaxima = models.FloatField(default=0, verbose_name=u'Nota maxima')
+    notaaprobar = models.FloatField(default=0, verbose_name=u'Nota para aprobar')
+    asistenciaaprobar = models.FloatField(default=0, verbose_name=u'Asistencia para aprobar')
+    observaciones = models.TextField(default='', max_length=200, verbose_name=u'Observaciones')
+    activo = models.BooleanField(default=True, verbose_name=u"Activo")
+
+    def __str__(self):
+        return u'%s' % self.nombre
+
+    class Meta:
+        verbose_name = u"Modelo evaluativo"
+        verbose_name_plural = u"Modelos evaluativos"
+        ordering = ['nombre']
+
+    def save(self, *args, **kwargs):
+        self.nombre = self.nombre.upper()
+        super(ModeloEvaluativo, self).save(*args, **kwargs)
+
+
+class DetalleModeloEvaluativo(ModeloBase):
+    modelo = models.ForeignKey(ModeloEvaluativo, on_delete=models.PROTECT, verbose_name=u"Modelo")
+    nombre = models.CharField(default='', max_length=10, verbose_name=u"Nombre campo")
+    notaminima = models.FloatField(default=0, verbose_name=u'Nota minima')
+    notamaxima = models.FloatField(default=0, verbose_name=u'Nota maxima')
+    orden = models.IntegerField(default=0, verbose_name=u"Orden en acta")
+
+    def __str__(self):
+        return u'%s (%s a %s)' % (self.nombre, self.notaminima.__str__(), self.notamaxima.__str__())
+
+    class Meta:
+        verbose_name = u"Detalle del modelo evaluativo"
+        verbose_name_plural = u"Detalles de los modelos evaluativos"
+        ordering = ['orden']
+
+class Curso(ModeloBase):
+    periodo = models.ForeignKey(Periodo, on_delete=models.PROTECT, verbose_name=u'Periodo', blank=True, null=True)
+    modeloevaluativo = models.ForeignKey(ModeloEvaluativo, on_delete=models.PROTECT, verbose_name=u'Modelo Evaluativo', blank=True, null=True)
+    nombre = models.CharField(max_length=500, verbose_name=u'Nombre')
+    estado = models.IntegerField(choices=ESTADO_CURSO, blank=True, null=True, verbose_name=u'Estado Curso')
+    tiporubro = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para cuota", on_delete=models.PROTECT, blank=True, null=True)
+    tiporubroinscripcion = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para inscripcion", on_delete=models.PROTECT, blank=True, null=True)
+    tiporubromatricula = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para matricula", on_delete=models.PROTECT, blank=True, null=True)
+    horasvirtual = models.IntegerField(default=0, verbose_name=u'Horas Virtuales')
+    minasistencia = models.IntegerField(default=0, verbose_name=u'Asistencia mínima para aprobar')
+    minnota = models.IntegerField(default=0, verbose_name=u'Nota mínima para aprobar')
+    cupo = models.IntegerField(default=0, verbose_name=u'Cupo')
+    cuotas = models.IntegerField(default=0, verbose_name=u'Cuotas')
+    costo = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u"Costo del curso")
+    gcuotas = models.BooleanField(default=False, verbose_name=u"El curso genera cuotas?")
+    inscripcion = models.BooleanField(default=False, verbose_name=u"El curso aplica inscripción?")
+    costoinscripcion = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u"Costo de la inscripción")
+    oferta = models.BooleanField(default=False, verbose_name=u"Aplica oferta?")
+    costooferta = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u"Costo del curso aplicando oferta")
+    matricula = models.BooleanField(default=False, verbose_name=u"Matrícula")
+    costomatricula = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u"Costo de la matrícula")
+    modalidad = models.IntegerField(choices=MODALIDAD_CAPACITACION, blank=True, null=True, verbose_name=u'Modalidad DEL CURSO')
+    docente = models.ForeignKey(Docente, on_delete=models.PROTECT, verbose_name=u"Docente")
+    fechainicio = models.DateField(blank=True, null=True)
+    fechafin = models.DateField(blank=True, null=True)
+    fechainicioinscripcion = models.DateField(blank=True, null=True)
+    fechafininscripcion = models.DateField(blank=True, null=True)
+    observacion = models.TextField(blank=True, null=True, verbose_name=u"Observacion")
+    objetivo = models.TextField(blank=True, null=True, verbose_name=u"Objetivo")
+    contenido = models.TextField(blank=True, null=True, verbose_name=u"Contenido")
+    visualizar = models.BooleanField(default=False, verbose_name=u"Visualizar")
+    publicarcurso = models.BooleanField(default=False, verbose_name=u"Publicar")
+    planificacion = models.FileField(upload_to='planificacioncurso', verbose_name='Planificación', null=True, blank=True)
+    # fondocertificado = models.ImageField(upload_to='fondocertificados', verbose_name='Fondo', null=True, blank=True)
+    finalizarcurso = models.BooleanField(default=False, verbose_name='¿Curso terminado?', null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Curso"
+        verbose_name_plural = "Cursos"
+        ordering = ['id']
+
+    def __str__(self):
+        return u'%s' % (self.nombre)
+
+
 class AccesoModulo(ModeloBase):
     grupo = models.ForeignKey(Group,  on_delete=models.CASCADE)
     modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE)

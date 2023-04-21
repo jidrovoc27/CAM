@@ -20,7 +20,7 @@ def view_acceso_modulo(request):
     if Persona.objects.filter(usuario=usuario_logeado, status=True).exists():
         persona_logeado = Persona.objects.get(usuario=usuario_logeado, status=True)
     else:
-        persona_logeado = 'AGENCIA'
+        persona_logeado = 'CAM'
 
     if request.method == 'POST':
         if 'peticion' in request.POST:

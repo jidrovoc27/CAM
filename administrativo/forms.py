@@ -6,7 +6,7 @@ from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
 from django.forms import DateTimeInput, ModelChoiceField
 
-from administrativo.models import Genero, Modulo, Docente, Alumno
+from administrativo.models import *
 
 
 class ExtFileField(forms.FileField):
@@ -174,6 +174,44 @@ class PersonaForm(forms.Form):
     def editar(self):
         campo_solo_lectura(self, 'cedula')
         campo_solo_lectura(self, 'genero')
+
+class PeriodoForm(forms.Form):
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
+    descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
+    inicio = forms.DateTimeField(label='Fecha inicio',input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}))
+    fin = forms.DateTimeField(label='Fecha fin',input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}))
+    activo = forms.BooleanField(label='Activo', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+
+class CursoForm(forms.Form):
+    periodo = forms.ModelChoiceField(label=u"Periodo", required=True, queryset=Periodo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    docente = forms.ModelChoiceField(label=u"Docente a cargo", required=True, queryset=Docente.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
+    tiporubro = forms.ModelChoiceField(label=u"Tipo rubro", required=True, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    costo = forms.CharField(label=u"Costo", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    fechainicio = forms.DateTimeField(label='Fecha inicio', input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}))
+    fechafin = forms.DateTimeField(label='Fecha fin', input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d',attrs={'class': 'form-control','type': 'date'}))
+    fechainicioinscripcion = forms.DateTimeField(label='Fecha inicio inscripción', input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}))
+    fechafininscripcion = forms.DateTimeField(label='Fecha fin inscripción', input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d',attrs={'class': 'form-control','type': 'date'}))
+    inscripcion = forms.BooleanField(label='Inscripción', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+    tiporubroinscripcion = forms.ModelChoiceField(label=u"Tipo rubro inscripción", required=False, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    costoinscripcion = forms.CharField(label=u"Costo inscripción", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    matricula = forms.BooleanField(label='Matrícula', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+    tiporubromatricula = forms.ModelChoiceField(label=u"Tipo rubro matrícula", required=False, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    costomatricula = forms.CharField(label=u"Costo matrícula", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    horasvirtual = forms.CharField(label=u"Número de horas", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    minasistencia = forms.CharField(label=u"Asistencia mínima", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    minnota = forms.CharField(label=u"Nota mínima", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    cupo = forms.CharField(label=u"Cupos", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    gcuotas = forms.BooleanField(label='Genera cuotas', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+    cuotas = forms.CharField(label=u"Número de cuotas", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    oferta = forms.BooleanField(label='Aplica oferta', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+    costooferta = forms.CharField(label=u"Costo oferta", max_length=50, required=False,widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    observacion = forms.CharField(label='Observacion', required=True, widget=forms.TextInput(attrs={'class': ' form-control', }))
+    objetivo = forms.CharField(label='Objetivo', required=True, widget=forms.TextInput(attrs={'class': ' form-control', }))
+    contenido = forms.CharField(label='Contenido', required=True, widget=forms.TextInput(attrs={'class': ' form-control', }))
+    publicarcurso = forms.BooleanField(label='Publicar curso', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+    planificacion = ExtFileField(label=u'Planificación', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png, pdf', ext_whitelist=(".jpg", ".png", ".pdf"), max_upload_size=2621440)
+
 
 class DoctorForm(forms.Form):
     nombre1 = forms.CharField(label='1ª Nombre', required=True,
