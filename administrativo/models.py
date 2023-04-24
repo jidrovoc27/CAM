@@ -452,23 +452,6 @@ class Rubro(ModeloBase):
         cantidad_pagos = Pago.objects.filter(rubro_id=self.id, status=True).count()
         return cantidad_pagos
 
-class Pago(ModeloBase):
-    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, blank=True, null=True)
-    rubro = models.ForeignKey(Rubro, on_delete=models.CASCADE)
-    valor = models.FloatField(default=0, verbose_name=u'Pago')
-    # iva = models.DecimalField(max_digits=30, decimal_places=2, default=12, verbose_name=u'Iva')
-    # subtotal_iva = models.FloatField(default=0, verbose_name=u'Subtotal iva')
-    valorfinal = models.FloatField(default=0, verbose_name=u'Valor final')
-    fecha = models.DateField(verbose_name=u'Fecha', auto_now_add=True, null=True)
-
-
-class Factura(ModeloBase):
-    pago = models.ForeignKey(Pago, on_delete=models.CASCADE)
-    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, blank=True, null=True)
-    fecha = models.DateField(verbose_name=u'Fecha', auto_now_add=True, null=True)
-    archivo = models.FileField(upload_to='facturas', blank=True, null=True, verbose_name=u'Facturas')
-
-
 class CuotasCurso(ModeloBase):
     curso = models.ForeignKey(Curso, on_delete=models.PROTECT, verbose_name=u'Curso', blank=True, null=True)
     numerocuota = models.IntegerField(default=0, verbose_name=u'Número de la cuota', blank=True, null=True)
@@ -505,13 +488,76 @@ class Caja(ModeloBase):
     persona = models.ForeignKey(Persona, on_delete=models.PROTECT, verbose_name=u'Persona encarga de la caja', blank=True, null=True)
     activo = models.BooleanField(verbose_name="¿Caja activa?")
 
+    class Meta:
+        verbose_name = "Caja"
+        verbose_name_plural = "Cajas"
+        ordering = ['id']
+
+    def __str__(self):
+        return u'%s - %s' % (self.nombre,self.persona)
+
+    def estado_caja(self):
+        return 'success' if self.activo else 'danger'
+
 class SesionCaja(ModeloBase):
     caja = models.ForeignKey(Caja, on_delete=models.PROTECT, verbose_name=u'Caja a aperturar', blank=True, null=True)
     inicio = models.DateField(verbose_name=u'Fecha inicio')
     fin = models.DateField(verbose_name=u'Fecha fin')
+    valorinicial = models.DecimalField(default=0, max_digits=30, decimal_places=2, verbose_name=u'Valor con el que comienza la caja')
     activo = models.BooleanField(default=True, verbose_name=u'Sesión activa')
+
+    class Meta:
+        verbose_name = "Sesion Caja"
+        verbose_name_plural = "Sesiones de caja"
+        ordering = ['id']
+
+    def __str__(self):
+        return u'%s: %s - %s' % (self.caja, self.inicio, self.fin)
+
+    def estado_sesioncaja(self):
+        return 'success' if self.activo else 'danger'
+
+class CierreSesionCaja(ModeloBase):
+    sesioncaja = models.ForeignKey(SesionCaja, on_delete=models.PROTECT, verbose_name=u'Sesión caja', blank=True, null=True)
+    fechacierre = models.DateField(verbose_name=u'Fecha fin')
+    totalfacturado = models.DecimalField(default=0, max_digits=30, decimal_places=2, verbose_name=u'Valor con el que cierra la caja')
+
+    class Meta:
+        verbose_name = "Cierre Sesion Caja"
+        verbose_name_plural = "Cierres de sesiones de caja"
+        ordering = ['id']
+
+    def __str__(self):
+        return u'%s: %s - %s' % (self.sesioncaja, self.fechacierre, self.totalfacturado)
+
 
 class ValorRecaudado(ModeloBase):
     sesioncaja = models.ForeignKey(SesionCaja, on_delete=models.PROTECT, verbose_name=u'Sesión caja', blank=True, null=True)
+    rubro = models.ForeignKey(Rubro, on_delete=models.PROTECT, verbose_name=u'Rubro facturado', blank=True, null=True)
     valor = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u'Valor recaudado')
 
+    class Meta:
+        verbose_name = "Valor recaudado en la sesión de caja"
+        verbose_name_plural = "Valores recaudados en las sesiones de caja"
+        ordering = ['id']
+
+    def __str__(self):
+        return u'%s - %s - %s' % (self.sesioncaja, self.rubro, self.valor)
+
+
+class Pago(ModeloBase):
+    sesioncaja = models.ForeignKey(SesionCaja, on_delete=models.CASCADE, blank=True, null=True)
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, blank=True, null=True)
+    rubro = models.ForeignKey(Rubro, on_delete=models.CASCADE)
+    valor = models.FloatField(default=0, verbose_name=u'Pago')
+    # iva = models.DecimalField(max_digits=30, decimal_places=2, default=12, verbose_name=u'Iva')
+    # subtotal_iva = models.FloatField(default=0, verbose_name=u'Subtotal iva')
+    valorfinal = models.FloatField(default=0, verbose_name=u'Valor final')
+    fecha = models.DateField(verbose_name=u'Fecha', auto_now_add=True, null=True)
+
+
+class Factura(ModeloBase):
+    pago = models.ForeignKey(Pago, on_delete=models.CASCADE)
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, blank=True, null=True)
+    fecha = models.DateField(verbose_name=u'Fecha', auto_now_add=True, null=True)
+    archivo = models.FileField(upload_to='facturas', blank=True, null=True, verbose_name=u'Facturas')

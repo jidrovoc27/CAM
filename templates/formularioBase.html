@@ -56,17 +56,13 @@
 {% block script %}
 
     <script>
-        $(function () {
-            //Date picker
-            {#$('#id_fecha_cita').datetimepicker({#}
-            {#    format: 'DD-MM-YYYY'#}
-            {#})
-                ;
-                #}
-
-            }
-        )
-            ;
+        {#$(function () {#}
+        {#    //Date picker#}
+        {#    $('#id_fecha_cita').datetimepicker({#}
+        {#        format: 'DD-MM-YYYY'#}
+        {#    });#}
+        {##}
+        {# });#}
 
 
             $('#formulario_data_enviar').submit(function (e) {
@@ -97,8 +93,7 @@
                                 ).then((result) => {
                                     /* Read more about isConfirmed, isDenied below */
                                     if (result.isConfirmed) {
-                                        location.href = "{% block location_href_destino %}
-                                            /{% endblock %}" + ((data.id) ? data.id : "");
+                                        location.href = "{% block location_href_destino %}/{% endblock %}" + ((data.id) ? data.id : "");
                                     }
                                 });
 

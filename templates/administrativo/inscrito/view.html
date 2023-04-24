@@ -22,7 +22,14 @@
             <div class="card-header pb-0 p-3 ">
                 <div class="row ">
                     <div class="col-6 d-flex align-items-center">
-                        <h6 class="mb-0">{{ curso }}</h6>
+                        <h6 class="mb-0">{{ curso.periodo }}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="card-header pb-0 p-3 ">
+                <div class="row ">
+                    <div class="col-6 d-flex align-items-center">
+                        <h6 class="mb-0">{{ curso }} [Fecha inicio: {{ curso.fechainicio|date:'d-m-Y' }} - Fecha fin: {{ curso.fechafin|date:'d-m-Y' }}]</h6>
                     </div>
                 </div>
             </div>
@@ -93,17 +100,17 @@
                                             <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3"
                                                 aria-labelledby="dropdownMarketingCard" style="">
                                                 <li><a class="dropdown-item border-radius-md"
-                                                       href="?peticion=edit_alumno&id={{ fila.pk }}">Editar</a></li>
+                                                       href="?peticion=edit_alumno&id={{ fila.pk }}"> Matricular</a></li>
                                                 <li>
-                                                    <hr class="dropdown-divider">
+{#                                                    <hr class="dropdown-divider">#}
                                                 </li>
-                                                {% if not fila.en_uso %}
-                                                    <li><a class="dropdown-item border-radius-md text-danger"
-                                                           href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_alumno','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
-                                                    </li>
-
-                                                {% endif %}
+{#                                                {% if not fila.en_uso %}#}
+{#                                                    <li><a class="dropdown-item border-radius-md text-danger"#}
+{#                                                           href="javascript:;"#}
+{#                                                           onclick="eliminar_registro('eliminar_alumno','{{ fila }}','{{ fila.pk }}')">Eliminar</a>#}
+{#                                                    </li>#}
+{##}
+{#                                                {% endif %}#}
                                             </ul>
                                         </div>
                                     </td>

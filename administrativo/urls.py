@@ -16,6 +16,8 @@ from administrativo.view_docente import *
 from administrativo.view_periodo import *
 from administrativo.view_alumno import *
 from administrativo.view_tiporubro import *
+from administrativo.view_cajas import *
+from administrativo.view_sesioncaja import *
 
 urlpatterns = [
 path(r'', dashboard, name='dashboard'),
@@ -33,6 +35,8 @@ path(r'', dashboard, name='dashboard'),
     path(r'tiporubros/', view_tiporubro, name='tiporubros'),
     path(r'finanzas/',view_finanzas ,name='finanzas'),
     path(r'mis_finanzas/',view_mis_finanzas ,name='mis_finanzas'),
+    path(r'cajas/',view_cajas ,name='cajas'),
+    path(r'sesioncaja/',view_sesioncaja ,name='sesioncaja'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
     path(r'CAM/', paginaweb, name='paginaweb'),
 ]

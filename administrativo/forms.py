@@ -236,6 +236,12 @@ class CursoForm(forms.Form):
 class InscribirForm(forms.Form):
     alumno = forms.ModelChoiceField(label=u"Alumno", required=True, queryset=Alumno.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
 
+class CajaForm(forms.Form):
+    encargado = forms.ModelChoiceField(label="Encargado", required=True, queryset=Persona.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)',  }))
+    descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
+    activo = forms.BooleanField(label='Activo', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+
 
 class DoctorForm(forms.Form):
     nombre1 = forms.CharField(label='1ª Nombre', required=True,
