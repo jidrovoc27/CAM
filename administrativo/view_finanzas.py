@@ -89,13 +89,13 @@ def view_finanzas(request):
             if peticion == 'ver_rubro':
                 try:
                     data['titulo'] = 'Rubros'
-                    data['paciente_rubro'] = Cliente.objects.get(id=request.GET['id'])
-                    lista = Rubro.objects.filter(status=True,paciente_id=request.GET['id'])
+                    data['persona'] = Persona.objects.get(id=request.GET['id'])
+                    lista = Rubro.objects.filter(status=True,alumno__persona_id=request.GET['id'])
                     paginator = Paginator(lista, 15)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
-                    return render(request, "finanzas/rubros.html", data)
+                    return render(request, "administrativo/finanzas/rubros.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
@@ -103,7 +103,7 @@ def view_finanzas(request):
             elif peticion == 'ver_pagos':
                 try:
                     data['titulo'] = 'Pagos'
-                    data['paciente_rubro'] = Cliente.objects.get(id=request.GET['id'])
+                    data['paciente_rubro'] = Persona.objects.get(id=request.GET['id'])
                     data['rubro_paciente'] = Rubro.objects.get(status=True, id=request.GET['idrubro'])
                     lista = Pago.objects.filter(status=True, rubro_id=request.GET['idrubro'])
                     paginator = Paginator(lista, 15)
@@ -117,7 +117,7 @@ def view_finanzas(request):
             elif peticion == 'addpago':
                 try:
                     data['titulo'] = 'Registrar nuevo pago'
-                    data['titulo_formulario'] = 'Formulario de registro de paciente'
+                    data['titulo_formulario'] = 'Formulario de registro de pagos'
                     data['peticion'] = 'addpago'
                     data['idrubro'] = request.GET['idrubro']
                     data['id'] = request.GET['id']
@@ -143,7 +143,7 @@ def view_finanzas(request):
             elif peticion == 'ver_facturas':
                 try:
                     data['titulo'] = 'Facturas'
-                    data['paciente_rubro'] = Cliente.objects.get(id=request.GET['paciente_id'])
+                    data['paciente_rubro'] = Persona.objects.get(id=request.GET['paciente_id'])
                     data['pago_factura'] = Pago.objects.get(id=int(request.GET['id']))
                     lista = Factura.objects.filter(status=True,pago_id=int(request.GET['id']))
                     paginator = Paginator(lista, 15)
@@ -159,14 +159,14 @@ def view_finanzas(request):
         else:
             try:
                 data['titulo'] = 'Finanzas'
-                data['titulo_tabla'] = 'Listado de pacientes'
+                data['titulo_tabla'] = 'Listado de personas'
                 data['persona_logeado'] = persona_logeado
-                lista = Cliente.objects.filter(status=True)
+                lista = Persona.objects.filter(status=True)
                 paginator = Paginator(lista, 15)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj
 
-                return render(request, "finanzas/view.html", data)
+                return render(request, "administrativo/finanzas/view.html", data)
             except Exception as ex:
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))

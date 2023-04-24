@@ -280,12 +280,14 @@ def view_periodo(request):
                         curso = Curso.objects.get(id=int(request.POST['id']))
                         inscrito = form.cleaned_data['alumno']
 
-                        inscrito = InscritoCurso(curso=curso, alumno=inscrito)
-                        inscrito.save(request)
+                        if not InscritoCurso.objects.filter(status=True, curso=curso, alumno=inscrito).exists():
 
-                        inscrito.generar_rubros(curso)
-
-                        return JsonResponse({"respuesta": True, "mensaje": "Alumno inscrito correctamente"})
+                            inscrito = InscritoCurso(curso=curso, alumno=inscrito)
+                            inscrito.save(request)
+                            inscrito.generar_rubros(curso)
+                            return JsonResponse({"respuesta": True, "mensaje": "Alumno inscrito correctamente"})
+                        else:
+                            return JsonResponse({"respuesta": False, "mensaje": "La persona ya se encuentra inscrita en este curso"})
                 except Exception as ex:
                     pass
 

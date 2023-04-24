@@ -75,11 +75,14 @@
 
                                     </td>
                                     <td>
-{#                                        {% if fila.verificar_cancelado %}#}
-{#                                            <span class="badge badge-sm bg-gradient-success text-center">CANCELADO</span>#}
-{#                                        {% else %}#}
+                                        {% if fila.adeuda %}
+                                            <span class="badge badge-sm bg-gradient-success text-center">CANCELADO</span>
+                                        {% else %}
                                             <span class="badge badge-sm bg-gradient-danger text-center">ADEUDA</span>
-{#                                        {% endif %}#}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-{{ fila.estado_aprobacion }} text-center">{{ fila.get_estado_display }}</span>
                                     </td>
                                     <td class="text-secondary text-sm font-weight-bolder text-center">
                                         <div class="dropstart">

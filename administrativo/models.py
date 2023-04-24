@@ -65,6 +65,21 @@ class Persona(ModeloBase):
     def tiene_perfil_persona(self):
         return self.personaperfil_set().exists()
 
+
+    def totalrubros(self):
+        total = Rubro.objects.filter(alumno__persona_id=self.id, status=True).aggregate(total=Sum('valor'))
+        if not total['total']:
+            return 0.00
+        return total['total']
+
+    def totalpagos(self):
+        lista_rubros = Rubro.objects.filter(alumno__persona_id=self.id, status=True).values_list('id')
+        total = Pago.objects.filter(rubro_id__in=lista_rubros, status=True).aggregate(total=Sum('valorfinal'))
+        valorpago = 0.00
+        if total['total']:
+            valorpago = total['total']
+        return solo_2_decimales(valorpago, 2)
+
 class PersonaPerfil(ModeloBase):
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
     is_profesor = models.BooleanField(default=False, verbose_name=u'Es profesor')
@@ -314,6 +329,23 @@ class InscritoCurso(ModeloBase):
     def __str__(self):
         return u'%s' % (self.alumno)
 
+    def adeuda(self):
+        curso = self.curso
+        rubros = Rubro.objects.filter(status=True, alumno=self.alumno, curso=curso).values_list('id', flat=True)
+        totalpagos = Pago.objects.filter(rubro_id__in=rubros, status=True).aggregate(total=Sum('valorfinal'))
+        if totalpagos['total']:
+            saldofinal = float(totalpagos['total'])
+            if float(curso.costo) == saldofinal:
+                return True
+        return False
+
+    def estado_aprobacion(self):
+        if self.estado == 1:
+            return 'success'
+        else:
+            return 'danger'
+
+
     def generar_rubros(self, curso):
         try:
             if curso.inscripcion:
@@ -466,4 +498,20 @@ class TiempoAntesRecordatorioCorreo(ModeloBase):
 
     def __str__(self):
         return u'Días: %s | Horas: %s | Minutos: %s' % (self.dias_antes,self.horas_antes,self.minutos_antes)
+
+class Caja(ModeloBase):
+    nombre = models.CharField(verbose_name="Nombre de la caja", max_length=100, unique=True)
+    descripcion = models.CharField(verbose_name="Descripción de la caja", default='', max_length=200)
+    persona = models.ForeignKey(Persona, on_delete=models.PROTECT, verbose_name=u'Persona encarga de la caja', blank=True, null=True)
+    activo = models.BooleanField(verbose_name="¿Caja activa?")
+
+class SesionCaja(ModeloBase):
+    caja = models.ForeignKey(Caja, on_delete=models.PROTECT, verbose_name=u'Caja a aperturar', blank=True, null=True)
+    inicio = models.DateField(verbose_name=u'Fecha inicio')
+    fin = models.DateField(verbose_name=u'Fecha fin')
+    activo = models.BooleanField(default=True, verbose_name=u'Sesión activa')
+
+class ValorRecaudado(ModeloBase):
+    sesioncaja = models.ForeignKey(SesionCaja, on_delete=models.PROTECT, verbose_name=u'Sesión caja', blank=True, null=True)
+    valor = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u'Valor recaudado')
 
