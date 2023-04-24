@@ -11,6 +11,8 @@ from administrativo.models import *
 from administrativo.funciones import *
 from administrativo.forms import *
 from CAM import settings
+from CAM.settings import *
+
 
 # Create your views here.
 from django.urls import reverse_lazy

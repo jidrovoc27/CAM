@@ -70,19 +70,24 @@
                                             <h6 class="mb-0 text-xs">{{ fila }}</h6>
                                         </div>
                                     </td>
-                                    <td data-title="Descripción" class="text-center">
-                                        <input type="checkbox" {% if fila.publicarcurso %}checked{% endif %}>
+                                    <td data-title="Publicado" class="text-center">
+{#                                        <input type="checkbox" readonly {% if fila.publicarcurso %}checked{% endif %}>#}
+                                        <a>{% if fila.publicarcurso %}<li style="color: green" class="fa fa-check"{% else %}<li style="color: red" class="fa fa-close"{% endif %}></li></a>
                                     </td>
-                                    <td data-title="Número de cursos" class="text-center">
-                                        <span class="text-xs">{{ forloop.counter }}</span>
+                                    <td data-title="Docente" class="text-center">
+                                        <span class="text-xs">{{ fila.docente }}</span>
                                     </td>
                                     <td class="text-xs text-center" data-title="¿Activo?">
-                                        {% if fila.activo %}
-                                            <span class="text-xs" style="color: green">ACTIVO</span>
-                                        {% else %}
-                                            <span class="text-xs" style="color: red">NO ACTIVO</span>
-                                        {% endif %}
-
+                                        {{ fila.fechainicioinscripcion }} - {{ fila.fechafininscripcion }}
+                                    </td>
+                                    <td class="text-xs text-center" data-title="¿Activo?">
+                                        ${{ fila.costo }}
+                                    </td>
+                                    <td class="text-xs text-center" data-title="¿Activo?">
+                                        {{ forloop.counter }}
+                                    </td>
+                                    <td class="text-xs text-center" data-title="¿Activo?">
+                                        {{ fila.fechainicio }} - {{ fila.fechafin }}
                                     </td>
                                     <td class="text-secondary text-sm font-weight-bolder text-center">
                                         <div class="dropstart">
@@ -93,18 +98,18 @@
                                             <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3"
                                                 aria-labelledby="dropdownMarketingCard" style="">
                                                 <li><a class="dropdown-item border-radius-md"
-                                                       href="?peticion=edit_periodo&id={{ fila.pk }}">Editar</a></li>
+                                                       href="?peticion=edit_curso&id={{ fila.pk }}">Editar</a></li>
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 <li><a class="dropdown-item border-radius-md"
-                                                       href="?peticion=edit_periodo&id={{ fila.pk }}">Cursos</a></li>
+                                                       href="?peticion=alumnos&id={{ fila.pk }}">Alumnos</a></li>
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 </li>
                                                 {% if not fila.en_uso %}
                                                     <li><a class="dropdown-item border-radius-md text-danger"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_periodo','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
+                                                           onclick="eliminar_registro('eliminar_curso','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
                                                     </li>
 
                                                 {% endif %}

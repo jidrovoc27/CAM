@@ -109,7 +109,7 @@
             // DESACTIVAR OPCIONES DE MATRÍCULA
             $("#id_tiporubromatricula, #id_costomatricula").attr({'disabled': 'disabled'});
             // DESACTIVAR OPCIONES DE GENERA CUOTAS
-            $("#id_cuotas").attr({'disabled': 'disabled'});
+            $("#id_cuotas, #id_tiporubrocuota").attr({'disabled': 'disabled'});
             // DESACTIVAR OPCIONES DE APLICA OFERTA
             $("#id_costooferta").attr({'disabled': 'disabled'});
         })
@@ -146,11 +146,11 @@
         $("#id_gcuotas").click(function () {
             var miCheckbox = document.getElementById("id_gcuotas");
             if (miCheckbox.checked) {
-                $("#id_cuotas, #adicionarcuotas").removeAttr('disabled');
-                $("#id_cuotas, #adicionarcuotas").attr({'required': 'required'});
+                $("#id_cuotas, #adicionarcuotas, #id_tiporubrocuota").removeAttr('disabled');
+                $("#id_cuotas, #adicionarcuotas, #id_tiporubrocuota").attr({'required': 'required'});
             } else {
-                $("#id_cuotas, #adicionarcuotas").attr({'disabled': 'disabled'});
-                $("#id_cuotas, #adicionarcuotas").removeAttr("required");
+                $("#id_cuotas, #adicionarcuotas, #id_tiporubrocuota").attr({'disabled': 'disabled'});
+                $("#id_cuotas, #adicionarcuotas, #id_tiporubrocuota").removeAttr("required");
             }
         })
         $("#adicionarcuotas").click(function () {
@@ -160,9 +160,9 @@
             if (estado == 'required') {
                 $("#listadocuotas").append('<tr class="registro">' +
                     {#'<td style="text-align: center" class="itemstime">' + itemstime + '</td>' +#}
-                    '<td style="text-align: center" class="inicio"><input type="date" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;"></td>' +
-                    '<td style="text-align: center" class="fin"><input type="date" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;"></td>' +
-                    '<td style="text-align: center" class="valor"><input type="number" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;width:30%"></td>' +
+                    '<td style="text-align: center" class="inicio"><input name="inicio" type="date" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;"></td>' +
+                    '<td style="text-align: center" class="fin"><input name="fin" type="date" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;"></td>' +
+                    '<td style="text-align: center" class="valor"><input name="valor" type="number" style="border: 2px solid #ccc; /* Borde de 2px de ancho y color gris claro */border-radius: 4px;text-align: center;width:30%"></td>' +
                     '<td style="text-align: center" class="valor"><a class="btn btn-tini btn-danger tu eliminar" onclick="solicitudaajax(this)" fila="' + fila + '" title="Eliminar"><i class="fa fa-remove"></i></a></td>' +
                     '</tr>');
             }

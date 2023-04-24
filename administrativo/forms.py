@@ -182,11 +182,15 @@ class PeriodoForm(forms.Form):
     fin = forms.DateTimeField(label='Fecha fin',input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}))
     activo = forms.BooleanField(label='Activo', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
 
+class TipoRubroForm(forms.Form):
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
+    descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
+
 class CursoForm(forms.Form):
     periodo = forms.ModelChoiceField(label=u"Periodo", required=True, queryset=Periodo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     docente = forms.ModelChoiceField(label=u"Docente a cargo", required=True, queryset=Docente.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
-    tiporubro = forms.ModelChoiceField(label=u"Tipo rubro", required=False, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    tiporubro = forms.ModelChoiceField(label=u"Tipo rubro", required=True, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     costo = forms.CharField(label=u"Costo", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
     fechainicio = forms.DateTimeField(label='Fecha inicio', input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}))
     fechafin = forms.DateTimeField(label='Fecha fin', input_formats=['%Y-%m-%d'], widget=forms.DateInput(format='%Y-%m-%d',attrs={'class': 'form-control','type': 'date'}))
@@ -203,6 +207,7 @@ class CursoForm(forms.Form):
     minnota = forms.CharField(label=u"Nota mínima", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
     cupo = forms.CharField(label=u"Cupos", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
     gcuotas = forms.BooleanField(label='Genera cuotas', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+    tiporubrocuota = forms.ModelChoiceField(label=u"Tipo rubro cuota", required=False, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     cuotas = forms.CharField(label=u"Número de cuotas", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
     oferta = forms.BooleanField(label='Aplica oferta', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
     costooferta = forms.CharField(label=u"Costo oferta", max_length=50, required=False,widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '50'}))
@@ -213,6 +218,23 @@ class CursoForm(forms.Form):
     planificacion = ExtFileField(label=u'Planificación', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png, pdf', ext_whitelist=(".jpg", ".png", ".pdf"), max_upload_size=2621440)
     imagen = ExtFileField(label=u'Imagen del curso', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png', ext_whitelist=(".jpg", ".png"), max_upload_size=2621440)
     imagenweb = ExtFileField(label=u'Imagen del curso para web', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png', ext_whitelist=(".jpg", ".png"), max_upload_size=2621440)
+
+    def desactivar_campos(self):
+        campo_requerido(self, 'gcuotas')
+        campo_requerido(self, 'cuotas')
+        campo_requerido(self, 'tiporubrocuota')
+        campo_requerido(self, 'planificacion')
+        campo_requerido(self, 'imagen')
+        campo_requerido(self, 'imagenweb')
+
+    def sin_cuotas(self):
+        del self.fields['gcuotas']
+        del self.fields['cuotas']
+        del self.fields['tiporubrocuota']
+
+
+class InscribirForm(forms.Form):
+    alumno = forms.ModelChoiceField(label=u"Alumno", required=True, queryset=Alumno.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
 
 
 class DoctorForm(forms.Form):

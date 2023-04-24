@@ -181,8 +181,9 @@ def view_periodo(request):
                         costo = form.cleaned_data['costo']
                         fechainicio = form.cleaned_data['fechainicio']
                         fechafin = form.cleaned_data['fechafin']
-                        fechainicioinscripcion = form.cleaned_data['fechainicio']
-                        fechafininscripcion = form.cleaned_data['fechainicio']
+                        fechainicioinscripcion = form.cleaned_data['fechainicioinscripcion']
+                        fechafininscripcion = form.cleaned_data['fechafininscripcion']
+                        gcuotas = form.cleaned_data['gcuotas']
                         inscripcion = form.cleaned_data['inscripcion']
                         matricula = form.cleaned_data['matricula']
                         horasvirtual = form.cleaned_data['horasvirtual']
@@ -200,7 +201,142 @@ def view_periodo(request):
                         curso = Curso(periodo=periodo, docente=docente, nombre=nombre, tiporubro=tiporubro, costo=costo,
                                       fechainicio=fechainicio, fechafin=fechafin, fechainicioinscripcion=fechainicioinscripcion, fechafininscripcion=fechafininscripcion,
                                       horasvirtual=horasvirtual, minasistencia=minasistencia, minnota=minnota, cupo=cupo,
-                                      observacion=observacion, objetivo=objetivo, contenido=contenido, publicarcurso=publicarcurso)
+                                      observacion=observacion, objetivo=objetivo, contenido=contenido, publicarcurso=publicarcurso, gcuotas=gcuotas)
+
+                        #VERIFICA SI EL CURSO APLICA INSCRIPCIÓN
+                        if inscripcion:
+                            curso.inscripcion = True
+                            curso.tiporubroinscripcion = form.cleaned_data['tiporubroinscripcion']
+                            curso.costoinscripcion = form.cleaned_data['costoinscripcion']
+
+                        # VERIFICA SI EL CURSO APLICA MATRÍCULA
+                        if matricula:
+                            curso.matricula = True
+                            curso.tiporubromatricula = form.cleaned_data['tiporubromatricula']
+                            curso.costomatricula = form.cleaned_data['costomatricula']
+
+                        curso.save(request)
+
+                        if curso.gcuotas:
+                            if 'valor' in request.POST:
+                                inicios = request.POST.getlist('inicio')
+                                fines = request.POST.getlist('fin')
+                                valores = request.POST.getlist('valor')
+                                tiporubrocuota = form.cleaned_data['tiporubrocuota']
+                                curso.tiporubrocuota = tiporubrocuota
+                                numcuota = 1
+                                contador = 0
+                                for cuota in inicios:
+                                    nuevacuota = CuotasCurso(curso=curso, numerocuota=numcuota, inicio=inicios[contador],
+                                                             fin=fines[contador], valor=valores[contador])
+                                    nuevacuota.save(request)
+                                    numcuota += 1
+                                    contador += 1
+                                curso.cuotas = numcuota
+                                curso.save(request)
+                            else:
+                                transaction.set_rollback(True)
+                                return JsonResponse({"respuesta": False, "mensaje": "Por favor, ingrese las cuotas correspondientes."})
+
+                        #GUARDA LA PLANIFICACIÓN DEL CURSO
+                        if 'planificacion' in request.FILES:
+                            newfile = request.FILES['planificacion']
+                            newfile._name = nuevo_nombre("planificacion", newfile._name)
+                            curso.planificacion = newfile
+                            curso.save(request)
+
+                        #GUARDA LA IMAGEN DEL CURSO QUE SIRVE PARA LA PÁGINA WEB
+                        if 'imagenweb' in request.FILES:
+                            newfile = request.FILES['imagenweb']
+                            newfile._name = nuevo_nombre("imagenweb", newfile._name)
+                            curso.fondoweb = newfile
+                            curso.save(request)
+                            rutaweb = MEDIA_ROOT + '/fondoweb/' + newfile._name
+                            ruta_a_guardar_web = MEDIA_ROOT + '/fondoweb/' + newfile._name
+                            redimenzionar_imagen(rutaweb, ruta_a_guardar_web, 693, 843)
+                            curso.save(request)
+
+                        # GUARDA LA IMAGEN DEL CURSO QUE SIRVE PARA LA PARTE ACADÉMICA
+                        if 'imagen' in request.FILES:
+                            newfile = request.FILES['imagen']
+                            newfile._name = nuevo_nombre("imagen", newfile._name)
+                            curso.fondocursos = newfile
+                            curso.save(request)
+                            rutacursos = MEDIA_ROOT + '/fondocursos/' + newfile._name
+                            ruta_a_guardar_cursos = MEDIA_ROOT + '/fondocursos/' + newfile._name
+                            redimenzionar_imagen(rutacursos, ruta_a_guardar_cursos, 825, 490)
+                            curso.save(request)
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
+                except Exception as ex:
+                    pass
+
+
+            elif peticion == 'add_inscrito':
+                try:
+                    form = InscribirForm(request.POST)
+                    if form.is_valid():
+
+                        curso = Curso.objects.get(id=int(request.POST['id']))
+                        inscrito = form.cleaned_data['alumno']
+
+                        inscrito = InscritoCurso(curso=curso, alumno=inscrito)
+                        inscrito.save(request)
+
+                        inscrito.generar_rubros(curso)
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Alumno inscrito correctamente"})
+                except Exception as ex:
+                    pass
+
+
+            elif peticion == 'edit_curso':
+                try:
+                    form = CursoForm(request.POST, request.FILES)
+                    if form.is_valid():
+
+                        periodo = form.cleaned_data['periodo']
+                        docente = form.cleaned_data['docente']
+                        nombre = form.cleaned_data['nombre']
+                        tiporubro = form.cleaned_data['tiporubro']
+                        costo = form.cleaned_data['costo']
+                        fechainicio = form.cleaned_data['fechainicio']
+                        fechafin = form.cleaned_data['fechafin']
+                        fechainicioinscripcion = form.cleaned_data['fechainicioinscripcion']
+                        fechafininscripcion = form.cleaned_data['fechafininscripcion']
+                        inscripcion = form.cleaned_data['inscripcion']
+                        matricula = form.cleaned_data['matricula']
+                        horasvirtual = form.cleaned_data['horasvirtual']
+                        minasistencia = form.cleaned_data['minasistencia']
+                        minnota = form.cleaned_data['minnota']
+                        cupo = form.cleaned_data['cupo']
+                        observacion = form.cleaned_data['observacion']
+                        objetivo = form.cleaned_data['objetivo']
+                        contenido = form.cleaned_data['contenido']
+                        publicarcurso = form.cleaned_data['publicarcurso']
+                        planificacion = request.FILES['planificacion']
+                        imagen = request.FILES['imagen']
+                        imagenweb = request.FILES['imagenweb']
+
+                        curso = Curso.objects.get(id=int(request.POST['id']))
+                        curso.periodo=periodo
+                        curso.docente=docente
+                        curso.nombre=nombre
+                        curso.tiporubro=tiporubro
+                        curso.costo=costo
+                        curso.fechainicio=fechainicio
+                        curso.fechafin=fechafin
+                        curso.fechainicioinscripcion=fechainicioinscripcion
+                        curso.fechafininscripcion=fechafininscripcion
+                        curso.horasvirtual=horasvirtual
+                        curso.minasistencia=minasistencia
+                        curso.minnota=minnota
+                        curso.cupo=cupo
+                        curso.observacion=observacion
+                        curso.objetivo=objetivo
+                        curso.contenido=contenido
+                        curso.publicarcurso=publicarcurso
+                        curso.save(request)
 
                         #VERIFICA SI EL CURSO APLICA INSCRIPCIÓN
                         if inscripcion:
@@ -229,9 +365,10 @@ def view_periodo(request):
                             newfile._name = nuevo_nombre("imagenweb", newfile._name)
                             curso.fondoweb = newfile
                             curso.save(request)
-                            rutaweb = MEDIA_ROOT + '/media/fondoweb/' + newfile._name
-                            ruta_a_guardar_web = MEDIA_ROOT + '/media/fondoweb/' + newfile._name
+                            rutaweb = MEDIA_ROOT + '/fondoweb/' + newfile._name
+                            ruta_a_guardar_web = MEDIA_ROOT + '/fondoweb/' + newfile._name
                             redimenzionar_imagen(rutaweb, ruta_a_guardar_web, 693, 843)
+                            curso.save(request)
 
                         # GUARDA LA IMAGEN DEL CURSO QUE SIRVE PARA LA PARTE ACADÉMICA
                         if 'imagen' in request.FILES:
@@ -239,19 +376,19 @@ def view_periodo(request):
                             newfile._name = nuevo_nombre("imagen", newfile._name)
                             curso.fondocursos = newfile
                             curso.save(request)
-                            rutacursos = MEDIA_ROOT + '/media/fondocursos/' + newfile._name
-                            ruta_a_guardar_cursos = MEDIA_ROOT + '/media/fondocursos/' + newfile._name
+                            rutacursos = MEDIA_ROOT + '/fondocursos/' + newfile._name
+                            ruta_a_guardar_cursos = MEDIA_ROOT + '/fondocursos/' + newfile._name
                             redimenzionar_imagen(rutacursos, ruta_a_guardar_cursos, 825, 490)
+                            curso.save(request)
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Registro modificado correctamente."})
                 except Exception as ex:
                     pass
 
-            if peticion == 'eliminar_alumno':
+            if peticion == 'eliminar_curso':
                 try:
                     with transaction.atomic():
-                        registro = Alumno.objects.get(pk=request.POST['id'])
-                        persona = Persona.objects.get(pk=registro.persona_id)
-                        persona.status = False
-                        persona.save()
+                        registro = Curso.objects.get(pk=request.POST['id'])
                         registro.status = False
                         registro.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro eliminado correctamente."})
@@ -342,6 +479,48 @@ def view_periodo(request):
                     return render(request, "administrativo/periodo/edit_periodo.html", data)
                 except Exception as ex:
                     pass
+            if peticion == 'edit_curso':
+                try:
+                    data['titulo'] = 'Editar curso'
+                    data['titulo_formulario'] = 'Edición de curso'
+                    data['peticion'] = 'edit_curso'
+                    data['curso'] = curso = Curso.objects.get(pk=request.GET['id'])
+                    form = CursoForm(initial={
+                        'periodo':curso.periodo,
+                        'docente': curso.docente,
+                        'nombre': curso.nombre,
+                        'tiporubro': curso.tiporubro,
+                        'costo': curso.costo,
+                        'fechainicio': curso.fechainicio,
+                        'fechafin': curso.fechafin,
+                        'fechainicioinscripcion': curso.fechainicioinscripcion,
+                        'fechafininscripcion': curso.fechafininscripcion,
+                        'inscripcion': curso.inscripcion,
+                        'tiporubroinscripcion': curso.tiporubroinscripcion,
+                        'costoinscripcion': curso.costoinscripcion,
+                        'matricula': curso.matricula,
+                        'tiporubromatricula': curso.tiporubromatricula,
+                        'costomatricula': curso.costomatricula,
+                        'horasvirtual': curso.horasvirtual,
+                        'minasistencia': curso.minasistencia,
+                        'minnota': curso.minnota,
+                        'cupo': curso.cupo,
+                        'oferta': curso.oferta,
+                        'costooferta': curso.costooferta,
+                        'observacion': curso.observacion,
+                        'objetivo': curso.objetivo,
+                        'contenido': curso.contenido,
+                        'publicarcurso': curso.publicarcurso,
+                        'planificacion': curso.planificacion,
+                        'imagen': curso.fondocursos,
+                        'imagenweb': curso.fondoweb,
+                    })
+                    form.desactivar_campos()
+                    form.sin_cuotas()
+                    data['form'] = form
+                    return render(request, "administrativo/cursos/edit_curso.html", data)
+                except Exception as ex:
+                    pass
 
             if peticion == 'generar_certificado':
                 try:
@@ -428,6 +607,35 @@ def view_periodo(request):
                     return render(request, "administrativo/cursos/view.html", data)
                 except Exception as ex:
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
+
+            elif peticion == 'alumnos':
+                try:
+                    data['titulo'] = 'Alumnos'
+                    data['titulo_tabla'] = 'Lista  de Alumnos'
+                    data['persona_logeado'] = persona_logeado
+                    idperiodo = int(request.GET['id'])
+                    data['curso'] = curso = Curso.objects.get(id=idperiodo)
+                    lista = InscritoCurso.objects.filter(status=True, curso=curso).order_by('id')
+                    paginator = Paginator(lista, 15)
+                    page_number = request.GET.get('page')
+                    page_obj = paginator.get_page(page_number)
+                    data['page_obj'] = page_obj
+                    return render(request, "administrativo/inscrito/view.html", data)
+                except Exception as ex:
+                    print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
+
+            elif peticion == 'add_inscrito':
+                try:
+                    data['titulo'] = 'Agregar nuevo inscrito'
+                    data['titulo_formulario'] = 'Formulario de inscripción'
+                    data['curso'] = Curso.objects.get(id=int(request.GET['id']))
+                    data['peticion'] = 'add_inscrito'
+                    form = InscribirForm()
+                    data['form'] = form
+                    return render(request, "administrativo/inscrito/add_inscrito.html", data)
+                except Exception as ex:
+                    transaction.set_rollback(True)
+                    pass
 
             elif peticion == 'add_curso':
                 try:

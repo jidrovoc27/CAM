@@ -58,9 +58,9 @@
     <script>
         $(function () {
             //Date picker
-            $('#id_fecha_cita').datetimepicker({
-                format: 'DD-MM-YYYY'
-            });
+            {#$('#id_fecha_cita').datetimepicker({#}
+            {#    format: 'DD-MM-YYYY'#}
+            {#});#}
 
         });
 
@@ -156,7 +156,11 @@
         });
     </script>
 
-
+<script type="text/javascript">
+        $(document).ready(function(){
+            $("select").select2({"width": "100%"});
+        });
+    </script>
 
     {% block js %}
 

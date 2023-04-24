@@ -1,6 +1,17 @@
 from django.db import models
 import datetime
 from datetime import datetime
+from decimal import Decimal
+
+def solo_2_decimales(valor, decimales=None):
+    if valor:
+        if decimales:
+            if decimales > 0:
+                return float(Decimal(valor if valor else 0).quantize(
+                    Decimal('.' + ''.zfill(decimales - 1) + '1')) if valor else 0)
+            else:
+                return float(Decimal(valor if valor else 0).quantize(Decimal('0')))
+    return valor if valor else 0
 
 def quitar_caracteres(cadena):
     return cadena.replace(u'ñ', u'n').replace(u'Ñ', u'N').replace(u'Á', u'A').replace(u'á', u'a').replace(u'É',u'E').replace(u'é', u'e').replace(u'Í', u'I').replace(u'í', u'i').replace(u'Ó', u'O').replace(u'ó', u'o').replace(u'Ú',u'U').replace(u'ú', u'u')

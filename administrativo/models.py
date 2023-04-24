@@ -4,7 +4,7 @@ from django.db.models import Sum
 import datetime
 from datetime import datetime
 
-from administrativo.funciones import ModeloBase
+from administrativo.funciones import *
 
 class Modulo(ModeloBase):
     nombre = models.CharField(verbose_name="Nombre del módulo", max_length=100, unique=True)
@@ -168,6 +168,9 @@ class Periodo(ModeloBase):
         verbose_name_plural = u"Periodos de cursos"
         ordering = ['-id']
 
+    def total_cursos(self):
+        return Curso.objects.filter(status=True, periodo=self).count()
+
 ESTADO_CURSO = (
     (1, u'CREADO'),
     (2, u'APERTURADO'),
@@ -188,12 +191,13 @@ MODALIDAD_CAPACITACION = (
 
 class TipoOtroRubro(ModeloBase):
     nombre = models.CharField(default='', max_length=300, verbose_name=u'Nombre')
+    descripcion = models.CharField(default='', max_length=800, verbose_name=u'Descripción')
     valor = models.DecimalField(default=0, max_digits=30, decimal_places=2, verbose_name=u'Valor')
     activo = models.BooleanField(default=True, verbose_name=u'Activo')
     tiporubro = models.IntegerField(choices=TIPO_RUBRO, default=1, verbose_name=u"Tipo de Rubro")
 
     def __str__(self):
-        return u'%s: %s - %s' % (self.nombre, self.valor, self.tiporubro)
+        return u'%s' % (self.nombre)
 
     class Meta:
         verbose_name = u"Tipo otro rubro"
@@ -253,6 +257,7 @@ class Curso(ModeloBase):
     tiporubro = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para cuota", on_delete=models.PROTECT, blank=True, null=True)
     tiporubroinscripcion = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para inscripcion", on_delete=models.PROTECT, blank=True, null=True)
     tiporubromatricula = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para matricula", on_delete=models.PROTECT, blank=True, null=True)
+    tiporubrocuota = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para cuotas", on_delete=models.PROTECT, blank=True, null=True)
     horasvirtual = models.IntegerField(default=0, verbose_name=u'Horas Virtuales')
     minasistencia = models.IntegerField(default=0, verbose_name=u'Asistencia mínima para aprobar')
     minnota = models.IntegerField(default=0, verbose_name=u'Nota mínima para aprobar')
@@ -291,27 +296,86 @@ class Curso(ModeloBase):
     def __str__(self):
         return u'%s' % (self.nombre)
 
+ESTADO_INSCRITO = (
+    (1, u'APROBADO'),
+    (2, u'REPROBADO'),
+)
+
+class InscritoCurso(ModeloBase):
+    alumno = models.ForeignKey(Alumno, on_delete=models.PROTECT, verbose_name=u"Alumno")
+    curso = models.ForeignKey(Curso, on_delete=models.PROTECT, verbose_name=u"Curso")
+    estado = models.IntegerField(default=2, choices=ESTADO_INSCRITO, blank=True, null=True, verbose_name=u'Modalidad DEL CURSO')
+
+    class Meta:
+        verbose_name = "Inscrito Curso"
+        verbose_name_plural = "Inscritos por curso"
+        ordering = ['id']
+
+    def __str__(self):
+        return u'%s' % (self.alumno)
+
     def generar_rubros(self, curso):
-
-        if curso.inscripcion:
-            rubroinscripcion = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
-                          tiporubro=curso.tiporubro, curso=curso, alumno=self, tipocuota=1, valor=curso.costoinscripcion,
-                          fecha=datetime.now().date(), cancelado=False)
-            rubroinscripcion.save()
-
-        if curso.matricula:
-            rubromatricula = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
-                          tiporubro=curso.tiporubro, curso=curso, alumno=self, tipocuota=2, valor=curso.costomatricula,
-                          fecha=datetime.now().date(), cancelado=False)
-            rubromatricula.save()
-
-        if curso.gcuotas:
-            cuotas = CuotasCurso.objects.filter(status=True, curso=curso)
-            for cuota in cuotas:
-                rubrocuotas = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
-                              tiporubro=curso.tiporubro, curso=curso, alumno=self, cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
+        try:
+            if curso.inscripcion:
+                rubroinscripcion = Rubro(nombre=curso.tiporubroinscripcion.nombre + ' - ' + self.nombre,
+                              tiporubro=curso.tiporubroinscripcion, curso=curso, alumno=self, tipocuota=1, valor=curso.costoinscripcion,
                               fecha=datetime.now().date(), cancelado=False)
-                rubrocuotas.save()
+                rubroinscripcion.save()
+
+            if curso.matricula:
+                rubromatricula = Rubro(nombre=curso.tiporubromatricula.nombre + ' - ' + self.nombre,
+                              tiporubro=curso.tiporubromatricula, curso=curso, alumno=self, tipocuota=2, valor=curso.costomatricula,
+                              fecha=datetime.now().date(), cancelado=False)
+                rubromatricula.save()
+
+            if curso.gcuotas:
+                cuotas = CuotasCurso.objects.filter(status=True, curso=curso)
+                for cuota in cuotas:
+                    rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + self.nombre,
+                                  tiporubro=curso.tiporubrocuota, curso=curso, alumno=self, cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
+                                  fecha=datetime.now().date(), cancelado=False)
+                    rubrocuotas.save()
+
+            if not curso.inscripcion and not curso.matricula and not curso.gcuotas:
+                nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
+                                       tiporubro=curso.tiporubro, curso=curso, alumno=self, tipocuota=4,
+                                       valor=curso.costo,
+                                       fecha=datetime.now().date(), cancelado=False)
+                nuevorubrocurso.save()
+
+            if curso.inscripcion and not curso.matricula and not curso.gcuotas:
+                diferenciavalor = solo_2_decimales(curso.costo - curso.costoinscripcion, 2)
+                if diferenciavalor:
+                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
+                                            tiporubro=curso.tiporubro, curso=curso, alumno=self, tipocuota=4,
+                                            valor=curso.costo,
+                                            fecha=datetime.now().date(), cancelado=False)
+                    nuevorubrocurso.save()
+
+            if not curso.inscripcion and curso.matricula and not curso.gcuotas:
+                diferenciavalor = solo_2_decimales(curso.costo - curso.costomatricula, 2)
+                if diferenciavalor:
+                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
+                                            tiporubro=curso.tiporubro, curso=curso, alumno=self, tipocuota=4,
+                                            valor=curso.costo,
+                                            fecha=datetime.now().date(), cancelado=False)
+                    nuevorubrocurso.save()
+            return True
+        except Exception as ex:
+            return False
+
+class NotaInscrito(ModeloBase):
+    inscrito = models.ForeignKey(InscritoCurso, on_delete=models.PROTECT, verbose_name=u"Alumno")
+    modelo = models.ForeignKey(DetalleModeloEvaluativo, on_delete=models.PROTECT, verbose_name=u"Modelo Evaluativo: N1, N2, N3, etc.")
+    notafinal = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u'Nota final')
+
+    class Meta:
+        verbose_name = "Nota del inscrito"
+        verbose_name_plural = "Notas del inscrito"
+        ordering = ['id']
+
+    def __str__(self):
+        return u'%s' % (self.notafinal)
 
 
 TIPO_CUOTA = (
