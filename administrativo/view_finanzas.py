@@ -8,7 +8,7 @@ from datetime import *
 
 from administrativo.forms import ConsultaForm, PagoForm, FacturaForm
 from administrativo.funciones import add_data_aplication
-from administrativo.models import Persona, Rubro, Pago, Docente, Factura
+from administrativo.models import *
 from django.db.models import Sum
 
 
@@ -89,12 +89,21 @@ def view_finanzas(request):
             if peticion == 'ver_rubro':
                 try:
                     data['titulo'] = 'Rubros'
+                    puedepagar = False
+                    fechaactual = datetime.now().date()
+                    if not persona_logeado == 'CAM':
+                        cajadisponible = Caja.objects.filter(status=True, persona=persona_logeado, activo=True)
+                        if cajadisponible:
+                            sesioncajadisponible = SesionCaja.objects.filter(status=True, caja=cajadisponible.first(), activo=True, inicio=fechaactual)
+                            if sesioncajadisponible:
+                                puedepagar = True
                     data['persona'] = Persona.objects.get(id=request.GET['id'])
-                    lista = Rubro.objects.filter(status=True,alumno__persona_id=request.GET['id'])
+                    lista = Rubro.objects.filter(status=True, persona_id=request.GET['id'])
                     paginator = Paginator(lista, 15)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
+                    data['puedepagar'] = puedepagar
                     return render(request, "administrativo/finanzas/rubros.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
@@ -110,7 +119,7 @@ def view_finanzas(request):
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
-                    return render(request, "finanzas/pagos.html", data)
+                    return render(request, "administrativo/finanzas/pagos.html", data)
                 except Exception as ex:
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 

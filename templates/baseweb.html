@@ -150,32 +150,23 @@
                     Próximos
                 </a>
             </div>
-            <div class="portfolio-container"> 
-                <div class="col-md-6 col-lg-4 web new">
+            <div class="portfolio-container">
+                {% for cursoactual in cursosdisponibles %}
+                    <div class="col-md-6 col-lg-4 web new">
                     <div class="portfolio-item">
-                        <img src="{%  static 'imgs/web-1.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/web-1.jpg' %}"></a>
+                        <img src="/media/{{ cursoactual.fondoweb }}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
+                       <div class="content-holder" style="background: #4e555b; opacity: 90%">
+                            <a class="img-popup" href="/media/{{ cursoactual.fondoweb }}"></a>
                             <div class="text-holder">
-                                <h6 class="title">Enfermería</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
+                                <h6 class="title">{{ cursoactual }}</h6>
+                                <a class="btn btn-success"><i class="fa fa-archive"></i>Click para ver más detalles!</a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-4 web new">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/web-2.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/web-2.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">Enfermería</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 advertising">
+                {% endfor %}
+                {% for ofertado in cursosofertados %}
+                    <div class="col-md-6 col-lg-4 advertising">
                     <div class="portfolio-item">
                         <img src="{%  static 'imgs/advertising-2.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
                         <div class="content-holder">
@@ -187,128 +178,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-4 new">
+                {% endfor %}
+                {% for futuro in cursosproximos %}
+                    <div class="col-md-6 col-lg-4 branding">
                     <div class="portfolio-item">
-                        <img src="{%  static 'imgs/web-4.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/web-4.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">Enfermería</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 advertising">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/advertising-1.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/advertising-1.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">ADVERSITING</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 web new">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/web-3.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                       <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/web-3.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">Enfermería</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 advertising new">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/advertising-3.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                       <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/advertising-3.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">ADVERSITING</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 advertising new">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/advertising-4.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/advertising-4.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">ADVERTISING</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-md-6 col-lg-4 branding new">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/branding-1.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/branding-1.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">BRANDING</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 branding new">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/branding-3.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/branding-3.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">BRANDING</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 branding">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/branding-2.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
+                        <img src="/media/{{ futuro.fondoweb }}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
                         <div class="content-holder">
                             <a class="img-popup" href="{%  static 'imgs/branding-2.jpg' %}"></a>
                             <div class="text-holder">
-                                <h6 class="title">BRANDING</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
+                                <h6 class="title">{{ futuro }}</h6>
+                                <a class="btn btn-success"><i class="fa fa-archive"></i>Click para ver más detalles!</a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-4 branding">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/branding-4.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/branding-4.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">BRANDING</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 branding">
-                    <div class="portfolio-item">
-                        <img src="{%  static 'imgs/branding-5.jpg' %}" class="img-fluid" alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder">
-                            <a class="img-popup" href="{%  static 'imgs/branding-5.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">BRANDING</h6>
-                                <p class="subtitle">Expedita corporis doloremque velit in totam!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </section>

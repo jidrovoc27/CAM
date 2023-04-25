@@ -67,18 +67,25 @@ class Persona(ModeloBase):
 
 
     def totalrubros(self):
-        total = Rubro.objects.filter(alumno__persona_id=self.id, status=True).aggregate(total=Sum('valor'))
+        total = Rubro.objects.filter(persona_id=self.id, status=True).aggregate(total=Sum('valor'))
         if not total['total']:
             return 0.00
         return total['total']
 
     def totalpagos(self):
-        lista_rubros = Rubro.objects.filter(alumno__persona_id=self.id, status=True).values_list('id')
+        lista_rubros = Rubro.objects.filter(persona_id=self.id, status=True).values_list('id')
         total = Pago.objects.filter(rubro_id__in=lista_rubros, status=True).aggregate(total=Sum('valorfinal'))
         valorpago = 0.00
         if total['total']:
             valorpago = total['total']
         return solo_2_decimales(valorpago, 2)
+
+    def verificar_estadocuenta(self):
+        lista_rubros = Rubro.objects.filter(persona=self, cancelado=False, status=True)
+        tienevalorapagar = False
+        if lista_rubros:
+            tienevalorapagar = True
+        return tienevalorapagar
 
 class PersonaPerfil(ModeloBase):
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
@@ -148,13 +155,13 @@ class Alumno(ModeloBase):
         return u'%s' % self.persona
 
     def totalrubros(self):
-        total = Rubro.objects.filter(alumno_id=self.id, status=True).aggregate(total=Sum('valor'))
+        total = Rubro.objects.filter(persona_id=self.persona.id, status=True).aggregate(total=Sum('valor'))
         if not total['total']:
             return 0.00
         return total['total']
 
     def totalpagos(self):
-        lista_rubros = Rubro.objects.filter(alumno_id=self.id, status=True).values_list('id')
+        lista_rubros = Rubro.objects.filter(persona_id=self.persona.id, status=True).values_list('id')
         total = Pago.objects.filter(rubro_id__in=lista_rubros, status=True).aggregate(total=Sum('valorfinal'))
         valorpago = 0.00
         if total['total']:
@@ -162,7 +169,7 @@ class Alumno(ModeloBase):
         return ("{0:.0f}".format(valorpago))
 
     def verificar_estadocuenta(self):
-        lista_rubros = Rubro.objects.filter(alumno_id=self.id, cancelado=False, status=True)
+        lista_rubros = Rubro.objects.filter(persona_id=self.persona.id, cancelado=False, status=True)
         tienevalorapagar = False
         if lista_rubros:
             tienevalorapagar = True
@@ -331,7 +338,7 @@ class InscritoCurso(ModeloBase):
 
     def adeuda(self):
         curso = self.curso
-        rubros = Rubro.objects.filter(status=True, alumno=self.alumno, curso=curso).values_list('id', flat=True)
+        rubros = Rubro.objects.filter(status=True, persona=self.alumno.persona, curso=curso).values_list('id', flat=True)
         totalpagos = Pago.objects.filter(rubro_id__in=rubros, status=True).aggregate(total=Sum('valorfinal'))
         if totalpagos['total']:
             saldofinal = float(totalpagos['total'])
@@ -349,28 +356,28 @@ class InscritoCurso(ModeloBase):
     def generar_rubros(self, curso):
         try:
             if curso.inscripcion:
-                rubroinscripcion = Rubro(nombre=curso.tiporubroinscripcion.nombre + ' - ' + self.nombre,
-                              tiporubro=curso.tiporubroinscripcion, curso=curso, alumno=self, tipocuota=1, valor=curso.costoinscripcion,
+                rubroinscripcion = Rubro(nombre=curso.tiporubroinscripcion.nombre + ' - ' + curso.nombre,
+                              tiporubro=curso.tiporubroinscripcion, curso=curso, persona=self.alumno.persona, tipocuota=1, valor=curso.costoinscripcion,
                               fecha=datetime.now().date(), cancelado=False)
                 rubroinscripcion.save()
 
             if curso.matricula:
-                rubromatricula = Rubro(nombre=curso.tiporubromatricula.nombre + ' - ' + self.nombre,
-                              tiporubro=curso.tiporubromatricula, curso=curso, alumno=self, tipocuota=2, valor=curso.costomatricula,
+                rubromatricula = Rubro(nombre=curso.tiporubromatricula.nombre + ' - ' + curso.nombre,
+                              tiporubro=curso.tiporubromatricula, curso=curso, persona=self.alumno.persona, tipocuota=2, valor=curso.costomatricula,
                               fecha=datetime.now().date(), cancelado=False)
                 rubromatricula.save()
 
             if curso.gcuotas:
                 cuotas = CuotasCurso.objects.filter(status=True, curso=curso)
                 for cuota in cuotas:
-                    rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + self.nombre,
-                                  tiporubro=curso.tiporubrocuota, curso=curso, alumno=self, cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
+                    rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + curso.nombre,
+                                  tiporubro=curso.tiporubrocuota, curso=curso, persona=self.alumno.persona, cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
                                   fecha=datetime.now().date(), cancelado=False)
                     rubrocuotas.save()
 
             if not curso.inscripcion and not curso.matricula and not curso.gcuotas:
-                nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
-                                       tiporubro=curso.tiporubro, curso=curso, alumno=self, tipocuota=4,
+                nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
+                                       tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
                                        valor=curso.costo,
                                        fecha=datetime.now().date(), cancelado=False)
                 nuevorubrocurso.save()
@@ -378,8 +385,8 @@ class InscritoCurso(ModeloBase):
             if curso.inscripcion and not curso.matricula and not curso.gcuotas:
                 diferenciavalor = solo_2_decimales(curso.costo - curso.costoinscripcion, 2)
                 if diferenciavalor:
-                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
-                                            tiporubro=curso.tiporubro, curso=curso, alumno=self, tipocuota=4,
+                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
+                                            tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
                                             valor=curso.costo,
                                             fecha=datetime.now().date(), cancelado=False)
                     nuevorubrocurso.save()
@@ -387,8 +394,8 @@ class InscritoCurso(ModeloBase):
             if not curso.inscripcion and curso.matricula and not curso.gcuotas:
                 diferenciavalor = solo_2_decimales(curso.costo - curso.costomatricula, 2)
                 if diferenciavalor:
-                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + self.nombre,
-                                            tiporubro=curso.tiporubro, curso=curso, alumno=self, tipocuota=4,
+                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
+                                            tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
                                             valor=curso.costo,
                                             fecha=datetime.now().date(), cancelado=False)
                     nuevorubrocurso.save()
@@ -421,7 +428,7 @@ TIPO_CUOTA = (
 class Rubro(ModeloBase):
     tiporubro = models.ForeignKey(TipoOtroRubro, on_delete=models.CASCADE, blank=True, null=True)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE, blank=True, null=True)
-    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, blank=True, null=True)
     nombre = models.CharField(max_length=300, blank=True, null=True)
     cuota = models.IntegerField(default=0, verbose_name=u'Cuota')
     tipocuota = models.IntegerField(choices=TIPO_CUOTA, default=3)

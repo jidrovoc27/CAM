@@ -35,6 +35,13 @@ class PersonaAdmin(admin.ModelAdmin):
     list_display = ('usuario','nombres','apellidos','cedula','genero','telefono_movil','telefono_convencional','email','usuario_creacion','fecha_creacion','usuario_modificacion','fecha_modificacion','status',)
     search_fields = ('apellidos','nombres','email',)
 
+@admin.register(Alumno)
+class AlumnoAdmin(admin.ModelAdmin):
+    '''Admin View for Persona'''
+
+    list_display = ('persona',)
+    search_fields = ('',)
+
 @admin.register(Docente)
 class DocenteAdmin(admin.ModelAdmin):
     '''Admin View for Docente'''

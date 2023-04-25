@@ -398,6 +398,22 @@ def view_periodo(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'eliminar_inscrito':
+                try:
+                    with transaction.atomic():
+                        registro = InscritoCurso.objects.get(pk=request.POST['id'])
+                        registro.status = False
+                        registro.save(request)
+                        rubros = Rubro.objects.filter(status=True, persona=registro.alumno.persona)
+                        idrubros = rubros.values_list('id', flat=True)
+                        pagos = Pago.objects.filter(status=True, rubro_id__in=idrubros).update(status=False)
+                        if rubros:
+                            rubros.update(status=False)
+                        return JsonResponse({"respuesta": True, "mensaje": "Inscrito eliminado correctamente."})
+
+                except Exception as ex:
+                    pass
+
             if peticion == 'add_documento':
                 try:
                     form = DocumentoForm(request.POST, request.FILES)

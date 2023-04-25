@@ -31,6 +31,15 @@ def login_usuario(request):
                     usuario = authenticate(username=request.POST['usuario'].lower().strip(), password=request.POST['clave'])
                     if usuario is not None:
                         if usuario.is_active:
+                            persona_logeado = Persona.objects.filter(usuario=usuario, status=True)
+                            if persona_logeado:
+                                persona_logeado = persona_logeado.first()
+                                if not persona_logeado == 'CAM':
+                                    mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado)
+                                    if mis_perfiles:
+                                        mis_perfiles = mis_perfiles.first()
+                                        if not mis_perfiles.is_administrador or not mis_perfiles.is_profesor:
+                                            return JsonResponse({"respuesta": False, 'mensaje': u'No tiene perfil administrativo o docente'})
                             login(request, usuario)
                             return JsonResponse({"respuesta": True, "url": settings.LOGIN_REDIRECT_URL})
                         else:
@@ -57,7 +66,12 @@ def login_usuario(request):
 
 
 def paginaweb(request):
-    return render(request, "baseweb.html")
+    data = {}
+    fechaactual = datetime.now().date()
+    data['cursosofertados'] = cursosofertados = Curso.objects.filter(status=True, oferta=True)
+    data['cursosdisponibles'] = Curso.objects.filter(status=True).exclude(id__in=cursosofertados.values_list('id', flat=True))
+    data['cursosproximos'] = Curso.objects.filter(status=True, fechainicio__gte=fechaactual)
+    return render(request, "baseweb.html", data)
 
 @login_required(redirect_field_name='next', login_url='/login')
 @transaction.atomic()

@@ -12,6 +12,13 @@
                     <div class="col-6 d-flex align-items-center">
                         <h6 class="mb-0">Cédula: {{ persona.cedula }}</h6><br>
                     </div>
+                    {% if puedepagar %}
+                        <div class="col-6 text-end">
+                            <a class="btn btn-outline-dark btn-sm mb-0" href="?peticion=add_tiporubro"><i
+                                    class="material-icons text-sm">money</i>&nbsp;&nbsp;Facturar</a>
+
+                        </div>
+                    {% endif %}
                     <h6 class="mb-0">Persona: {{ persona }}</h6>
                     <div class="col-6 text-end">
 
@@ -25,7 +32,7 @@
                             <table class="table table-striped table-hover align-items-center mb-0 ">
                             <thead>
                             <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolde text-center" style="text-align:center">N°.
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolde text-center" style="text-align:center">Cod.
                                 </th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder" style="text-align:center">
                                     Nombre
@@ -63,9 +70,12 @@
                             <tbody>
                             {% for fila in page_obj %}
                                 <tr>
-                                    <td class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">{{ forloop.counter }}</td>
+                                    <td class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">{{ fila.id }}</td>
                                     <td data-title="Nombre">
-                                        {{ fila.nombre }}
+                                        {{ fila.nombre }}<br>
+                                        {% if fila.tipocuota == 3 %}
+                                            <h6>Cuota #{{ fila.cuota }}</h6>
+                                        {% endif %}
                                     </td>
 
                                     <td class="text-xs" data-title="¿Activo?" style="text-align:center">
@@ -73,15 +83,15 @@
                                     </td>
 
                                     <td class="text-xs" data-title="¿Activo?" style="text-align:center">
-                                        {{ fila.valor }}
+                                        {{ fila.valor|floatformat:2 }}
                                     </td>
 
                                     <td class="text-xs" data-title="¿Activo?" style="text-align:center">
-                                        {{ fila.totalpagos }}
+                                        {{ fila.totalpagos|floatformat:2 }}
                                     </td>
 
                                     <td class="text-xs" data-title="¿Activo?" style="text-align:center">
-                                        {{ fila.saldorestante }}
+                                        {{ fila.saldorestante|floatformat:2 }}
                                     </td>
 
                                      <td class="text-xs" data-title="¿Estado de cuenta?" style="text-align:center">

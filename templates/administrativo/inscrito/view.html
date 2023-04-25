@@ -102,8 +102,12 @@
                                                 <li><a class="dropdown-item border-radius-md"
                                                        href="?peticion=edit_alumno&id={{ fila.pk }}"> Matricular</a></li>
                                                 <li>
-{#                                                    <hr class="dropdown-divider">#}
+                                                    <hr class="dropdown-divider">
                                                 </li>
+                                                {% if not fila.adeuda and fila.estado == 2 %}
+                                                <li><a class="dropdown-item border-radius-md"
+                                                       onclick="eliminar_registro('eliminar_inscrito','{{ fila }}','{{ fila.pk }}')"> Eliminar</a></li>
+                                                {% endif %}
 {#                                                {% if not fila.en_uso %}#}
 {#                                                    <li><a class="dropdown-item border-radius-md text-danger"#}
 {#                                                           href="javascript:;"#}
