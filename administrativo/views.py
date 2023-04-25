@@ -66,6 +66,10 @@ def dashboard(request):
     data = {}
     add_data_aplication(request, data)
     usuario_logeado = request.user
+    if 'tipoperfil' in request.session:
+        tipoperfil = request.session['tipoperfil']
+    else:
+        tipoperfil = usuario_logeado.groups.all()
     if  Persona.objects.filter(usuario=usuario_logeado, status=True).exists():
         persona_logeado = Persona.objects.get(usuario=usuario_logeado, status=True)
     else:
@@ -74,9 +78,30 @@ def dashboard(request):
     if request.method == 'POST':
         if 'peticion' in request.POST:
             peticion = request.POST['peticion']
+
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']
+
+            if peticion == 'cambioperfil':
+                try:
+                    data['titulo'] = 'Menú principal'
+                    mis_perfiles = None
+                    # obtener perfiles
+
+                    mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado)
+                    data['mis_perfiles'] = mis_perfiles
+                    data['tipoperfil'] = request.GET['tipoperfil']
+                    act_data_aplication(request, data)
+                    tipoperfil = request.session['tipoperfil']
+
+                    menu = AccesoModulo.objects.values_list('modulo_id').filter(status=True, activo=True, grupo_id=tipoperfil)
+                    modulos = Modulo.objects.filter(status=True, activo=True, pk__in=menu)
+                    data['persona_logeado'] = persona_logeado
+                    data['modulos'] = modulos
+                    return HttpResponseRedirect("/")
+                except Exception as ex:
+                    print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
         else:
             try:
@@ -89,10 +114,10 @@ def dashboard(request):
 
                 #obtener modulos
                 if usuario_logeado.is_superuser:
-                    modulos = Modulo.objects.filter(status=True,activo=True).exclude(id=18)
+                    modulos = Modulo.objects.filter(status=True,activo=True)
 
                 else:
-                    menu = AccesoModulo.objects.values_list('modulo_id').filter(status = True, activo = True ,grupo__in = usuario_logeado.groups.all())
+                    menu = AccesoModulo.objects.values_list('modulo_id').filter(status = True, activo = True ,grupo__id = tipoperfil)
                     modulos = Modulo.objects.filter(status=True, activo=True, pk__in = menu )
                 data['persona_logeado'] = persona_logeado
                 data['modulos'] = modulos

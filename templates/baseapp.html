@@ -42,6 +42,44 @@
     <link rel="stylesheet"
           href="{% static 'css/tempusdominus-bootstrap-4.min.css' %}">
 
+    <script>
+        $(function (){
+            $(".cambioperfil").click(function (){
+                var href = $(this).attr('tipo')
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ reques.path }}',
+                    async: false,
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        peticion: 'cambioperfil',
+                        tipoperfil : href,
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
+
+                    }
+                }).done(function (data) {
+                    if (data.respuesta === true) {
+                        Swal.fire(
+                            'Correcto',
+                            data.mensaje,
+                            'success'
+                        ).then(function () {
+                            location.href='/';
+                        });
+                    } else {
+
+                        Swal.fire(data.mensaje);
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
+                }).always(function () {
+                });
+            })
+        })
+    </script>
+
     {% block head %}{% endblock %}
 </head>
 
@@ -100,14 +138,14 @@
 {#                                    <ol><a href="#" class="logout"> Perfil paciente</a></ol>#}
 {#                                {% endif %}#}
                                 {% if perfil.is_profesor %}
-                                    <ol><a href="#" class="logout" >Perfil docente</a></ol>
+                                    <ol><a href="/?peticion=cambioperfil&tipoperfil=is_profesor" tipo="is_profesor" class="logout cambioperfil" >Perfil docente</a></ol>
                                 {% endif %}
                                 {% if perfil.is_alumno %}
-                                    <ol><a href="#" class="logout" >Perfil alumno</a></ol>
+                                    <ol><a href="/?peticion=cambioperfil&tipoperfil=is_alumno" tipo="is_alumno" class="logout cambioperfil" >Perfil alumno</a></ol>
 
                                 {% endif %}
                                 {% if perfil.is_administrador %}
-                                    <ol><a href="#" class="logout"> Perfil administrador</a></ol>
+                                    <ol><a href="/?peticion=cambioperfil&tipoperfil=is_administrador" tipo="is_administrador" class="logout cambioperfil"> Perfil administrador</a></ol>
                                 {% endif %}
 
                             {% endfor %}

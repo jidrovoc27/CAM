@@ -177,7 +177,7 @@ def view_sesioncaja(request):
                             return JsonResponse({"result": False, "mensaje": u"No tiene caja asignada"})
 
                         cajaasignada = cajaasignada.first()
-                        if SesionCaja.objects.filter(caja=cajaasignada, inicio=datetime.now().date()).exists():
+                        if SesionCaja.objects.filter(caja=cajaasignada, inicio=datetime.now().date(), activo=True).exists():
                             return JsonResponse({"result": False, "mensaje": u"Ya existe sesión de caja abierta referente al día " + str(datetime.now().date())})
 
                         sesioncaja = SesionCaja(caja=cajaasignada,
@@ -202,7 +202,7 @@ def view_sesioncaja(request):
                         sesioncaja = SesionCaja.objects.get(id=int(request.POST['id']))
 
                         totalfacturado = Pago.objects.filter(sesioncaja=sesioncaja, status=True).aggregate(total=Sum('valorfinal'))
-                        totalfacturado = solo_2_decimales(Decimal(totalfacturado), 2)
+                        totalfacturado = solo_2_decimales(Decimal(totalfacturado), 2) if totalfacturado['total'] else 0
 
                         cierresesioncaja = CierreSesionCaja(sesioncaja=sesioncaja,
                                                 fechacierre=datetime.now().date(),
@@ -211,6 +211,7 @@ def view_sesioncaja(request):
 
                         sesioncaja.activo = False
                         sesioncaja.fin = datetime.now().date()
+                        sesioncaja.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Sesión cerrada correctamente."})
                     else:
                         transaction.set_rollback(True)
