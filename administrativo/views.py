@@ -11,6 +11,7 @@ from administrativo.models import *
 from administrativo.funciones import *
 from administrativo.forms import *
 from CAM import settings
+from django.db.models import Q, F, Count
 from CAM.settings import *
 
 
@@ -68,9 +69,10 @@ def login_usuario(request):
 def paginaweb(request):
     data = {}
     fechaactual = datetime.now().date()
-    data['cursosofertados'] = cursosofertados = Curso.objects.filter(status=True, periodo__status=True, oferta=True)
-    data['cursosdisponibles'] = Curso.objects.filter(status=True, periodo__status=True, fechainicio__lte=fechaactual, fechafin__gte=fechaactual)
-    data['cursosproximos'] = Curso.objects.filter(status=True, periodo__status=True, fechainicio__gte=fechaactual)
+    filtro = (Q(status=True) & Q(finalizarcurso=False))
+    data['cursosofertados'] = cursosofertados = Curso.objects.filter(filtro).filter(status=True, periodo__status=True, oferta=True)
+    data['cursosdisponibles'] = Curso.objects.filter(filtro).filter(status=True, periodo__status=True, fechainicio__lte=fechaactual, fechafin__gte=fechaactual)
+    data['cursosproximos'] = Curso.objects.filter(filtro).filter(status=True, periodo__status=True, fechainicio__gte=fechaactual)
     data['docentes'] = Docente.objects.filter(status=True)
     return render(request, "baseweb.html", data)
 

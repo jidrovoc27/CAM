@@ -377,7 +377,7 @@ def view_periodo(request):
                             curso.save(request)
                             rutaweb = MEDIA_ROOT + '/fondoweb/' + newfile._name
                             ruta_a_guardar_web = MEDIA_ROOT + '/fondoweb/' + newfile._name
-                            redimenzionar_imagen(rutaweb, ruta_a_guardar_web, 693, 843)
+                            redimenzionar_imagen(rutaweb, ruta_a_guardar_web, 750, 422)
                             curso.save(request)
 
                         # GUARDA LA IMAGEN DEL CURSO QUE SIRVE PARA LA PARTE ACADÉMICA

@@ -24,7 +24,7 @@
       <td colspan="1">${{ curso.costo }}</td>
   </tr>
     <tr>
-      <td colspan="2" style="text-align: center"><b>Número de horas</b></td>
+      <td colspan="2" style="text-align: left"><b>Número de horas</b></td>
       <td colspan="3" style="text-align: left;">{{ curso.horasvirtual }}</td>
       <td colspan="1" style="width: 1px;text-align: left"><b>Asistencia mínima:</b></td>
       <td colspan="1" style="text-align: left">{{ curso.minasistencia }}</td>
@@ -66,13 +66,13 @@
   {% if curso.gcuotas %}
       <tr>
           <td colspan="3" style="text-align: center"><b>Fecha inicio</b></td>
-        <td colspan="2" style="text-align: center;padding-left: 80px"><b>Fecha fin</b></td>
+        <td colspan="2" style="text-align: center;padding-left: 125px"><b>Fecha fin</b></td>
         <td colspan="3" style="text-align: center"><b>Valor</b></td>
       </tr>
       {% for cuota in cuotas %}
           <tr>
             <td colspan="3" style="text-align: center">{{ cuota.inicio|date:'d-m-Y' }}</td>
-            <td colspan="2" style="text-align: center;padding-left: 80px">{{ cuota.fin|date:'d-m-Y' }}</td>
+            <td colspan="2" style="text-align: center;padding-left: 125px">{{ cuota.fin|date:'d-m-Y' }}</td>
             <td colspan="3" style="text-align: center">${{ cuota.valor }}</td>
           </tr>
       {% endfor %}

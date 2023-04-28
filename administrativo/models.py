@@ -319,6 +319,26 @@ class Curso(ModeloBase):
     def __str__(self):
         return u'%s' % (self.nombre)
 
+
+ESTADO_ATENCION = (
+    (1, u'ATENDIDO'),
+    (2, u'PENDIENTE'),
+)
+
+
+class Lead(ModeloBase):
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, blank=True, null=True)
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, blank=True, null=True)
+    atendido = models.IntegerField(default=2, choices=ESTADO_ATENCION, blank=True, null=True, verbose_name=u'Campo para verificar si el interesado fue atendido o no')
+
+    class Meta:
+        verbose_name = "Lead"
+        verbose_name_plural = "Leads"
+        ordering = ['-id']
+
+    def __str__(self):
+        return u'%s' % self.persona
+
 ESTADO_INSCRITO = (
     (1, u'APROBADO'),
     (2, u'REPROBADO'),
