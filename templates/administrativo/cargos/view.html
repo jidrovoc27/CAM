@@ -13,7 +13,7 @@
                         <h6 class="mb-0">{{ titulo_tabla }}</h6>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn btn-outline-dark btn-sm mb-0" href="?peticion=add_caja"><i
+                        <a class="btn btn-outline-dark btn-sm mb-0" href="?peticion=add_cargo"><i
                                 class="material-icons text-sm">add</i>&nbsp;&nbsp;Agregar</a>
 
                     </div>
@@ -32,19 +32,11 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolde text-center">N°.
                                 </th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
-                                    Encargado
+                                    Nombre
                                 </th>
 
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">
-                                    Nombre caja
-                                </th>
-
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">
-                                    Descripción
-                                </th>
-
-                                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">
-                                    Estado
+                                    Fecha de creación
                                 </th>
 
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder text-center">
@@ -58,16 +50,7 @@
                                     <td class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">{{ forloop.counter }}</td>
                                     <td data-title="Nombre/ Cedula">
                                         <div class="d-flex flex-column justify-content-center">
-                                            <h6 class="mb-0 text-xs">{{ fila.persona| upper }}</h6>
-                                            <p class="text-xs text-secondary mb-0">
-                                                <strong>CI: {{ fila.persona.cedula }} </strong></p>
-                                            <p class="text-xs text-secondary mb-0"><strong> <i
-                                                    class="fa fa-mobile-phone" title="MÓVIL"></i>
-                                                +593 {{ fila.persona.telefono_movil }} </strong> <a
-                                                    href='https://web.whatsapp.com/send?l=en&phone=+593{{ fila.persona.telefono_movil }}&text=Buen dia, se le recuerda que tiene una cita pendiente con el dentista, Fecha: {{ fila.fecha }} Hora: {{ fila.horario.hora_inicio }}     '
-                                                    target="_blank" title="Enviar recordatorio" data-bs-toggle="tooltip" data-bs-placement="bottom" >
-                                                <i class="fa fa-whatsapp"></i>
-                                            </a></p>
+                                            <h6 class="mb-0 text-xs">{{ fila }}</h6>
                                         </div>
                                     </td>
 
@@ -75,18 +58,10 @@
 {#                                        <h6 class="mb-0 text-xs">FECHA: {{ fila.fecha }}</h6>#}
 {#                                        <h6 class="mb-0 text-xs">HORA: {{ fila.horario }}</h6>#}
                                         <p class="text-xs text-secondary mb-0">
-                                            <strong>{{ fila.nombre }} </strong></p>
+                                            <strong>{{ fila.fecha_creacion|date:"d-m-Y" }} </strong></p>
 
                                     </td>
 
-                                    <td class="text-xs" data-title="¿Activo?" style="text-align:center">
-                                        <h6 class="mb-0 text-xs">{{ fila.descripcion }}</h6>
-
-                                    </td>
-
-                                     <td class="text-xs text-center" data-title="¿Estado de cuenta?">
-                                        <span class="badge badge-sm bg-gradient-{{ fila.estado_caja }} text-center">{% if fila.activo %}ACTIVO{% else %}INACTIVO{% endif %}</span>
-                                    </td>
                                     <td class="text-secondary text-sm font-weight-bolder text-center">
                                         <div class="dropstart">
                                             <a href="javascript:;" class="text-secondary" id="dropdownMarketingCard" data-bs-toggle="dropdown" aria-expanded="false">
@@ -95,7 +70,7 @@
                                             <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3"
                                                 aria-labelledby="dropdownMarketingCard" style="">
                                                 <li><a class="dropdown-item border-radius-md"
-                                                           href="?peticion=edit_caja&id={{ fila.pk }}">Editar</a>
+                                                           href="?peticion=edit_cargo&id={{ fila.pk }}">Editar</a>
                                                     </li>
 
                                                 <li>
@@ -104,7 +79,7 @@
 
                                                 <li><a class="dropdown-item border-radius-md text-danger"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_caja','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
+                                                           onclick="eliminar_registro('eliminar_cargo','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
                                                     </li>
                                             </ul>
                                         </div>

@@ -32,6 +32,9 @@
                                     Nombres / Cédula
                                 </th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
+                                    Cargo
+                                </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
                                     Usuario
                                 </th>
                                 <th class=" text-uppercase text-secondary text-xxs font-weight-bolder">
@@ -52,6 +55,9 @@
                                             <p class="text-xs text-secondary mb-0">
                                                 <strong>Cédula:{{ fila.persona.cedula }} </strong></p>
                                         </div>
+                                    </td>
+                                    <td data-title=" Ruta(url)">
+                                        {{ fila.cargo }}
                                     </td>
                                     <td data-title=" Ruta(url)">
                                         <span class="text-xs">{{ fila.persona.usuario }}</span>

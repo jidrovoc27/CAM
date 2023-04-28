@@ -90,26 +90,23 @@ def view_cargoocupacional(request):
         if 'peticion' in request.POST:
             peticion = request.POST['peticion']
 
-            if peticion == 'add_caja':
+            if peticion == 'add_cargo':
                 try:
-                    form = CajaForm(request.POST, request.FILES)
+                    form = CargoForm(request.POST, request.FILES)
                     if form.is_valid():
 
                         campos_repetidos = list()
 
-                        if Caja.objects.values('id').filter(nombre=form.cleaned_data['nombre'], persona=form.cleaned_data['encargado'], status=True).exists():
+                        if Cargo.objects.values('id').filter(nombre=form.cleaned_data['nombre'], status=True).exists():
                             campos_repetidos.append(form['nombre'].name)
                         if campos_repetidos:
                             return JsonResponse(
                                 {"respuesta": False, "mensaje": "registro ya existe.", 'repetidos': campos_repetidos})
 
                         nombre = form.cleaned_data['nombre']
-                        descripcion = form.cleaned_data['descripcion']
-                        activo = form.cleaned_data['activo']
-                        persona = form.cleaned_data['encargado']
 
-                        newcaja = Caja(persona=persona, nombre=nombre, descripcion=descripcion, activo=activo)
-                        newcaja.save(request)
+                        newcargo = Cargo(nombre=nombre)
+                        newcargo.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
                     else:
@@ -120,20 +117,14 @@ def view_cargoocupacional(request):
                    transaction.set_rollback(True)
                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
 
-            if peticion == 'edit_caja':
+            if peticion == 'edit_cargo':
                 try:
-                    form = CajaForm(request.POST, request.FILES)
+                    form = CargoForm(request.POST)
                     if form.is_valid():
 
-                        caja = Caja.objects.get(pk=request.POST['id'])
-                        caja.nombre =request.POST['nombre']
-                        caja.descripcion=request.POST['descripcion']
-                        caja.persona_id=request.POST['encargado']
-                        if 'activo' in request.POST:
-                            caja.activo = True
-                        else:
-                            caja.activo = False
-                        caja.save(request)
+                        cargo = Cargo.objects.get(pk=request.POST['id'])
+                        cargo.nombre =request.POST['nombre']
+                        cargo.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro modificado correctamente."})
 
@@ -142,10 +133,10 @@ def view_cargoocupacional(request):
                     transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
 
-            if peticion == 'eliminar_caja':
+            if peticion == 'eliminar_cargo':
                 try:
                     with transaction.atomic():
-                        registro = Caja.objects.get(pk=request.POST['id'])
+                        registro = Cargo.objects.get(pk=request.POST['id'])
                         registro.status = False
                         registro.save()
                         return JsonResponse({"respuesta": True, "mensaje": "Registro eliminado correctamente."})
@@ -157,31 +148,28 @@ def view_cargoocupacional(request):
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']
-            if peticion == 'add_caja':
+            if peticion == 'add_cargo':
                 try:
-                    data['titulo'] = 'Agregar nueva caja'
-                    data['titulo_formulario'] = 'Formulario de registro de cajas'
-                    data['peticion'] = 'add_caja'
-                    form = CajaForm()
+                    data['titulo'] = 'Agregar nuevo cargo'
+                    data['titulo_formulario'] = 'Formulario de registro de cargos'
+                    data['peticion'] = 'add_cargo'
+                    form = CargoForm()
                     data['form'] = form
-                    return render(request, "administrativo/caja/add_caja.html", data)
+                    return render(request, "administrativo/cargos/add_cargo.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
 
-            if peticion == 'edit_caja':
+            if peticion == 'edit_cargo':
                 try:
-                    data['titulo'] = 'Editar caja'
-                    data['titulo_formulario'] = 'Edición de caja'
-                    data['peticion'] = 'edit_caja'
-                    data['caja'] = caja = Caja.objects.get(pk=request.GET['id'])
-                    form = CajaForm(initial={
-                        'nombre':caja.nombre,
-                        'descripcion': caja.descripcion,
-                        'encargado': caja.persona,
-                        'activo': caja.activo})
+                    data['titulo'] = 'Editar cargo'
+                    data['titulo_formulario'] = 'Edición de cargo'
+                    data['peticion'] = 'edit_cargo'
+                    data['cargo'] = cargo = Cargo.objects.get(pk=request.GET['id'])
+                    form = CargoForm(initial={
+                        'nombre':cargo.nombre})
                     data['form'] = form
-                    return render(request, "administrativo/caja/edit_caja.html", data)
+                    return render(request, "administrativo/cargos/edit_cargo.html", data)
                 except Exception as ex:
                     pass
 

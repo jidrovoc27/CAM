@@ -258,6 +258,8 @@ class CajaForm(forms.Form):
     descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
     activo = forms.BooleanField(label='Activo', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
 
+class CargoForm(forms.Form):
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)',  }))
 
 class DoctorForm(forms.Form):
     nombre1 = forms.CharField(label='1ª Nombre', required=True,
