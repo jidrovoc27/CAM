@@ -1,0 +1,93 @@
+{% load static %}
+<table class="table">
+  <thead>
+  </thead>
+  <tbody>
+    <tr class="table-active">
+
+    </tr>
+    <tr>
+      <th colspan="3" class="table-active">{{ curso }}</th>
+      <td colspan="2">Fecha inicio: {{ curso.fechainicio|date:'d-m-Y' }}</td>
+      <td colspan="2">Fecha fin: {{ curso.fechafin|date:'d-m-Y' }}</td>
+    </tr>
+  <tr>
+      <td colspan="3" style="width: 150px"><b>Modalidad:</b> {% if curso.modalidad %}{{ curso.get_modalidad_display }}{% else %} Virtual {% endif %}</td>
+      <td colspan="2">Fecha inicio inscripción: {{ curso.fechainicioinscripcion|date:'d-m-Y' }}</td>
+      <td colspan="2">Fecha fin inscripción: {{ curso.fechafininscripcion|date:'d-m-Y' }}</td>
+    </tr>
+  </tr>
+  <tr>
+      <td colspan="3"><b>Docente a cargo</b></td>
+      <td colspan="2">{{ curso.docente }}</td>
+      <td colspan="1"><b>Costo:</b></td>
+      <td colspan="1">${{ curso.costo }}</td>
+  </tr>
+    <tr>
+      <td colspan="2" style="text-align: center"><b>Número de horas</b></td>
+      <td colspan="3" style="text-align: left;">{{ curso.horasvirtual }}</td>
+      <td colspan="1" style="width: 1px;text-align: left"><b>Asistencia mínima:</b></td>
+      <td colspan="1" style="text-align: left">{{ curso.minasistencia }}</td>
+  </tr>
+    <tr>
+        <td colspan="2"><b>Nota mínima</b></td>
+        <td colspan="3">{{ curso.minnota }}</td>
+        <td colspan="1"><b>Cupos disponibles</b></td>
+        <td colspan="1" style="text-align: left">{{ curso.cupo }}</td>
+    </tr>
+  <tr>
+      <td colspan="3"><b>Aplica inscripción:</b></td>
+      {% if curso.inscripcion %}
+          <td colspan="2">Sí</td>
+          <td colspan="1"><b>Valor inscripción</b></td>
+          <td colspan="1">${{ curso.costoinscripcion }}</td>
+      {% else %}
+          <td colspan="5">No</td>
+      {% endif %}
+  </tr>
+    <tr>
+      <td colspan="3"><b>Aplica matrícula:</b></td>
+      {% if curso.matricula %}
+          <td colspan="2">Sí</td>
+          <td colspan="1"><b>Valor matrícula</b></td>
+          <td colspan="1">${{ curso.costomatricula }}</td>
+      {% else %}
+          <td colspan="5">No</td>
+      {% endif %}
+  </tr>
+  <tr>
+      {% if not curso.gcuotas %}
+        <td colspan="3"><b>Aplica Cuotas:</b></td>
+        <td colspan="5">No</td>
+      {% else %}
+          <td colspan="8" style="text-align: center"><b>Cuotas</b></td>
+      {% endif %}
+  </tr>
+  {% if curso.gcuotas %}
+      <tr>
+          <td colspan="3" style="text-align: center"><b>Fecha inicio</b></td>
+        <td colspan="2" style="text-align: center;padding-left: 80px"><b>Fecha fin</b></td>
+        <td colspan="3" style="text-align: center"><b>Valor</b></td>
+      </tr>
+      {% for cuota in cuotas %}
+          <tr>
+            <td colspan="3" style="text-align: center">{{ cuota.inicio|date:'d-m-Y' }}</td>
+            <td colspan="2" style="text-align: center;padding-left: 80px">{{ cuota.fin|date:'d-m-Y' }}</td>
+            <td colspan="3" style="text-align: center">${{ cuota.valor }}</td>
+          </tr>
+      {% endfor %}
+  {% endif %}
+  <tr>
+      <td><b>Objetivo</b></td>
+      <td colspan="8">{{ curso.objetivo }}</td>
+  </tr>
+  <tr>
+      <td><b>Observacion</b></td>
+      <td colspan="8">{{ curso.observacion }}</td>
+  </tr>
+  <tr>
+      <td><b>Contenido</b></td>
+      <td colspan="8">{{ curso.contenido }}</td>
+  </tr>
+  </tbody>
+</table>

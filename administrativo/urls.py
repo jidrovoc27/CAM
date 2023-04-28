@@ -19,6 +19,7 @@ from administrativo.view_tiporubro import *
 from administrativo.view_cajas import *
 from administrativo.view_sesioncaja import *
 from administrativo.view_cargoocupacional import *
+from administrativo.view_paginaweb import *
 
 urlpatterns = [
 path(r'', dashboard, name='dashboard'),
@@ -39,6 +40,7 @@ path(r'', dashboard, name='dashboard'),
     path(r'cajas/',view_cajas ,name='cajas'),
     path(r'sesioncaja/',view_sesioncaja ,name='sesioncaja'),
     path(r'cargos/',view_cargoocupacional ,name='cargos'),
+    path(r'paginaweb/',view_pagina ,name='paginaweb'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
     path(r'CAM/', paginaweb, name='paginaweb'),
 ]

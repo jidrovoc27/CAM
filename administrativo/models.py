@@ -294,7 +294,7 @@ class Curso(ModeloBase):
     costooferta = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u"Costo del curso aplicando oferta")
     matricula = models.BooleanField(default=False, verbose_name=u"Matrícula")
     costomatricula = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u"Costo de la matrícula")
-    modalidad = models.IntegerField(choices=MODALIDAD_CAPACITACION, blank=True, null=True, verbose_name=u'Modalidad DEL CURSO')
+    modalidad = models.IntegerField(default=1, choices=MODALIDAD_CAPACITACION, blank=True, null=True, verbose_name=u'Modalidad DEL CURSO')
     docente = models.ForeignKey(Docente, on_delete=models.PROTECT, verbose_name=u"Docente")
     fechainicio = models.DateField(blank=True, null=True)
     fechafin = models.DateField(blank=True, null=True)

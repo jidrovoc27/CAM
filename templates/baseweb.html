@@ -11,6 +11,34 @@
     <link rel="stylesheet" href="{% static 'vendors/themify-icons/css/themify-icons.css' %}">
     <!-- Bootstrap + LeadMark main styles -->
     <link rel="stylesheet" href="{% static 'css/leadmark.css' %}">
+
+    <script>
+        function detalle_curso(peticion, pk, titulo) {
+            $.ajax({
+                type: "GET",
+                url: '/paginaweb/',
+                dataType: "json",
+                data: {
+                    'peticion': peticion,
+                    'id': pk,
+                },
+                success: function (data) {
+                    if (data.respuesta === true) {
+                        $('.contenido-modal').html(data.data);
+                        $('#modalGeneric .modal-title').html(titulo);
+                        $("#modalGeneric").modal({backdrop: 'static'}).modal('show');
+                    } else {
+                        alert(data.mensaje);
+                    }
+                },
+                error: function () {
+                    alert("Error de conexión.");
+                },
+
+            });
+        }
+    </script>
+
 </head>
 <body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
 
@@ -177,7 +205,7 @@
                             <a class="img-popup" href="/media/{{ cursoactual.fondoweb }}"></a>
                             <div class="text-holder">
                                 <h6 class="title">{{ cursoactual }}</h6>
-                                <a style="cursor: pointer" class="btn btn-success"><i class="fa fa-archive"></i>Click
+                                <a style="cursor: pointer" class="btn btn-success" onclick="detalle_curso('detallecurso','{{ cursoactual.id }}','{{ cursoactual }}')"><i class="fa fa-archive"></i>Click
                                     para ver más detalles!</a>
                             </div>
                         </div>
@@ -193,7 +221,7 @@
                             <a class="img-popup" href="/media/{{ ofertado.fondoweb }}"></a>
                             <div class="text-holder">
                                 <h6 class="title">{{ ofertado }}</h6>
-                                <a style="cursor: pointer" class="btn btn-success"><i class="fa fa-archive"></i>Click
+                                <a style="cursor: pointer" class="btn btn-success" onclick="detalle_curso('detallecurso','{{ ofertado.id }}', '{{ ofertado }}')"><i class="fa fa-archive"></i>Click
                                     para ver más detalles!</a>
                             </div>
                         </div>
@@ -209,7 +237,7 @@
                             <a class="img-popup" href="{% static 'imgs/branding-2.jpg' %}"></a>
                             <div class="text-holder">
                                 <h6 class="title">{{ futuro }}</h6>
-                                <a style="cursor: pointer" class="btn btn-success"><i class="fa fa-archive"></i>Click
+                                <a style="cursor: pointer" class="btn btn-success" onclick="detalle_curso('detallecurso','{{ futuro.id }}', '{{ futuro }}')"><i class="fa fa-archive"></i>Click
                                     para ver más detalles!</a>
                             </div>
                         </div>
@@ -344,6 +372,30 @@
         <!-- End of Page Footer -->
     </div>
 </section>
+
+<div class="modal fade" id="modalGeneric">
+
+        <div class="modal-dialog modal-dialog-centered  modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-uppercase"></h5>
+                    <button type="button" class="btn-close text-dark" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" autocomplete="off" action="{{ request.path }}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class=" contenido-modal">
+
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
 
 <!-- core  -->
 <script src="{% static 'vendors/jquery/jquery-3.4.1.js' %}"></script>
