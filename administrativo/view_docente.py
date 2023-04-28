@@ -17,7 +17,7 @@ from xhtml2pdf import pisa
 
 from CAM import settings
 from CAM.settings import BASE_DIR
-from administrativo.forms import PersonaForm, AbonarCuotaForm, DocumentoForm
+from administrativo.forms import *
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
 
@@ -109,7 +109,7 @@ def view_docente(request):
 
             if peticion == 'add_docente':
                 try:
-                    form = PersonaForm(request.POST, request.FILES)
+                    form = DocenteForm(request.POST, request.FILES)
                     if form.is_valid():
 
                         campos_repetidos = list()
@@ -124,9 +124,7 @@ def view_docente(request):
                         username = form.cleaned_data['nombres']
                         password = form.cleaned_data['nombres'].replace(' ','')
                         nombres = form.cleaned_data['nombres']
-                        # nombre2 = form.cleaned_data['nombre2']
                         apellidos = form.cleaned_data['apellidos']
-                        # apellido2 = form.cleaned_data['apellido2']
                         cedula = form.cleaned_data['cedula']
                         genero = form.cleaned_data['genero']
                         ciudad = form.cleaned_data['ciudad']
@@ -167,8 +165,9 @@ def view_docente(request):
 
                         persona_perfil.save(request)
 
+                        cargo = form.cleaned_data['cargo']
                         newdocente = Docente(fechaingreso=datetime.now().date(),
-                            persona=persona
+                            persona=persona, cargo=cargo
                         )
                         newdocente.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
@@ -182,10 +181,13 @@ def view_docente(request):
 
             if peticion == 'edit_docente':
                 try:
-                    form = PersonaForm(request.POST, request.FILES)
+                    form = DocenteForm(request.POST, request.FILES)
                     if form.is_valid():
-                        paciente = Docente.objects.get(pk=request.POST['id'])
-                        persona = Persona.objects.get(pk = paciente.persona_id)
+                        cargo = form.cleaned_data['cargo']
+                        docente = Docente.objects.get(pk=request.POST['id'])
+                        docente.cargo = cargo
+                        docente.save(request)
+                        persona = Persona.objects.get(pk = docente.persona_id)
                         persona.nombres =request.POST['nombres']
                         persona.apellidos=request.POST['apellidos']
                         persona.email=request.POST['email']
@@ -241,7 +243,7 @@ def view_docente(request):
                     data['titulo'] = 'Agregar nuevo docente'
                     data['titulo_formulario'] = 'Formulario de registro de docentes'
                     data['peticion'] = 'add_docente'
-                    form = PersonaForm()
+                    form = DocenteForm()
                     data['form'] = form
                     return render(request, "administrativo/docente/add_docente.html", data)
                 except Exception as ex:
@@ -360,18 +362,19 @@ def view_docente(request):
                     data['titulo'] = 'Editar docente'
                     data['titulo_formulario'] = 'Edición de docente'
                     data['peticion'] = 'edit_docente'
-                    data['paciente'] = paciente = Docente.objects.get(pk=request.GET['id'])
-                    form = PersonaForm(initial={
-                        'nombres':paciente.persona.nombres,
-                        'apellidos': paciente.persona.apellidos,
-                        'email': paciente.persona.email,
-                        'cedula': paciente.persona.cedula,
-                        'genero': paciente.persona.genero,
-                        'ciudad':paciente.persona.ciudad,
-                        'direccion':paciente.persona.direccion,
-                        'referencia':paciente.persona.referencia,
-                        'telefono_movil': paciente.persona.telefono_movil,
-                        'telefono_convencional': paciente.persona.telefono_convencional
+                    data['docente'] = docente = Docente.objects.get(pk=request.GET['id'])
+                    form = DocenteForm(initial={
+                        'cargo':docente.cargo,
+                        'nombres':docente.persona.nombres,
+                        'apellidos': docente.persona.apellidos,
+                        'email': docente.persona.email,
+                        'cedula': docente.persona.cedula,
+                        'genero': docente.persona.genero,
+                        'ciudad':docente.persona.ciudad,
+                        'direccion':docente.persona.direccion,
+                        'referencia':docente.persona.referencia,
+                        'telefono_movil': docente.persona.telefono_movil,
+                        'telefono_convencional': docente.persona.telefono_convencional
                     })
                     form.editar()
                     data['form'] = form

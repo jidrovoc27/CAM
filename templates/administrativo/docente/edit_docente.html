@@ -7,7 +7,7 @@
 {% block class_extra_card_formulario %}col-lg-8 col-md-10{% endblock %}
 {% block inputs_extras %}
     <input type="hidden" name="peticion" value="{{ peticion }}">
-    <input type="hidden" name="id" value="{{ paciente.id }}">
+    <input type="hidden" name="id" value="{{ docente.id }}">
 {% endblock %}
 {% block news_inputs_form %}
 
@@ -25,6 +25,12 @@
 
         var mask = IMask(document.getElementById('id_telefono_movil'), { mask: '00 000 0000'});
         var mask = IMask(document.getElementById('id_telefono_convencional'), { mask: '000 000 0000'});
+
+        $(document).ready(function (){
+            {% if docente.cargo %}
+                $("#id_cargo").val({{ docente.cargo.id }}).trigger("change");
+            {% endif %}
+        })
     </script>
 
 {% endblock %}

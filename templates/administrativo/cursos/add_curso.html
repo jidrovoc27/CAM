@@ -101,7 +101,7 @@
         }
 
         $(document).ready(function () {
-            $("#id_periodo").val({{ periodo.id }});
+            $("#id_periodo").val({{ periodo.id }}).trigger("change");
             $("#id_periodo").attr({'disabled': 'disabled'});
 
             // DESACTIVAR OPCIONES DE INSCRIPCIÓN

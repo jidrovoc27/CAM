@@ -184,6 +184,7 @@ def view_periodo(request):
                         fechainicioinscripcion = form.cleaned_data['fechainicioinscripcion']
                         fechafininscripcion = form.cleaned_data['fechafininscripcion']
                         gcuotas = form.cleaned_data['gcuotas']
+                        oferta = form.cleaned_data['oferta']
                         inscripcion = form.cleaned_data['inscripcion']
                         matricula = form.cleaned_data['matricula']
                         horasvirtual = form.cleaned_data['horasvirtual']
@@ -201,7 +202,7 @@ def view_periodo(request):
                         curso = Curso(periodo=periodo, docente=docente, nombre=nombre, tiporubro=tiporubro, costo=costo,
                                       fechainicio=fechainicio, fechafin=fechafin, fechainicioinscripcion=fechainicioinscripcion, fechafininscripcion=fechafininscripcion,
                                       horasvirtual=horasvirtual, minasistencia=minasistencia, minnota=minnota, cupo=cupo,
-                                      observacion=observacion, objetivo=objetivo, contenido=contenido, publicarcurso=publicarcurso, gcuotas=gcuotas)
+                                      observacion=observacion, objetivo=objetivo, contenido=contenido, publicarcurso=publicarcurso, gcuotas=gcuotas, oferta=oferta)
 
                         #VERIFICA SI EL CURSO APLICA INSCRIPCIÓN
                         if inscripcion:
@@ -237,6 +238,11 @@ def view_periodo(request):
                             else:
                                 transaction.set_rollback(True)
                                 return JsonResponse({"respuesta": False, "mensaje": "Por favor, ingrese las cuotas correspondientes."})
+
+                        if curso.oferta:
+                            costooferta = form.cleaned_data['costooferta']
+                            curso.costooferta = costooferta
+                            curso.save(request)
 
                         #GUARDA LA PLANIFICACIÓN DEL CURSO
                         if 'planificacion' in request.FILES:
@@ -301,7 +307,7 @@ def view_periodo(request):
                         docente = form.cleaned_data['docente']
                         nombre = form.cleaned_data['nombre']
                         tiporubro = form.cleaned_data['tiporubro']
-                        costo = form.cleaned_data['costo']
+                        costo = Decimal(form.cleaned_data['costo'])
                         fechainicio = form.cleaned_data['fechainicio']
                         fechafin = form.cleaned_data['fechafin']
                         fechainicioinscripcion = form.cleaned_data['fechainicioinscripcion']
@@ -316,9 +322,6 @@ def view_periodo(request):
                         objetivo = form.cleaned_data['objetivo']
                         contenido = form.cleaned_data['contenido']
                         publicarcurso = form.cleaned_data['publicarcurso']
-                        planificacion = request.FILES['planificacion']
-                        imagen = request.FILES['imagen']
-                        imagenweb = request.FILES['imagenweb']
 
                         curso = Curso.objects.get(id=int(request.POST['id']))
                         curso.periodo=periodo
@@ -343,14 +346,19 @@ def view_periodo(request):
                         #VERIFICA SI EL CURSO APLICA INSCRIPCIÓN
                         if inscripcion:
                             curso.inscripcion = True
-                            curso.tiporubroinscripcion = form.cleaned_data['tiporubroinscripcion']
-                            curso.costoinscripcion = form.cleaned_data['costoinscripcion']
+                            if 'tiporubroinscripcion' in request.POST:
+                                curso.tiporubroinscripcion = form.cleaned_data['tiporubroinscripcion']
+
+                            if 'costoinscripcion' in request.POST:
+                                curso.costoinscripcion = form.cleaned_data['costoinscripcion']
 
                         # VERIFICA SI EL CURSO APLICA MATRÍCULA
                         if matricula:
                             curso.matricula = True
-                            curso.tiporubromatricula = form.cleaned_data['tiporubromatricula']
-                            curso.costomatricula = form.cleaned_data['costomatricula']
+                            if 'tiporubromatricula' in request.POST:
+                                curso.tiporubromatricula = form.cleaned_data['tiporubromatricula']
+                            if 'costomatricula' in request.POST:
+                                curso.costomatricula = form.cleaned_data['costomatricula']
 
                         curso.save(request)
 
@@ -384,6 +392,8 @@ def view_periodo(request):
                             curso.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro modificado correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     pass
 

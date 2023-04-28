@@ -175,6 +175,24 @@ class PersonaForm(forms.Form):
         campo_solo_lectura(self, 'cedula')
         campo_solo_lectura(self, 'genero')
 
+class DocenteForm(forms.Form):
+    cargo = forms.ModelChoiceField(label=u"Cargo", required=False, queryset=Cargo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    nombres = forms.CharField(label='Nombres', required=True, widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)',  }))
+    apellidos = forms.CharField(label='Apellidos', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
+    email = forms.CharField(label="Correo electrónico", max_length=200, required=False, widget=forms.TextInput(attrs={'class': 'form-control',}))
+    cedula = forms.CharField(label="Cédula", max_length=10, required=False, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_numeros(event)',}))
+    genero = forms.ModelChoiceField(label="Género",required=True, queryset=Genero.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))
+    telefono_movil = forms.CharField(label="Teléfono móvil", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'(99 123 1234)'}))
+    telefono_convencional = forms.CharField(label=u"Teléfono fijo", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control ',}))
+    ciudad = forms.CharField(label=u"Ciudad", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(Naranjito)'}))
+    direccion = forms.CharField(label=u"Dirección", required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(Dirección)'}))
+    referencia = forms.CharField(label=u"Referencia", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(Referencia)'}))
+
+
+    def editar(self):
+        campo_solo_lectura(self, 'cedula')
+        campo_solo_lectura(self, 'genero')
+
 class PeriodoForm(forms.Form):
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
     descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
@@ -187,7 +205,7 @@ class TipoRubroForm(forms.Form):
     descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
 
 class CursoForm(forms.Form):
-    periodo = forms.ModelChoiceField(label=u"Periodo", required=True, queryset=Periodo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    periodo = forms.ModelChoiceField(label=u"Periodo", required=False, queryset=Periodo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     docente = forms.ModelChoiceField(label=u"Docente a cargo", required=True, queryset=Docente.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
     tiporubro = forms.ModelChoiceField(label=u"Tipo rubro", required=True, queryset=TipoOtroRubro.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
@@ -215,17 +233,15 @@ class CursoForm(forms.Form):
     objetivo = forms.CharField(label='Objetivo', required=True, widget=forms.TextInput(attrs={'class': ' form-control', }))
     contenido = forms.CharField(label='Contenido', required=True, widget=forms.TextInput(attrs={'class': ' form-control', }))
     publicarcurso = forms.BooleanField(label='Publicar curso', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
-    planificacion = ExtFileField(label=u'Planificación', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png, pdf', ext_whitelist=(".jpg", ".png", ".pdf"), max_upload_size=2621440)
-    imagen = ExtFileField(label=u'Imagen del curso', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png', ext_whitelist=(".jpg", ".png"), max_upload_size=2621440)
-    imagenweb = ExtFileField(label=u'Imagen del curso para web', help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png', ext_whitelist=(".jpg", ".png"), max_upload_size=2621440)
+    planificacion = ExtFileField(label=u'Planificación', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png, pdf', ext_whitelist=(".jpg", ".png", ".pdf"), max_upload_size=2621440)
+    imagen = ExtFileField(label=u'Imagen del curso', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png', ext_whitelist=(".jpg", ".png"), max_upload_size=2621440)
+    imagenweb = ExtFileField(label=u'Imagen del curso para web', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png', ext_whitelist=(".jpg", ".png"), max_upload_size=2621440)
 
     def desactivar_campos(self):
-        campo_requerido(self, 'gcuotas')
-        campo_requerido(self, 'cuotas')
-        campo_requerido(self, 'tiporubrocuota')
-        campo_requerido(self, 'planificacion')
-        campo_requerido(self, 'imagen')
-        campo_requerido(self, 'imagenweb')
+        campo_no_requerido(self, 'planificacion')
+        campo_no_requerido(self, 'imagen')
+        campo_no_requerido(self, 'imagenweb')
+        campo_no_requerido(self, 'periodo')
 
     def sin_cuotas(self):
         del self.fields['gcuotas']

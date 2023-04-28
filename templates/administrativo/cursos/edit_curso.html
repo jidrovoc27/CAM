@@ -14,7 +14,7 @@
 {% block class_extra_card_formulario %}col-lg-8 col-md-10{% endblock %}
 {% block inputs_extras %}
     <input type="hidden" name="peticion" value="{{ peticion }}">
-    <input type="hidden" name="periodo" value="{{ periodo.id }}">
+    <input type="hidden" name="id" value="{{ curso.id }}">
 {% endblock %}
 
 {% block news_inputs_form %}
@@ -71,7 +71,7 @@
         }
 
         $(document).ready(function () {
-            $("#id_periodo").val({{ periodo.id }});
+            $("#id_periodo").val({{ periodo.id }}).trigger("change");
             $("#id_periodo").attr({'disabled': 'disabled'});
 
             // DESACTIVAR OPCIONES DE INSCRIPCIÓN

@@ -68,9 +68,10 @@ def login_usuario(request):
 def paginaweb(request):
     data = {}
     fechaactual = datetime.now().date()
-    data['cursosofertados'] = cursosofertados = Curso.objects.filter(status=True, oferta=True)
-    data['cursosdisponibles'] = Curso.objects.filter(status=True).exclude(id__in=cursosofertados.values_list('id', flat=True))
-    data['cursosproximos'] = Curso.objects.filter(status=True, fechainicio__gte=fechaactual)
+    data['cursosofertados'] = cursosofertados = Curso.objects.filter(status=True, periodo__status=True, oferta=True)
+    data['cursosdisponibles'] = Curso.objects.filter(status=True, periodo__status=True, fechainicio__lte=fechaactual, fechafin__gte=fechaactual)
+    data['cursosproximos'] = Curso.objects.filter(status=True, periodo__status=True, fechainicio__gte=fechaactual)
+    data['docentes'] = Docente.objects.filter(status=True)
     return render(request, "baseweb.html", data)
 
 @login_required(redirect_field_name='next', login_url='/login')

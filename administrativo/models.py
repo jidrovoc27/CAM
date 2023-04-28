@@ -117,19 +117,20 @@ class PersonaPerfil(ModeloBase):
     def es_alumno(self):
         return self.es_alumno
 
-class CargoDocente(ModeloBase):
+class Cargo(ModeloBase):
     nombre = models.CharField(default='', max_length=100, verbose_name=u'Nombre')
 
     def __str__(self):
         return u'%s' % self.nombre
 
     class Meta:
-        verbose_name = u"Cargo docente"
-        verbose_name_plural = u" Cargos docentes"
+        verbose_name = u"Cargo"
+        verbose_name_plural = u" Cargos"
         ordering = ['nombre']
 
 class Docente(ModeloBase):
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, null=True, blank=True)
     fechaingreso = models.DateField(verbose_name=u'Fecha ingreso')
     contrato = models.CharField(default='', max_length=50, null=True, blank=True, verbose_name=u"Contrato")
     activo = models.BooleanField(default=True, verbose_name=u"Activo")
