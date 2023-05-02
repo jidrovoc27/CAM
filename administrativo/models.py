@@ -342,6 +342,7 @@ class Lead(ModeloBase):
 ESTADO_INSCRITO = (
     (1, u'APROBADO'),
     (2, u'REPROBADO'),
+    (3, u'RETIRADO'),
 )
 
 class InscritoCurso(ModeloBase):
@@ -376,50 +377,104 @@ class InscritoCurso(ModeloBase):
 
     def generar_rubros(self, curso):
         try:
-            if curso.inscripcion:
-                rubroinscripcion = Rubro(nombre=curso.tiporubroinscripcion.nombre + ' - ' + curso.nombre,
-                              tiporubro=curso.tiporubroinscripcion, curso=curso, persona=self.alumno.persona, tipocuota=1, valor=curso.costoinscripcion,
-                              fecha=datetime.now().date(), cancelado=False)
-                rubroinscripcion.save()
-
-            if curso.matricula:
-                rubromatricula = Rubro(nombre=curso.tiporubromatricula.nombre + ' - ' + curso.nombre,
-                              tiporubro=curso.tiporubromatricula, curso=curso, persona=self.alumno.persona, tipocuota=2, valor=curso.costomatricula,
-                              fecha=datetime.now().date(), cancelado=False)
-                rubromatricula.save()
-
-            if curso.gcuotas:
-                cuotas = CuotasCurso.objects.filter(status=True, curso=curso)
-                for cuota in cuotas:
-                    rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + curso.nombre,
-                                  tiporubro=curso.tiporubrocuota, curso=curso, persona=self.alumno.persona, cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
+            if not curso.oferta:
+                if curso.inscripcion:
+                    rubroinscripcion = Rubro(nombre=curso.tiporubroinscripcion.nombre + ' - ' + curso.nombre,
+                                  tiporubro=curso.tiporubroinscripcion, curso=curso, persona=self.alumno.persona, tipocuota=1, valor=curso.costoinscripcion,
                                   fecha=datetime.now().date(), cancelado=False)
-                    rubrocuotas.save()
+                    rubroinscripcion.save()
 
-            if not curso.inscripcion and not curso.matricula and not curso.gcuotas:
-                nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
-                                       tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
-                                       valor=curso.costo,
-                                       fecha=datetime.now().date(), cancelado=False)
-                nuevorubrocurso.save()
+                if curso.matricula:
+                    rubromatricula = Rubro(nombre=curso.tiporubromatricula.nombre + ' - ' + curso.nombre,
+                                  tiporubro=curso.tiporubromatricula, curso=curso, persona=self.alumno.persona, tipocuota=2, valor=curso.costomatricula,
+                                  fecha=datetime.now().date(), cancelado=False)
+                    rubromatricula.save()
 
-            if curso.inscripcion and not curso.matricula and not curso.gcuotas:
-                diferenciavalor = solo_2_decimales(curso.costo - curso.costoinscripcion, 2)
-                if diferenciavalor:
+                if curso.gcuotas:
+                    cuotas = CuotasCurso.objects.filter(status=True, curso=curso)
+                    for cuota in cuotas:
+                        rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + curso.nombre,
+                                      tiporubro=curso.tiporubrocuota, curso=curso, persona=self.alumno.persona, cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
+                                      fecha=datetime.now().date(), cancelado=False)
+                        rubrocuotas.save()
+
+                if not curso.inscripcion and not curso.matricula and not curso.gcuotas:
+                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
+                                           tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
+                                           valor=curso.costo,
+                                           fecha=datetime.now().date(), cancelado=False)
+                    nuevorubrocurso.save()
+
+                if curso.inscripcion and not curso.matricula and not curso.gcuotas:
+                    diferenciavalor = solo_2_decimales(curso.costo - curso.costoinscripcion, 2)
+                    # if diferenciavalor:
                     nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
                                             tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
-                                            valor=curso.costo,
+                                            valor=diferenciavalor,
                                             fecha=datetime.now().date(), cancelado=False)
                     nuevorubrocurso.save()
 
-            if not curso.inscripcion and curso.matricula and not curso.gcuotas:
-                diferenciavalor = solo_2_decimales(curso.costo - curso.costomatricula, 2)
-                if diferenciavalor:
+                if not curso.inscripcion and curso.matricula and not curso.gcuotas:
+                    diferenciavalor = solo_2_decimales(curso.costo - curso.costomatricula, 2)
+                    # if diferenciavalor:
                     nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
                                             tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
-                                            valor=curso.costo,
+                                            valor=diferenciavalor,
                                             fecha=datetime.now().date(), cancelado=False)
                     nuevorubrocurso.save()
+
+            else:
+                if curso.inscripcion:
+                    rubroinscripcion = Rubro(nombre=curso.tiporubroinscripcion.nombre + ' - ' + curso.nombre,
+                                             tiporubro=curso.tiporubroinscripcion, curso=curso,
+                                             persona=self.alumno.persona, tipocuota=1, valor=curso.costoinscripcion,
+                                             fecha=datetime.now().date(), cancelado=False)
+                    rubroinscripcion.save()
+
+                if curso.matricula:
+                    rubromatricula = Rubro(nombre=curso.tiporubromatricula.nombre + ' - ' + curso.nombre,
+                                           tiporubro=curso.tiporubromatricula, curso=curso, persona=self.alumno.persona,
+                                           tipocuota=2, valor=curso.costomatricula,
+                                           fecha=datetime.now().date(), cancelado=False)
+                    rubromatricula.save()
+
+                if curso.gcuotas:
+                    cuotas = CuotasCurso.objects.filter(status=True, curso=curso)
+                    for cuota in cuotas:
+                        rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + curso.nombre,
+                                            tiporubro=curso.tiporubrocuota, curso=curso, persona=self.alumno.persona,
+                                            cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
+                                            fecha=datetime.now().date(), cancelado=False)
+                        rubrocuotas.save()
+
+                if not curso.inscripcion and not curso.matricula and not curso.gcuotas:
+                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
+                                            tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona,
+                                            tipocuota=4,
+                                            valor=curso.costooferta,
+                                            fecha=datetime.now().date(), cancelado=False)
+                    nuevorubrocurso.save()
+
+                if curso.inscripcion and not curso.matricula and not curso.gcuotas:
+                    diferenciavalor = solo_2_decimales(curso.costooferta - curso.costoinscripcion, 2)
+                    # if diferenciavalor:
+                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
+                                            tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona,
+                                            tipocuota=4,
+                                            valor=diferenciavalor,
+                                            fecha=datetime.now().date(), cancelado=False)
+                    nuevorubrocurso.save()
+
+                if not curso.inscripcion and curso.matricula and not curso.gcuotas:
+                    diferenciavalor = solo_2_decimales(curso.costooferta - curso.costomatricula, 2)
+                    # if diferenciavalor:
+                    nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
+                                            tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona,
+                                            tipocuota=4,
+                                            valor=diferenciavalor,
+                                            fecha=datetime.now().date(), cancelado=False)
+                    nuevorubrocurso.save()
+
             return True
         except Exception as ex:
             return False

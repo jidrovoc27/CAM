@@ -3,6 +3,7 @@ import datetime
 from datetime import datetime
 from decimal import Decimal
 from django.forms import model_to_dict
+from django.contrib.auth.models import User, Group
 
 def solo_2_decimales(valor, decimales=None):
     if valor:
@@ -69,11 +70,17 @@ def add_data_aplication(request,data):
             mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
             tipoperfil = mis_perfiles.first()
             if tipoperfil.is_administrador == True:
-                request.session['tipoperfil'] = 1
+                grupo_administrativo = Group.objects.filter(name='Administrativo')
+                if grupo_administrativo:
+                    request.session['tipoperfil'] = grupo_administrativo.first().id
             elif tipoperfil.is_profesor == True:
-                request.session['tipoperfil'] = 2
+                grupo_profesor = Group.objects.filter(name='Docente')
+                if grupo_profesor:
+                    request.session['tipoperfil'] = grupo_profesor.first().id
             elif tipoperfil.is_alumno == True:
-                request.session['tipoperfil'] = 3
+                grupo_alumno = Group.objects.filter(name='Alumno')
+                if grupo_alumno:
+                    request.session['tipoperfil'] = grupo_alumno.first().id
             request.session['perfil_principal'] = model_to_dict(mis_perfiles.first())
         # request.session.save()
 
@@ -121,11 +128,17 @@ def act_data_aplication(request,data):
             mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
             tipoperfil = mis_perfiles.first()
             if data['tipoperfil'] == 'is_administrador':
-                request.session['tipoperfil'] = 1
+                grupo_administrativo = Group.objects.filter(name='Administrativo')
+                if grupo_administrativo:
+                    request.session['tipoperfil'] = grupo_administrativo.first().id
             elif data['tipoperfil'] == 'is_profesor':
-                request.session['tipoperfil'] = 2
+                grupo_profesor = Group.objects.filter(name='Docente')
+                if grupo_profesor:
+                    request.session['tipoperfil'] = grupo_profesor.first().id
             elif data['tipoperfil'] == 'is_alumno':
-                request.session['tipoperfil'] = 3
+                grupo_alumno = Group.objects.filter(name='Alumno')
+                if grupo_alumno:
+                    request.session['tipoperfil'] = grupo_alumno.first().id
         request.session['perfil_principal'] = model_to_dict(mis_perfiles.first())
         # request.session.save()
 

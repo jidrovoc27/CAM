@@ -284,6 +284,9 @@ def view_periodo(request):
                     if form.is_valid():
 
                         curso = Curso.objects.get(id=int(request.POST['id']))
+                        if not curso.cupo > 0:
+                            return JsonResponse(
+                                {"respuesta": False, "mensaje": "El curso no cuenta con cupos disponibles"})
                         inscrito = form.cleaned_data['alumno']
 
                         if not InscritoCurso.objects.filter(status=True, curso=curso, alumno=inscrito).exists():
@@ -291,6 +294,9 @@ def view_periodo(request):
                             inscrito = InscritoCurso(curso=curso, alumno=inscrito)
                             inscrito.save(request)
                             inscrito.generar_rubros(curso)
+                            cuposdisponibles = curso.cupo - 1
+                            curso.cupo = cuposdisponibles
+                            curso.save(request)
                             return JsonResponse({"respuesta": True, "mensaje": "Alumno inscrito correctamente"})
                         else:
                             return JsonResponse({"respuesta": False, "mensaje": "La persona ya se encuentra inscrita en este curso"})

@@ -2,6 +2,33 @@
 {% load static %}
 {% block head %}
 
+    <script>
+        function facturar_curso(peticion, id) {
+            $.ajax({
+                type: "GET",
+                url: '/finanzas/?peticion=ver_rubro&id={{ persona.id }}',
+                dataType: "json",
+                data: {
+                    'peticion': peticion,
+                    'id': id,
+                },
+                success: function (data) {
+                    if (data.respuesta === true) {
+                        $('.contenido-modal').html(data.data);
+                        $('#modalGeneric .modal-title').html(titulo);
+                        $("#modalGeneric").modal({backdrop: 'static'}).modal('show');
+                    } else {
+                        alert(data.mensaje);
+                    }
+                },
+                error: function () {
+                    alert("Error de conexión.");
+                },
+
+            });
+        }
+    </script>
+
 {% endblock %}
 {% block contenido %}
 
@@ -14,7 +41,7 @@
                     </div>
                     {% if puedepagar %}
                         <div class="col-6 text-end">
-                            <a class="btn btn-outline-dark btn-sm mb-0" href="?peticion=add_tiporubro"><i
+                            <a class="btn btn-outline-dark btn-sm mb-0" style="cursor: pointer" onclick="facturar_curso('facturarcurso', '{{ persona.id }}')"><i
                                     class="material-icons text-sm">money</i>&nbsp;&nbsp;Facturar</a>
 
                         </div>
@@ -203,6 +230,30 @@
         </div>
 
 
+    </div>
+
+    <div class="modal fade" id="modalGeneric">
+
+        <div class="modal-dialog modal-dialog-centered  modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-uppercase"></h5>
+                    <button type="button" class="btn-close text-dark" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" autocomplete="off" action="{{ request.path }}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class=" contenido-modal">
+
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
     </div>
 
 

@@ -10,6 +10,7 @@ from administrativo.forms import ConsultaForm, PagoForm, FacturaForm
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
 from django.db.models import Sum
+from django.template.loader import get_template
 
 
 @login_required(redirect_field_name='next', login_url='/login')
@@ -107,6 +108,19 @@ def view_finanzas(request):
                     return render(request, "administrativo/finanzas/rubros.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
+                    pass
+
+            elif peticion == 'facturarcurso':
+                try:
+                    cursosporpagar = None
+                    persona = Persona.objects.get(id=int(request.GET['id']))
+                    alumno = Alumno.objects.filter(status=True, persona=persona)
+                    if alumno:
+                        cursosporpagar = Rubro.objects.filter(status=True, cancelado=False, persona=persona).order_by('curso_id').distinct('curso_id')
+                        data['cursosporpagar'] = cursosporpagar
+                        template = get_template("administrativo/finanzas/facturarcurso.html")
+                        return JsonResponse({"respuesta": True, 'data': template.render(data)})
+                except Exception as ex:
                     pass
 
             elif peticion == 'ver_pagos':

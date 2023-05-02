@@ -1,0 +1,9 @@
+{% load static %}
+<div class="col-lg-3 col-md-5 col-12">
+    <select class="selectpicker" data-width="100%">
+        <option value="" disabled>Seleccione</option>
+        {% for curso in cursosporpagar %}
+            <option value="{{ curso.id }}">{{ curso }}</option>
+        {% endfor %}
+    </select>
+</div>
