@@ -381,13 +381,13 @@ class InscritoCurso(ModeloBase):
                 if curso.inscripcion:
                     rubroinscripcion = Rubro(nombre=curso.tiporubroinscripcion.nombre + ' - ' + curso.nombre,
                                   tiporubro=curso.tiporubroinscripcion, curso=curso, persona=self.alumno.persona, tipocuota=1, valor=curso.costoinscripcion,
-                                  fecha=datetime.now().date(), cancelado=False)
+                                  fecha=datetime.now().date(), cancelado=False, saldo=curso.costoinscripcion)
                     rubroinscripcion.save()
 
                 if curso.matricula:
                     rubromatricula = Rubro(nombre=curso.tiporubromatricula.nombre + ' - ' + curso.nombre,
                                   tiporubro=curso.tiporubromatricula, curso=curso, persona=self.alumno.persona, tipocuota=2, valor=curso.costomatricula,
-                                  fecha=datetime.now().date(), cancelado=False)
+                                  fecha=datetime.now().date(), cancelado=False, saldo=curso.costomatricula)
                     rubromatricula.save()
 
                 if curso.gcuotas:
@@ -395,14 +395,14 @@ class InscritoCurso(ModeloBase):
                     for cuota in cuotas:
                         rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + curso.nombre,
                                       tiporubro=curso.tiporubrocuota, curso=curso, persona=self.alumno.persona, cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
-                                      fecha=datetime.now().date(), cancelado=False)
+                                      fecha=datetime.now().date(), cancelado=False, saldo=curso.valor)
                         rubrocuotas.save()
 
                 if not curso.inscripcion and not curso.matricula and not curso.gcuotas:
                     nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
                                            tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
                                            valor=curso.costo,
-                                           fecha=datetime.now().date(), cancelado=False)
+                                           fecha=datetime.now().date(), cancelado=False, saldo=curso.costo)
                     nuevorubrocurso.save()
 
                 if curso.inscripcion and not curso.matricula and not curso.gcuotas:
@@ -411,7 +411,7 @@ class InscritoCurso(ModeloBase):
                     nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
                                             tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
                                             valor=diferenciavalor,
-                                            fecha=datetime.now().date(), cancelado=False)
+                                            fecha=datetime.now().date(), cancelado=False, saldo=diferenciavalor)
                     nuevorubrocurso.save()
 
                 if not curso.inscripcion and curso.matricula and not curso.gcuotas:
@@ -420,7 +420,7 @@ class InscritoCurso(ModeloBase):
                     nuevorubrocurso = Rubro(nombre=curso.tiporubro.nombre + ' - ' + curso.nombre,
                                             tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona, tipocuota=4,
                                             valor=diferenciavalor,
-                                            fecha=datetime.now().date(), cancelado=False)
+                                            fecha=datetime.now().date(), cancelado=False, saldo=diferenciavalor)
                     nuevorubrocurso.save()
 
             else:
@@ -428,14 +428,14 @@ class InscritoCurso(ModeloBase):
                     rubroinscripcion = Rubro(nombre=curso.tiporubroinscripcion.nombre + ' - ' + curso.nombre,
                                              tiporubro=curso.tiporubroinscripcion, curso=curso,
                                              persona=self.alumno.persona, tipocuota=1, valor=curso.costoinscripcion,
-                                             fecha=datetime.now().date(), cancelado=False)
+                                             fecha=datetime.now().date(), cancelado=False, saldo=curso.costoinscripcion)
                     rubroinscripcion.save()
 
                 if curso.matricula:
                     rubromatricula = Rubro(nombre=curso.tiporubromatricula.nombre + ' - ' + curso.nombre,
                                            tiporubro=curso.tiporubromatricula, curso=curso, persona=self.alumno.persona,
                                            tipocuota=2, valor=curso.costomatricula,
-                                           fecha=datetime.now().date(), cancelado=False)
+                                           fecha=datetime.now().date(), cancelado=False, saldo=curso.costomatricula)
                     rubromatricula.save()
 
                 if curso.gcuotas:
@@ -444,7 +444,7 @@ class InscritoCurso(ModeloBase):
                         rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + curso.nombre,
                                             tiporubro=curso.tiporubrocuota, curso=curso, persona=self.alumno.persona,
                                             cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
-                                            fecha=datetime.now().date(), cancelado=False)
+                                            fecha=datetime.now().date(), cancelado=False, saldo=curso.valor)
                         rubrocuotas.save()
 
                 if not curso.inscripcion and not curso.matricula and not curso.gcuotas:
@@ -452,7 +452,7 @@ class InscritoCurso(ModeloBase):
                                             tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona,
                                             tipocuota=4,
                                             valor=curso.costooferta,
-                                            fecha=datetime.now().date(), cancelado=False)
+                                            fecha=datetime.now().date(), cancelado=False, saldo=curso.costooferta)
                     nuevorubrocurso.save()
 
                 if curso.inscripcion and not curso.matricula and not curso.gcuotas:
@@ -462,7 +462,7 @@ class InscritoCurso(ModeloBase):
                                             tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona,
                                             tipocuota=4,
                                             valor=diferenciavalor,
-                                            fecha=datetime.now().date(), cancelado=False)
+                                            fecha=datetime.now().date(), cancelado=False, saldo=diferenciavalor)
                     nuevorubrocurso.save()
 
                 if not curso.inscripcion and curso.matricula and not curso.gcuotas:
@@ -472,7 +472,7 @@ class InscritoCurso(ModeloBase):
                                             tiporubro=curso.tiporubro, curso=curso, persona=self.alumno.persona,
                                             tipocuota=4,
                                             valor=diferenciavalor,
-                                            fecha=datetime.now().date(), cancelado=False)
+                                            fecha=datetime.now().date(), cancelado=False, saldo=diferenciavalor)
                     nuevorubrocurso.save()
 
             return True
@@ -510,12 +510,16 @@ class Rubro(ModeloBase):
     tipocuota = models.IntegerField(choices=TIPO_CUOTA, default=3)
     subtotal = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u'Subtotal')
     valor = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u'Valor')
+    saldo = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u'Saldo')
     fecha = models.DateField(verbose_name=u'Fecha', auto_now_add=True, null=True)
     fechavencimiento = models.DateField(verbose_name=u'Fecha vencimiento', auto_now_add=True, null=True)
     cancelado = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
-        return u'%s - Consulta: %s' % (self.nombre, self.valor)
+        return u'%s - Valor: %s' % (self.nombre, self.valor)
+
+    def nombrecurso(self):
+        return u'%s' % (self.curso)
 
     def totalpagos(self):
         total = Pago.objects.filter(rubro_id=self.id, status=True).aggregate(total=Sum('valorfinal'))

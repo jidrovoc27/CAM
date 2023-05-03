@@ -1,9 +1,15 @@
 {% load static %}
-<div class="col-lg-3 col-md-5 col-12">
-    <select class="selectpicker" data-width="100%">
+{#<div class="col-lg-3 col-md-5 col-12">#}
+    <select id="cursosfacturar" class="selectpicker" data-width="100%" name="cursofacturar">
         <option value="" disabled>Seleccione</option>
         {% for curso in cursosporpagar %}
             <option value="{{ curso.id }}">{{ curso }}</option>
         {% endfor %}
     </select>
-</div>
+    <br>
+    <br>
+    <button type="submit" class="btn btn-success" style="float: right"><li class="fa fa-money" style="margin-right: 5px"></li> Facturar</button>
+{#</div>#}
+<script>
+    $("#cursosfacturar").select2({"width":"100%"});
+</script>

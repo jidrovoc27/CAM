@@ -15,7 +15,7 @@
                 success: function (data) {
                     if (data.respuesta === true) {
                         $('.contenido-modal').html(data.data);
-                        $('#modalGeneric .modal-title').html(titulo);
+                        $('#modalGeneric .modal-title').html("Cursos a facturar");
                         $("#modalGeneric").modal({backdrop: 'static'}).modal('show');
                     } else {
                         alert(data.mensaje);
@@ -238,15 +238,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title text-uppercase"></h5>
-                    <button type="button" class="btn-close text-dark" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" autocomplete="off" action="{{ request.path }}" enctype="multipart/form-data">
-                        {% csrf_token %}
+                    <form method="GET" autocomplete="off" action="{{ request.path }}" enctype="multipart/form-data">
+{#                        {% csrf_token %}#}
+                        <input type="hidden" name="peticion" value="pagar">
+                        <input type="hidden" name="id" value="{{ persona.id }}">
                         <div class=" contenido-modal">
-
+                        <button type="submit" class="btn btn-success">Facturar</button>
                         </div>
                     </form>
 

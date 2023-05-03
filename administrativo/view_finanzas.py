@@ -116,10 +116,21 @@ def view_finanzas(request):
                     persona = Persona.objects.get(id=int(request.GET['id']))
                     alumno = Alumno.objects.filter(status=True, persona=persona)
                     if alumno:
-                        cursosporpagar = Rubro.objects.filter(status=True, cancelado=False, persona=persona).order_by('curso_id').distinct('curso_id')
-                        data['cursosporpagar'] = cursosporpagar
+                        cursosporpagar = Rubro.objects.filter(status=True, cancelado=False, persona=persona).values_list('curso_id', flat=True).order_by('curso_id').distinct('curso_id')
+                        # data['cursosporpagar'] = cursosporpagar
+                        data['cursosporpagar'] = Curso.objects.filter(status=True, id__in=cursosporpagar)
                         template = get_template("administrativo/finanzas/facturarcurso.html")
                         return JsonResponse({"respuesta": True, 'data': template.render(data)})
+                except Exception as ex:
+                    pass
+
+            elif peticion == 'pagar':
+                try:
+                    id = request.GET['cursofacturar']
+                    data['curso' ] = curso = Curso.objects.get(id=int(id))
+                    data['persona'] = persona = Persona.objects.get(id=int(request.GET['id']))
+                    data['rubrosopendientes'] = rubrosopendientes = Rubro.objects.filter(status=True, cancelado=False, curso=curso, persona=persona)
+                    return render(request, "administrativo/finanzas/pagar.html", data)
                 except Exception as ex:
                     pass
 
