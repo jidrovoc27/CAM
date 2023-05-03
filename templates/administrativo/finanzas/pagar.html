@@ -183,6 +183,7 @@
     <form method="POST" autocomplete="off" action="{{ request.path }}" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" name="peticion" value="pagar">
+        <input type="hidden" name="id" value="{{ persona.id }}">
         <div class="col-md-12 mb-lg-0 mb-4 ">
             <div class="position-relative  card mt-1 ">
                 <div class="card-header pb-0 p-3 ">
@@ -243,7 +244,7 @@
                             <br>
                             <br>
                             {#                        <a class="btn btn-success" style="float: right"><li class="fa fa-money"></li> Pagar</a>#}
-                            <button class="btn btn-success" style="float: right" id="pagar">
+                            <button type="submit" class="btn btn-success" style="float: right" id="pagar">
                                 <li class="fa fa-money"></li>
                                 Pagar
                             </button>
@@ -318,12 +319,14 @@
             var abono = $("#abono" + idrubro).val();
             if (abono.length > 0) {
                 if (parseFloat(abono) <= parseFloat(saldo)) {
+                    saldo = parseFloat(saldo) - parseFloat(abono);
                     $("#rubrosfacturar").append('<tr class="registro">' +
+                        '<td style="text-align: center;display: none" class="cod" name="idrubro"><input name="idrubro" id="idrubro'+ idrubro +'" style="width: 100px;border-style: solid;border-width: 0.5px;text-align: center;" readonly type="text" class="form-control" placeholder="Abono" aria-label="Abono" aria-describedby="addon-wrapping" value="' + idrubro + '"></td>' +
                         '<td style="text-align: center" class="cod" name="idrubro">' + idrubro + '</td>' +
                         '<td style="text-align: left" class="nombre" name="nombre">' + curso + '</td>' +
                         '<td style="text-align: center" class="fecha" name="fecha">' + fecha + '</td>' +
                         '<td style="text-align: center" class="saldo" name="saldo">' + saldo + '</td>' +
-                        '<td style="text-align: center" class="abono" name="abono">' + abono + '</td>' +
+                        '<td style="text-align: right;width: 20px" class="abono" name="abono"> <input name="abonorubro" id="abono'+ idrubro +'" style="width: 100px;border-style: solid;border-width: 0.5px;text-align: center;" readonly type="text" class="form-control" placeholder="Abono" aria-label="Abono" aria-describedby="addon-wrapping" value="' + abono + '"></td>' +
                         '<td style="text-align: center" class="regresar"><a class="dropdown-item border-radius-md text-warning regresarrubro" idrubro=' + idrubro + ' curso=' + curso + ' fecha=' + fecha + ' saldo=' + saldo + ' abono=' + abono + ' style="cursor: pointer"><li class="fa fa-trash"></li> Eliminar</a></td>' +
                         '</tr>');
                     total = total + parseFloat(abono);

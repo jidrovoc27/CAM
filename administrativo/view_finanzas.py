@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from datetime import *
 
 from administrativo.forms import ConsultaForm, PagoForm, FacturaForm
@@ -27,40 +27,57 @@ def view_finanzas(request):
     if request.method == 'POST':
         if 'peticion' in request.POST:
             peticion = request.POST['peticion']
-            if peticion == 'addpago':
+            if peticion == 'pagar':
                 try:
-                    form = PagoForm(request.POST)
-                    if form.is_valid():
-                        totalpagos = Pago.objects.filter(rubro_id=int(request.POST['idrubro']), status=True).aggregate(total=Sum('valorfinal'))
-                        valorpagos = 0
+                    fechaactual = datetime.now().date()
+                    idpersona = int(request.POST['id'])
+                    personafactura = Persona.objects.get(id=idpersona)
+                    rubros = request.POST.getlist('idrubro')
+                    abonos = request.POST.getlist('abonorubro')
+                    valortotal = 0
+                    nuevasecuencia = generar_secuencial_factura()
+                    numcompleto = '001-001-' + str(nuevasecuencia)
+                    caja = Caja.objects.filter(status=True, persona=persona_logeado)
+                    sesioncaja = None
+                    if caja:
+                        caja = caja.first()
+                        sesioncaja = SesionCaja.objects.filter(status=True, caja=caja, inicio=fechaactual, fin=fechaactual, activo=True)
+                        if sesioncaja:
+                            sesioncaja = sesioncaja.first()
+                    factura = Factura(persona_id=idpersona, fecha=datetime.now().date(), numero=nuevasecuencia,
+                                      numerocompleto=numcompleto, sesioncaja=sesioncaja, identificacion=personafactura.cedula,
+                                      tipo=1, nombre=personafactura.__str__(), email=personafactura.email, direccion=personafactura.direccion,
+                                      telefono=personafactura.telefono_movil, electronica=True)
+                    factura.save(request)
+
+                    contador = 0
+                    for rubrofact in rubros:
+                        rubro = Rubro.objects.get(id=int(rubrofact))
+                        abono = Pago(sesioncaja=sesioncaja, persona=personafactura, rubro=rubro, valor=Decimal(abonos[contador]),
+                                     valorfinal=abonos[contador], fecha=fechaactual)
+                        abono.save(request)
+                        nuevodetalle = DetalleFactura(factura=factura, pago=abono)
+                        nuevodetalle.save(request)
+                        diferencial = solo_2_decimales(Decimal(rubro.saldo) - Decimal(abonos[contador]), 2)
+                        rubro.saldo = diferencial
+                        totalpagos = Pago.objects.filter(rubro=rubro, status=True).aggregate(total=Sum('valorfinal'))
                         if totalpagos['total']:
                             valorpagos = totalpagos['total']
-                        consultarrubro = Rubro.objects.get(id=int(request.POST['idrubro']))
-                        valorrestante_porpagar = float(consultarrubro.valor) - float(valorpagos)
-                        if valorrestante_porpagar >= float(form.cleaned_data['valorfinal']):
-                            if not persona_logeado == 'AGENCIA':
-                                registrarpago = Pago(persona=persona_logeado,
-                                                     rubro_id=int(request.POST['idrubro']),
-                                                     valor=form.cleaned_data['valor'],
-                                                     valorfinal=form.cleaned_data['valorfinal'])
-                                registrarpago.save(request)
-                            else:
-                                registrarpago = Pago(rubro_id=int(request.POST['idrubro']),
-                                                     valor=form.cleaned_data['valor'],
-                                                     valorfinal=form.cleaned_data['valorfinal'])
-                                registrarpago.save(request)
-                            totalpagos = Pago.objects.filter(rubro_id=int(request.POST['idrubro']),status=True).aggregate(total=Sum('valorfinal'))
-                            valorpagos = 0
-                            if totalpagos['total']:
-                                valorpagos = float(totalpagos['total'])
-                            if valorpagos >= consultarrubro.valor:
-                                consultarrubro.cancelado = True
-                                consultarrubro.save(request)
-                            return JsonResponse({"respuesta": True, "mensaje": "Pago registrado correctamente."})
-                        return JsonResponse({"respuesta": False, "mensaje": "El valor cancelado supera el valor a pagar de $"+str(("{0:.2f}".format(valorrestante_porpagar)))})
-                    else:
-                       return JsonResponse( {"respuesta": False, "mensaje": "Por favor, complete el formulario correctamente"})
+                            if valorpagos == rubro.valor:
+                                rubro.cancelado = True
+                        rubro.save(request)
+                        valortotal = valortotal + Decimal(abonos[contador])
+                        contador += 1
 
+                    factura.total = solo_2_decimales(valortotal, 2)
+                    factura.save(request)
+
+                    valida = conviert_html_to_pdf('factura.html', {'data': data})
+                    if valida:
+                        factura.archivo = f'facturas/{str(factura.id)}.pdf'
+                        factura.save()
+
+                    return redirect('/finanzas/?peticion=ver_rubro&id=%s' % request.POST['id'])
 
                 except Exception as ex:
                    transaction.set_rollback(True)
@@ -137,8 +154,8 @@ def view_finanzas(request):
             elif peticion == 'ver_pagos':
                 try:
                     data['titulo'] = 'Pagos'
-                    data['paciente_rubro'] = Persona.objects.get(id=request.GET['id'])
-                    data['rubro_paciente'] = Rubro.objects.get(status=True, id=request.GET['idrubro'])
+                    data['persona_rubro'] = Persona.objects.get(id=request.GET['id'])
+                    data['rubro_persona'] = Rubro.objects.get(status=True, id=request.GET['idrubro'])
                     lista = Pago.objects.filter(status=True, rubro_id=request.GET['idrubro'])
                     paginator = Paginator(lista, 15)
                     page_number = request.GET.get('page')

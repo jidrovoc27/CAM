@@ -6,6 +6,17 @@ from datetime import datetime
 
 from administrativo.funciones import *
 
+def generar_secuencial_factura():
+    secuencial = Secuencial.objects.filter(status=True)
+    if secuencial:
+        secuencial = secuencial.last()
+        secuencial.factura = secuencial.factura + 1
+        secuencial.save()
+    else:
+        secuencial = Secuencial(factura=0)
+        secuencial.save()
+    return secuencial.factura
+
 class Modulo(ModeloBase):
     nombre = models.CharField(verbose_name="Nombre del módulo", max_length=100, unique=True)
     descripcion = models.CharField(verbose_name="Descripción", default='', max_length=200)
@@ -632,19 +643,111 @@ class ValorRecaudado(ModeloBase):
         return u'%s - %s - %s' % (self.sesioncaja, self.rubro, self.valor)
 
 
+ESTADO_PAGO = (
+    (1, u'VALIDADO'),
+    (2, u'ANULADO'),
+)
+
+
 class Pago(ModeloBase):
     sesioncaja = models.ForeignKey(SesionCaja, on_delete=models.CASCADE, blank=True, null=True)
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE, blank=True, null=True)
     rubro = models.ForeignKey(Rubro, on_delete=models.CASCADE)
     valor = models.FloatField(default=0, verbose_name=u'Pago')
-    # iva = models.DecimalField(max_digits=30, decimal_places=2, default=12, verbose_name=u'Iva')
-    # subtotal_iva = models.FloatField(default=0, verbose_name=u'Subtotal iva')
+    iva = models.DecimalField(max_digits=30, decimal_places=2, default=12, verbose_name=u'Iva')
+    subtotal_iva = models.FloatField(default=0, verbose_name=u'Subtotal iva')
     valorfinal = models.FloatField(default=0, verbose_name=u'Valor final')
     fecha = models.DateField(verbose_name=u'Fecha', auto_now_add=True, null=True)
+    estado = models.IntegerField(choices=ESTADO_PAGO, default=1, verbose_name=u"Validado o anulado", blank=True, null=True)
 
+    def factura(self):
+        factura = DetalleFactura.objects.filter(status=True, pago=self)
+        if factura:
+            numerocompleto = ''
+            factura = str(factura.first().factura.numero)
+            if len(factura) == 1:
+                numerocompleto = '001-001-000' + str(factura)
+            elif len(factura) == 2:
+                numerocompleto = '001-001-00' + str(factura)
+            elif len(factura) == 3:
+                numerocompleto = '001-001-0' + str(factura)
+            elif len(factura) == 4:
+                numerocompleto = '001-001-' + str(factura)
+            return numerocompleto
+        return ''
+
+IDENTIFICACIONES = (
+    (1, u'CEDULA'),
+    (2, u'RUC'),
+)
+
+IVA = (
+    (1, 0),
+    (2, 12),
+    (3, 14),
+)
+
+PROCESO_COMPROBANTE = (
+    (1, u'PENDIENTE'),
+    (2, u'FINALIZADA')
+)
+
+class Secuencial(ModeloBase):
+    factura = models.IntegerField(default=0, verbose_name=u'Secuencial de facturas')
 
 class Factura(ModeloBase):
-    pago = models.ForeignKey(Pago, on_delete=models.CASCADE)
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE, blank=True, null=True)
-    fecha = models.DateField(verbose_name=u'Fecha', auto_now_add=True, null=True)
     archivo = models.FileField(upload_to='facturas', blank=True, null=True, verbose_name=u'Facturas')
+    numero = models.IntegerField(default=0, verbose_name=u"Numero", blank=True, null=True)
+    numerocompleto = models.CharField(default='', max_length=20, verbose_name=u"Numero Completo", blank=True, null=True)
+    fecha = models.DateField(verbose_name=u"Fecha", blank=True, null=True)
+    observacion = models.TextField(default='', blank=True, null=True, verbose_name=u'Observación')
+    valida = models.BooleanField(default=True, verbose_name=u"Valida", blank=True, null=True)
+    ivaaplicado = models.IntegerField(choices=IVA, default=2, verbose_name=u"Tipo de iva", blank=True, null=True)
+    subtotal_base_iva = models.DecimalField(max_digits=30, decimal_places=2, default=0, blank=True, null=True)
+    subtotal_base0 = models.DecimalField(max_digits=30, decimal_places=2, default=0, blank=True, null=True)
+    total_descuento = models.DecimalField(max_digits=30, decimal_places=2, default=0, blank=True, null=True)
+    total_iva = models.DecimalField(max_digits=30, decimal_places=2, default=0, blank=True, null=True)
+    total = models.DecimalField(max_digits=30, decimal_places=2, default=0, blank=True, null=True)
+    sesioncaja = models.ForeignKey(SesionCaja, on_delete=models.PROTECT, verbose_name=u"Caja", blank=True, null=True)
+    identificacion = models.CharField(default='', max_length=20, verbose_name=u"Identificación", blank=True, null=True)
+    tipo = models.IntegerField(choices=IDENTIFICACIONES, default=1, verbose_name=u"Tipo de identificación", blank=True, null=True)
+    nombre = models.CharField(default='', max_length=100, verbose_name=u"Nombre", blank=True, null=True)
+    email = models.CharField(default='', max_length=100, verbose_name=u"Email", blank=True, null=True)
+    direccion = models.TextField(default='', verbose_name=u"Dirección", blank=True, null=True)
+    telefono = models.CharField(default='', max_length=50, verbose_name=u"Telefono", blank=True, null=True)
+    electronica = models.BooleanField(default=False, verbose_name=u"Electrónica", blank=True, null=True)
+    pagada = models.BooleanField(default=True, verbose_name=u"Pagada", blank=True, null=True)
+    firmada = models.BooleanField(default=False, verbose_name=u"Firmada", blank=True, null=True)
+    enviadasri = models.BooleanField(default=False, verbose_name=u"Enviada al sri", blank=True, null=True)
+    falloenviodasri = models.BooleanField(default=False, verbose_name=u"Fallo existente al enviar la factura al sri", blank=True, null=True)
+    mensajeenvio = models.TextField(blank=True, null=True, verbose_name=u"Mensaje de envio por parte del sri")
+    falloautorizacionsri = models.BooleanField(default=False, verbose_name=u"Fallo de Autorización SRI", blank=True, null=True)
+    mensajeautorizacion = models.TextField(blank=True, null=True, verbose_name=u"Mensaje de Autorización")
+    autorizada = models.BooleanField(default=False, verbose_name=u"Autorizada", blank=True, null=True)
+    enviadacliente = models.BooleanField(default=False, verbose_name=u"Enviada por correo", blank=True, null=True)
+    xmlgenerado = models.BooleanField(default=False, verbose_name=u"XML Generado", blank=True, null=True)
+    xml = models.TextField(blank=True, null=True, verbose_name=u'XML')
+    xmlfirmado = models.TextField(blank=True, null=True, verbose_name=u'XML Firmado')
+    xmlarchivo = models.FileField(upload_to='comprobantes/facturas/', blank=True, null=True, verbose_name=u'XML Archivo')
+    fechaautorizacion = models.DateTimeField(verbose_name=u"Fecha autorizacion", blank=True, null=True)
+    autorizacion = models.TextField(verbose_name=u'Autorizacion', blank=True, null=True)
+    weburl = models.CharField(max_length=32, blank=True, null=True)
+    claveacceso = models.CharField(max_length=49, verbose_name=u'Clave de Acceso', blank=True, null=True)
+    tipoambiente = models.IntegerField(default=1, verbose_name=u'Tipo Ambiente', blank=True, null=True)
+    tipoemision = models.IntegerField(default=1, verbose_name=u'Tipo Emision', blank=True, null=True)
+    estado = models.IntegerField(choices=PROCESO_COMPROBANTE, default=1, verbose_name=u'Estado de la factura', blank=True, null=True)
+    aplicanc = models.BooleanField(default=False, verbose_name=u"Aplica nota de crédito", blank=True, null=True)
+
+    def __str__(self):
+        return u'Factura No. %s' % self.numero
+
+    class Meta:
+        verbose_name = u"Factura"
+        verbose_name_plural = u"Facturas"
+        ordering = ['numero']
+        unique_together = ('numero',)
+
+class DetalleFactura(ModeloBase):
+    factura = models.ForeignKey(Factura, on_delete=models.CASCADE, blank=True, null=True)
+    pago = models.ForeignKey(Pago, on_delete=models.CASCADE, blank=True, null=True)
