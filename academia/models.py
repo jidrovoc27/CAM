@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from administrativo.models import *
+from administrativo.funciones import *
 
 class PeriodoA(ModeloBase):
     nombre = models.CharField(default='', max_length=200, verbose_name=u'Nombre', blank=True, null=True)
@@ -75,6 +76,7 @@ class DocenteA(ModeloBase):
 class CursoA(ModeloBase):
     periodo = models.ForeignKey(PeriodoA, on_delete=models.PROTECT, verbose_name=u'Periodo', blank=True, null=True)
     modeloevaluativo = models.ForeignKey(ModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'Modelo Evaluativo', blank=True, null=True)
+    idcursoadministrativo = models.ForeignKey(Curso, on_delete=models.PROTECT, verbose_name=u'Curso administrativo', blank=True, null=True)
     nombre = models.CharField(max_length=500, verbose_name=u'Nombre', blank=True, null=True)
     estado = models.IntegerField(choices=ESTADO_CURSO, blank=True, null=True, verbose_name=u'Estado Curso')
     horasvirtual = models.IntegerField(default=0, verbose_name=u'Horas Virtuales', blank=True, null=True)

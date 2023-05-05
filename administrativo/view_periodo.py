@@ -19,6 +19,7 @@ from CAM.settings import BASE_DIR, MEDIA_ROOT
 from administrativo.forms import *
 from administrativo.funciones import *
 from administrativo.models import *
+from academia.models import *
 
 def create_mail(user_mail, subject, template_name, context):
     template = get_template(template_name)
@@ -444,7 +445,102 @@ def view_periodo(request):
                     return redirect('/pacientes/?peticion=submenu_documentos&id=%s' % request.POST['id'])
                 except Exception as ex:
                     pass
-        return JsonResponse({"respuesta": False, "mensaje": "acción Incorrecta."})
+
+            elif peticion == 'matricular_alumnos':
+                try:
+                    curso = Curso.objects.get(id=int(request.POST['id']))
+                    periodo = curso.periodo
+                    if not PeriodoA.objects.filter(status=True, inicio=periodo.inicio, fin=periodo.fin, activo=True).exists():
+                        periodoacademia = PeriodoA(nombre=curso.periodo.nombre, descripcion=curso.periodo.descripcion,
+                                                   inicio=curso.periodo.inicio, fin=curso.periodo.fin, activo=curso.periodo.activo)
+                        periodoacademia.save(request)
+                    else:
+                        periodoacademia = PeriodoA.objects.filter(status=True, inicio=periodo.inicio, fin=periodo.fin, activo=True).last()
+
+                    if not curso.migrado:
+                        if curso.modeloevaluativo:
+                            detallemodelo = DetalleModeloEvaluativo.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                            if detallemodelo.exists():
+                                modeloevaluativo = curso.modeloevaluativo
+                                if not ModeloEvaluativoA.objects.filter(status=True, nombre=modeloevaluativo.nombre, fecha=modeloevaluativo.fecha, notamaxima=modeloevaluativo.notamaxima, notaaprobar=modeloevaluativo.notaaprobar, asistenciaaprobar=modeloevaluativo.asistenciaaprobar, observaciones=modeloevaluativo.observaciones ).exists():
+                                    modevalacademia = ModeloEvaluativoA(nombre=modeloevaluativo.nombre, fecha=modeloevaluativo.fecha, notamaxima=modeloevaluativo.notamaxima, notaaprobar=modeloevaluativo.notaaprobar, asistenciaaprobar=modeloevaluativo.asistenciaaprobar, observaciones=modeloevaluativo.observaciones )
+                                    modevalacademia.save(request)
+                                else:
+                                    modevalacademia = ModeloEvaluativoA.objects.filter(status=True, nombre=modeloevaluativo.nombre,
+                                                                        fecha=modeloevaluativo.fecha,
+                                                                        notamaxima=modeloevaluativo.notamaxima,
+                                                                        notaaprobar=modeloevaluativo.notaaprobar,
+                                                                        asistenciaaprobar=modeloevaluativo.asistenciaaprobar,
+                                                                        observaciones=modeloevaluativo.observaciones).last()
+                                cantidadetalle = detallemodelo.count()
+                                cantidadetalleA = 0
+                                for detalle in detallemodelo:
+                                    if DetalleModeloEvaluativoA.objects.filter(status=True, modelo=modevalacademia, nombre=detalle.nombre,
+                                                                               notaminima=detalle.notaminima, notamaxima=detalle.notamaxima,
+                                                                               orden=detalle.orden).exists():
+                                        cantidadetalleA += 1
+
+                                if cantidadetalle == cantidadetalleA:
+                                    for detalle in detallemodelo:
+                                        nuevodetalleA = DetalleModeloEvaluativoA(status=True, modelo=modevalacademia,
+                                                                                   nombre=detalle.nombre,
+                                                                                   notaminima=detalle.notaminima,
+                                                                                   notamaxima=detalle.notamaxima,
+                                                                                   orden=detalle.orden)
+                                        nuevodetalleA.save(request)
+
+                                if not DocenteA.objects.filter(status=True, persona=curso.docente.persona, fechaingreso=curso.docente.fechaingreso,
+                                                           activo=curso.docente.activo).exists():
+                                    nuevodocenteA = DocenteA(persona=curso.docente.persona, fechaingreso=curso.docente.fechaingreso, activo=curso.docente.activo)
+                                    nuevodocenteA.save(request)
+                                else:
+                                    nuevodocenteA = DocenteA.objects.filter(status=True, persona=curso.docente.persona, fechaingreso=curso.docente.fechaingreso, activo=curso.docente.activo).first()
+
+
+
+                                cursoacademia = CursoA(periodo=periodoacademia, modeloevaluativo=modevalacademia, nombre=curso.nombre,
+                                                       estado=2, horasvirtual=curso.horasvirtual, minasistencia=curso.minasistencia,
+                                                       minnota=curso.minnota, modalidad=curso.modalidad, docente=nuevodocenteA,
+                                                       fechainicio=curso.fechainicio, fechafin=curso.fechafin, observacion=curso.observacion,
+                                                       objetivo=curso.objetivo, contenido=curso.contenido, planificacion=curso.planificacion,
+                                                       fondoweb=curso.fondoweb, fondocursos=curso.fondocursos, finalizarcurso=curso.finalizarcurso,
+                                                       idcursoadministrativo=curso)
+                                cursoacademia.save(request)
+                                curso.idcursoacademia = cursoacademia
+                                curso.save(request)
+                                inscritos = InscritoCurso.objects.filter(status=True, curso=curso, matriculado=False)
+                                nummatriculados = 0
+                                for inscrito in inscritos:
+                                    nuevoinscritoA = InscritoCursoA(curso=cursoacademia, inscrito=inscrito.alumno.persona)
+                                    nuevoinscritoA.save(request)
+                                    inscrito.matriculado = True
+                                    inscrito.save(request)
+                                    nummatriculados += 1
+                                return JsonResponse({"respuesta": True, "mensaje": "Inscritos matriculados correctamente. Total: " + str(nummatriculados) + " matriculados"})
+
+                            else:
+                                return JsonResponse({"respuesta": False, "mensaje": "Por favor, ingrese detalle en el modelo evaluativo"})
+                        else:
+                            return JsonResponse({"respuesta": False, "mensaje": "El curso debe de tener un modelo evaluativo"})
+                    else:
+                        if curso.idcursoacademia:
+                            cursoacademia = CursoA.objects.get(id=curso.idcursoacademia_id)
+                            inscritos = InscritoCurso.objects.filter(status=True, curso=curso, matriculado=False)
+                            nummatriculados = 0
+                            for inscrito in inscritos:
+                                nuevoinscritoA = InscritoCursoA(curso=cursoacademia, inscrito=inscrito.alumno.persona)
+                                nuevoinscritoA.save(request)
+                                inscrito.matriculado = True
+                                inscrito.save(request)
+                                nummatriculados += 1
+                            return JsonResponse({"respuesta": True, "mensaje": "Inscritos matriculados correctamente. Total: " + str(nummatriculados) + " matriculados"})
+                        else:
+                            return JsonResponse({"respuesta": False, "mensaje": "Por algún motivo el curso no se encuentra enrolado"})
+
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Error al intentar matricular a los alumnos"})
+
+        return JsonResponse({"respuesta": False, "mensaje": "Acción incorrecta."})
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']

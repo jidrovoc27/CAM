@@ -5,6 +5,7 @@ import datetime
 from datetime import datetime
 
 from administrativo.funciones import *
+from academia.models import *
 
 def generar_secuencial_factura():
     secuencial = Secuencial.objects.filter(status=True)
@@ -286,6 +287,7 @@ class Documentos(ModeloBase):
 class Curso(ModeloBase):
     periodo = models.ForeignKey(Periodo, on_delete=models.PROTECT, verbose_name=u'Periodo', blank=True, null=True)
     modeloevaluativo = models.ForeignKey(ModeloEvaluativo, on_delete=models.PROTECT, verbose_name=u'Modelo Evaluativo', blank=True, null=True)
+    idcursoacademia = models.ForeignKey(CursoA, on_delete=models.PROTECT, verbose_name=u'Curso académico', blank=True, null=True)
     nombre = models.CharField(max_length=500, verbose_name=u'Nombre')
     estado = models.IntegerField(choices=ESTADO_CURSO, blank=True, null=True, verbose_name=u'Estado Curso')
     tiporubro = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para cuota", on_delete=models.PROTECT, blank=True, null=True)
