@@ -475,9 +475,7 @@ def view_periodo(request):
                                 cantidadetalle = detallemodelo.count()
                                 cantidadetalleA = 0
                                 for detalle in detallemodelo:
-                                    if DetalleModeloEvaluativoA.objects.filter(status=True, modelo=modevalacademia, nombre=detalle.nombre,
-                                                                               notaminima=detalle.notaminima, notamaxima=detalle.notamaxima,
-                                                                               orden=detalle.orden).exists():
+                                    if DetalleModeloEvaluativoA.objects.filter(status=True, modelo=modevalacademia, nombre=detalle.nombre, notaminima=detalle.notaminima, notamaxima=detalle.notamaxima, orden=detalle.orden).exists():
                                         cantidadetalleA += 1
 
                                 if cantidadetalle == cantidadetalleA:
@@ -489,14 +487,11 @@ def view_periodo(request):
                                                                                    orden=detalle.orden)
                                         nuevodetalleA.save(request)
 
-                                if not DocenteA.objects.filter(status=True, persona=curso.docente.persona, fechaingreso=curso.docente.fechaingreso,
-                                                           activo=curso.docente.activo).exists():
+                                if not DocenteA.objects.filter(status=True, persona=curso.docente.persona, fechaingreso=curso.docente.fechaingreso, activo=curso.docente.activo).exists():
                                     nuevodocenteA = DocenteA(persona=curso.docente.persona, fechaingreso=curso.docente.fechaingreso, activo=curso.docente.activo)
                                     nuevodocenteA.save(request)
                                 else:
                                     nuevodocenteA = DocenteA.objects.filter(status=True, persona=curso.docente.persona, fechaingreso=curso.docente.fechaingreso, activo=curso.docente.activo).first()
-
-
 
                                 cursoacademia = CursoA(periodo=periodoacademia, modeloevaluativo=modevalacademia, nombre=curso.nombre,
                                                        estado=2, horasvirtual=curso.horasvirtual, minasistencia=curso.minasistencia,

@@ -68,6 +68,13 @@
                                     <td data-title="Nombre/ Cedula" class="text-center">
                                         <div class="d-flex flex-column justify-content-center">
                                             <h6 class="mb-0 text-xs">{{ fila }}</h6>
+                                            {% if fila.migrado %}
+                                                    <p class="text-xs text-secondary mb-0">
+                                                    <strong style="color: green">MIGRADO</strong></p><br>
+                                                {% else %}
+                                                    <p class="text-xs text-secondary mb-0">
+                                                    <strong style="color: red">NO MIGRADO</strong></p><br>
+                                                {% endif %}
                                         </div>
                                     </td>
                                     <td data-title="Publicado" class="text-center">
