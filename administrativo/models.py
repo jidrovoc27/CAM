@@ -319,7 +319,7 @@ class Curso(ModeloBase):
     planificacion = models.FileField(upload_to='planificacioncurso', verbose_name='Planificación', null=True, blank=True)
     fondoweb = models.ImageField(verbose_name="Fondo para página web", upload_to='fondoweb', null=True, blank=True)
     fondocursos = models.ImageField(verbose_name="Fondo para cursos", upload_to='fondocursos', null=True, blank=True)
-    # fondocertificado = models.ImageField(upload_to='fondocertificados', verbose_name='Fondo', null=True, blank=True)
+    migrado = models.BooleanField(default=False, blank=True, null=True)
     finalizarcurso = models.BooleanField(default=False, verbose_name='¿Curso terminado?', null=True, blank=True)
 
     class Meta:
@@ -360,6 +360,7 @@ class InscritoCurso(ModeloBase):
     alumno = models.ForeignKey(Alumno, on_delete=models.PROTECT, verbose_name=u"Alumno")
     curso = models.ForeignKey(Curso, on_delete=models.PROTECT, verbose_name=u"Curso")
     estado = models.IntegerField(default=2, choices=ESTADO_INSCRITO, blank=True, null=True, verbose_name=u'Modalidad DEL CURSO')
+    matriculado = models.BooleanField(default=False, blank=True, null=True)
 
     class Meta:
         verbose_name = "Inscrito Curso"

@@ -58,6 +58,8 @@ def view_finanzas(request):
                         abono.save(request)
                         nuevodetalle = DetalleFactura(factura=factura, pago=abono)
                         nuevodetalle.save(request)
+                        valorrecaudado  = ValorRecaudado(sesioncaja=sesioncaja,rubro=rubro, valor=Decimal(abonos[contador]))
+                        valorrecaudado.save(request)
                         diferencial = solo_2_decimales(Decimal(rubro.saldo) - Decimal(abonos[contador]), 2)
                         rubro.saldo = diferencial
                         totalpagos = Pago.objects.filter(rubro=rubro, status=True).aggregate(total=Sum('valorfinal'))
