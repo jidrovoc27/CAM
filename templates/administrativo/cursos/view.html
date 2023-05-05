@@ -69,17 +69,20 @@
                                         <div class="d-flex flex-column justify-content-center">
                                             <h6 class="mb-0 text-xs">{{ fila }}</h6>
                                             {% if fila.migrado %}
-                                                    <p class="text-xs text-secondary mb-0">
+                                                <p class="text-xs text-secondary mb-0">
                                                     <strong style="color: green">MIGRADO</strong></p><br>
-                                                {% else %}
-                                                    <p class="text-xs text-secondary mb-0">
+                                            {% else %}
+                                                <p class="text-xs text-secondary mb-0">
                                                     <strong style="color: red">NO MIGRADO</strong></p><br>
-                                                {% endif %}
+                                            {% endif %}
                                         </div>
                                     </td>
                                     <td data-title="Publicado" class="text-center">
-{#                                        <input type="checkbox" readonly {% if fila.publicarcurso %}checked{% endif %}>#}
-                                        <a>{% if fila.publicarcurso %}<li style="color: green" class="fa fa-check"{% else %}<li style="color: red" class="fa fa-close"{% endif %}></li></a>
+                                        {#                                        <input type="checkbox" readonly {% if fila.publicarcurso %}checked{% endif %}>#}
+                                        <a>{% if fila.publicarcurso %}
+                                            <li style="color: green" class="fa fa-check"{% else %}
+                                            <li style="color: red" class="fa fa-close"{% endif %}></li>
+                                        </a>
                                     </td>
                                     <td data-title="Docente" class="text-center">
                                         <span class="text-xs">{{ fila.docente }}</span>
@@ -113,6 +116,15 @@
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 </li>
+                                                {% if not idcursoacademia %}
+                                                    <li><a class="dropdown-item border-radius-md"
+                                                           href="?peticion=modeloevaluativo&id={{ fila.pk }}">Añadir modelo
+                                                        evaluativo</a>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                {% endif %}
                                                 {% if not fila.en_uso %}
                                                     <li><a class="dropdown-item border-radius-md text-danger"
                                                            href="javascript:;"

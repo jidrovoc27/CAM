@@ -261,6 +261,9 @@ class ModeloEvaluativo(ModeloBase):
         self.nombre = self.nombre.upper()
         super(ModeloEvaluativo, self).save(*args, **kwargs)
 
+    def tiene_cursos_vinculados(self):
+        return Curso.objects.filter(status=True, modeloevaluativo=self).exists()
+
 
 class DetalleModeloEvaluativo(ModeloBase):
     modelo = models.ForeignKey(ModeloEvaluativo, on_delete=models.PROTECT, verbose_name=u"Modelo")
