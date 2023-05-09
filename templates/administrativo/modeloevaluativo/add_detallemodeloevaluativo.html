@@ -1,12 +1,7 @@
 {% extends 'formularioBase.html' %}
 {% load static %}
 {% block head %}
-    <script>
-        var fila = 0;
-        {#$(function (){#}
-        {#    #}
-        {#})#}
-    </script>
+
 {% endblock %}
 {% block contenido_extra %}
 
@@ -17,13 +12,14 @@
 {% block class_extra_card_formulario %}col-lg-8 col-md-10{% endblock %}
 {% block inputs_extras %}
     <input type="hidden" name="peticion" value="{{ peticion }}">
-    <input type="hidden" name="id" value="{{ curso.id }}">
+    <input type="hidden" name="id" value="{{ modelo.id }}">
 {% endblock %}
 
 {% block news_inputs_form %}
+
 {% endblock %}
 {% block nombre_boton_submit %}Guardar{% endblock %}
-{% block location_href_destino %}/periodo/?peticion=alumnos&id={{ curso.id }}{% endblock %}
+{% block location_href_destino %}/modeloevaluativo/?peticion=detallemodelo&id={{ modelo.id }}{% endblock %}
 {% block botones_extras %}{% endblock %}
 
 {% block modals %}
@@ -49,7 +45,9 @@
         function mensajeDanger(mensaje) {
             Swal.fire('', mensaje, 'error')
         }
+
     </script>
+
 
 {% endblock %}
 

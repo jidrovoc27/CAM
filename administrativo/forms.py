@@ -248,6 +248,10 @@ class CursoForm(forms.Form):
         del self.fields['cuotas']
         del self.fields['tiporubrocuota']
 
+class VincularModeloEvaluativoForm(forms.Form):
+    modelo = forms.ModelChoiceField(label=u"Modelo evaluativo", required=True, queryset=ModeloEvaluativo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+
+
 
 class InscribirForm(forms.Form):
     alumno = forms.ModelChoiceField(label=u"Alumno", required=True, queryset=Alumno.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
@@ -257,6 +261,21 @@ class CajaForm(forms.Form):
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)',  }))
     descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
     activo = forms.BooleanField(label='Activo', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+
+
+class ModeloEvaluativoForm(forms.Form):
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',}))
+    notamaxima = forms.DecimalField(initial='0.00', label='Nota máxima', required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'onKeyPress': 'return solo_digitos(event)', }))
+    notaaprobar = forms.DecimalField(initial='0.00', label='Nota para aprobar', required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'onKeyPress': 'return solo_digitos(event)', }))
+    asistenciaaprobar = forms.DecimalField(initial='0.00', label='Asistencia para aprobar', required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'onKeyPress': 'return solo_digitos(event)', }))
+    observaciones = forms.CharField(label='Observaciones', required=False,widget=forms.Textarea(attrs={'class': 'form-control', }))
+
+class DetalleModeloEvaluativoForm(forms.Form):
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',}))
+    notaminima = forms.DecimalField(initial='0.00', label='Nota mínima', required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'onKeyPress': 'return solo_digitos(event)', }))
+    notamaxima = forms.DecimalField(initial='0.00', label='Nota máxima', required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'onKeyPress': 'return solo_digitos(event)', }))
+    orden = forms.DecimalField(initial='0', label='Orden', required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'onKeyPress': 'return solo_digitos(event)', }))
+
 
 class CargoForm(forms.Form):
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)',  }))

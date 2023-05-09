@@ -177,7 +177,7 @@ def view_alumno(request):
 
                 except Exception as ex:
                    transaction.set_rollback(True)
-                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'edit_alumno':
                 try:
@@ -201,7 +201,7 @@ def view_alumno(request):
 
                 except Exception as ex:
                     transaction.set_rollback(True)
-                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'eliminar_alumno':
                 try:

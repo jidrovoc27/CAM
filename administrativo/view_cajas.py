@@ -134,7 +134,7 @@ def view_cajas(request):
 
                 except Exception as ex:
                    transaction.set_rollback(True)
-                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'edit_caja':
                 try:
@@ -156,7 +156,7 @@ def view_cajas(request):
 
                 except Exception as ex:
                     transaction.set_rollback(True)
-                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'eliminar_caja':
                 try:

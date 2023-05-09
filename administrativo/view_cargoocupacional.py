@@ -115,7 +115,7 @@ def view_cargoocupacional(request):
 
                 except Exception as ex:
                    transaction.set_rollback(True)
-                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'edit_cargo':
                 try:
@@ -131,7 +131,7 @@ def view_cargoocupacional(request):
 
                 except Exception as ex:
                     transaction.set_rollback(True)
-                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'eliminar_cargo':
                 try:

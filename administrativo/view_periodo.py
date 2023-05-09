@@ -147,7 +147,7 @@ def view_periodo(request):
 
                 except Exception as ex:
                    transaction.set_rollback(True)
-                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'edit_periodo':
                 try:
@@ -168,7 +168,7 @@ def view_periodo(request):
 
                 except Exception as ex:
                     transaction.set_rollback(True)
-                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             elif peticion == 'add_curso':
                 try:
@@ -275,6 +275,18 @@ def view_periodo(request):
                             curso.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
+                except Exception as ex:
+                    pass
+
+            elif peticion == 'add_modeloevaluativo':
+                try:
+                    form = VincularModeloEvaluativoForm(request.POST)
+                    if form.is_valid():
+                        modelo = form.cleaned_data['modelo']
+                        asignar = Curso.objects.get(id=int(request.POST['id']))
+                        asignar.modeloevaluativo = modelo
+                        asignar.save(request)
+                        return JsonResponse({"respuesta": True, "mensaje": "Modelo asignado correctamente."})
                 except Exception as ex:
                     pass
 
@@ -502,6 +514,7 @@ def view_periodo(request):
                                                        idcursoadministrativo=curso)
                                 cursoacademia.save(request)
                                 curso.idcursoacademia = cursoacademia
+                                curso.migrado = True
                                 curso.save(request)
                                 inscritos = InscritoCurso.objects.filter(status=True, curso=curso, matriculado=False)
                                 nummatriculados = 0
@@ -771,6 +784,20 @@ def view_periodo(request):
                     form = CursoForm()
                     data['form'] = form
                     return render(request, "administrativo/cursos/add_curso.html", data)
+                except Exception as ex:
+                    transaction.set_rollback(True)
+                    pass
+
+            elif peticion == 'add_modeloevaluativo':
+                try:
+                    data['titulo'] = 'Agregar nuevo modelo a curso'
+                    data['titulo_formulario'] = 'Formulario de registro de modelo evaluativo a curso'
+                    data['periodo'] = Periodo.objects.get(id=int(request.GET['idperiodo']))
+                    data['curso'] = Curso.objects.get(id=int(request.GET['id']))
+                    data['peticion'] = 'add_modeloevaluativo'
+                    form = VincularModeloEvaluativoForm()
+                    data['form'] = form
+                    return render(request, "administrativo/cursos/add_modeloevaluativo.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass

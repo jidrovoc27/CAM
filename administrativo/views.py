@@ -209,7 +209,7 @@ def registrate(request):
                         return render(request, "registration/registrate.html", {'form': form})
                 except Exception as ex:
                     transaction.set_rollback(True)
-                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
         return JsonResponse({"respuesta": False, "mensaje": "No se ha encontrado respuesta."})
 
     else:

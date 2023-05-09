@@ -248,6 +248,7 @@ class ModeloEvaluativo(ModeloBase):
     asistenciaaprobar = models.FloatField(default=0, verbose_name=u'Asistencia para aprobar')
     observaciones = models.TextField(default='', max_length=200, verbose_name=u'Observaciones')
     activo = models.BooleanField(default=True, verbose_name=u"Activo")
+    finalizado = models.BooleanField(default=False, verbose_name=u"Finalizado")
 
     def __str__(self):
         return u'%s' % self.nombre
@@ -263,6 +264,9 @@ class ModeloEvaluativo(ModeloBase):
 
     def tiene_cursos_vinculados(self):
         return Curso.objects.filter(status=True, modeloevaluativo=self).exists()
+
+    def tiene_detalle_modelo(self):
+        return DetalleModeloEvaluativo.objects.filter(status=True, modelo=self).exists()
 
 
 class DetalleModeloEvaluativo(ModeloBase):

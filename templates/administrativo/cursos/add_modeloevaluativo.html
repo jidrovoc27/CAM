@@ -3,9 +3,6 @@
 {% block head %}
     <script>
         var fila = 0;
-        {#$(function (){#}
-        {#    #}
-        {#})#}
     </script>
 {% endblock %}
 {% block contenido_extra %}
@@ -23,7 +20,7 @@
 {% block news_inputs_form %}
 {% endblock %}
 {% block nombre_boton_submit %}Guardar{% endblock %}
-{% block location_href_destino %}/periodo/?peticion=alumnos&id={{ curso.id }}{% endblock %}
+{% block location_href_destino %}/periodo/?peticion=cursos&id={{ periodo.id }}{% endblock %}
 {% block botones_extras %}{% endblock %}
 
 {% block modals %}
@@ -49,7 +46,9 @@
         function mensajeDanger(mensaje) {
             Swal.fire('', mensaje, 'error')
         }
+
     </script>
+
 
 {% endblock %}
 

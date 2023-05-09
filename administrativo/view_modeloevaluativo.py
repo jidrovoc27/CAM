@@ -36,26 +36,29 @@ def view_modeloevaluativo(request):
         if 'peticion' in request.POST:
             peticion = request.POST['peticion']
 
-            if peticion == 'add_caja':
+            if peticion == 'add_modeloevaluativo':
                 try:
-                    form = CajaForm(request.POST, request.FILES)
+                    form = ModeloEvaluativoForm(request.POST)
                     if form.is_valid():
 
                         campos_repetidos = list()
 
-                        if Caja.objects.values('id').filter(nombre=form.cleaned_data['nombre'], persona=form.cleaned_data['encargado'], status=True).exists():
+                        if ModeloEvaluativo.objects.values('id').filter(nombre=form.cleaned_data['nombre'], status=True).exists():
                             campos_repetidos.append(form['nombre'].name)
                         if campos_repetidos:
                             return JsonResponse(
-                                {"respuesta": False, "mensaje": "registro ya existe.", 'repetidos': campos_repetidos})
+                                {"respuesta": False, "mensaje": "Registro ya existe.", 'repetidos': campos_repetidos})
 
                         nombre = form.cleaned_data['nombre']
-                        descripcion = form.cleaned_data['descripcion']
-                        activo = form.cleaned_data['activo']
-                        persona = form.cleaned_data['encargado']
+                        notamaxima = form.cleaned_data['notamaxima']
+                        notaaprobar = form.cleaned_data['notaaprobar']
+                        asistenciaaprobar = form.cleaned_data['asistenciaaprobar']
+                        observaciones = form.cleaned_data['observaciones']
 
-                        newcaja = Caja(persona=persona, nombre=nombre, descripcion=descripcion, activo=activo)
-                        newcaja.save(request)
+                        newmodelo = ModeloEvaluativo(nombre=nombre, fecha=datetime.now().date(), notamaxima=notamaxima,
+                                                     notaaprobar=notaaprobar, asistenciaaprobar=asistenciaaprobar,
+                                                     observaciones=observaciones)
+                        newmodelo.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
                     else:
@@ -64,29 +67,68 @@ def view_modeloevaluativo(request):
 
                 except Exception as ex:
                    transaction.set_rollback(True)
-                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
+
+            if peticion == 'add_detallemodeloevaluativo':
+                try:
+                    form = DetalleModeloEvaluativoForm(request.POST)
+                    if form.is_valid():
+
+                        campos_repetidos = list()
+
+                        if DetalleModeloEvaluativo.objects.values('id').filter(nombre=form.cleaned_data['nombre'], status=True).exists():
+                            campos_repetidos.append(form['nombre'].name)
+                        if campos_repetidos:
+                            return JsonResponse(
+                                {"respuesta": False, "mensaje": "Registro ya existe.", 'repetidos': campos_repetidos})
+
+                        nombre = form.cleaned_data['nombre']
+                        notaminima = form.cleaned_data['notaminima']
+                        notamaxima = form.cleaned_data['notamaxima']
+                        orden = form.cleaned_data['orden']
+
+                        newdetallemodelo = DetalleModeloEvaluativo(modelo_id=int(request.POST['id']), nombre=nombre, notaminima=notaminima, notamaxima=notamaxima,
+                                                     orden=orden)
+                        newdetallemodelo.save(request)
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
+                    else:
+                       return JsonResponse(  {"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+
+                except Exception as ex:
+                   transaction.set_rollback(True)
+                   return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
+
+            if peticion == 'finalizar_modelo':
+                try:
+                    id = int(request.POST['id'])
+                    modelo = ModeloEvaluativo.objects.get(id=id)
+                    modelo.finalizado = True
+                    return JsonResponse({"respuesta": True, "mensaje": "Modelo finalizado correctamente"})
+                except Exception as ex:
+                    transaction.set_rollback(True)
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'edit_caja':
                 try:
-                    form = CajaForm(request.POST, request.FILES)
+                    form = ModeloEvaluativoForm(request.POST)
                     if form.is_valid():
 
-                        caja = Caja.objects.get(pk=request.POST['id'])
-                        caja.nombre =request.POST['nombre']
-                        caja.descripcion=request.POST['descripcion']
-                        caja.persona_id=request.POST['encargado']
-                        if 'activo' in request.POST:
-                            caja.activo = True
-                        else:
-                            caja.activo = False
-                        caja.save(request)
+                        modelo = ModeloEvaluativo.objects.get(pk=request.POST['id'])
+                        modelo.nombre =request.POST['nombre']
+                        modelo.notamaxima =request.POST['notamaxima']
+                        modelo.notaaprobar =request.POST['notaaprobar']
+                        modelo.asistenciaaprobar =request.POST['asistenciaaprobar']
+                        modelo.observaciones=request.POST['observaciones']
+                        modelo.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro modificado correctamente."})
 
 
                 except Exception as ex:
                     transaction.set_rollback(True)
-                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente mas tarde."})
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
 
             if peticion == 'eliminar_caja':
                 try:
@@ -103,33 +145,63 @@ def view_modeloevaluativo(request):
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']
-            if peticion == 'add_caja':
+            if peticion == 'add_modeloevaluativo':
                 try:
-                    data['titulo'] = 'Agregar nueva caja'
-                    data['titulo_formulario'] = 'Formulario de registro de cajas'
-                    data['peticion'] = 'add_caja'
-                    form = CajaForm()
+                    data['titulo'] = 'Agregar nuevo modelo evaluativo'
+                    data['titulo_formulario'] = 'Formulario de registro de modelo evaluativo'
+                    data['peticion'] = 'add_modeloevaluativo'
+                    form = ModeloEvaluativoForm()
                     data['form'] = form
-                    return render(request, "administrativo/caja/add_caja.html", data)
+                    return render(request, "administrativo/modeloevaluativo/add_modeloevaluativo.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
                     pass
 
-            if peticion == 'edit_caja':
+            if peticion == 'add_detallemodeloevaluativo':
                 try:
-                    data['titulo'] = 'Editar caja'
-                    data['titulo_formulario'] = 'Edición de caja'
-                    data['peticion'] = 'edit_caja'
-                    data['caja'] = caja = Caja.objects.get(pk=request.GET['id'])
-                    form = CajaForm(initial={
-                        'nombre':caja.nombre,
-                        'descripcion': caja.descripcion,
-                        'encargado': caja.persona,
-                        'activo': caja.activo})
+                    data['titulo'] = 'Agregar nuevo detalle al modelo evaluativo'
+                    data['titulo_formulario'] = 'Formulario de registro de detalle al modelo evaluativo'
+                    data['peticion'] = 'add_detallemodeloevaluativo'
+                    data['modelo'] = ModeloEvaluativo.objects.get(id=int(request.GET['id']))
+                    form = DetalleModeloEvaluativoForm()
                     data['form'] = form
-                    return render(request, "administrativo/caja/edit_caja.html", data)
+                    return render(request, "administrativo/modeloevaluativo/add_detallemodeloevaluativo.html", data)
+                except Exception as ex:
+                    transaction.set_rollback(True)
+                    pass
+
+            if peticion == 'edit_modeloevaluativo':
+                try:
+                    data['titulo'] = 'Editar modelo evaluativo'
+                    data['titulo_formulario'] = 'Edición de modelo evaluativo'
+                    data['peticion'] = 'edit_modeloevaluativo'
+                    data['modelo'] = modelo = ModeloEvaluativo.objects.get(pk=request.GET['id'])
+                    form = ModeloEvaluativoForm(initial={
+                        'nombre':modelo.nombre,
+                        'notamaxima': modelo.notamaxima,
+                        'notaaprobar': modelo.notaaprobar,
+                        'asistenciaaprobar': modelo.asistenciaaprobar,
+                        'observaciones': modelo.observaciones,}
+                    )
+                    data['form'] = form
+                    return render(request, "administrativo/modeloevaluativo/edit_modeloevaluativo.html", data)
                 except Exception as ex:
                     pass
+
+            if peticion == 'detallemodelo':
+                try:
+                    data['titulo'] = 'Detalle del modelo evaluativo'
+                    data['titulo_tabla'] = 'Detalle del modelo evaluativo'
+                    data['modelo'] = ModeloEvaluativo.objects.get(id=int(request.GET['id']))
+                    data['persona_logeado'] = persona_logeado
+                    lista = DetalleModeloEvaluativo.objects.filter(status=True)
+                    paginator = Paginator(lista, 15)
+                    page_number = request.GET.get('page')
+                    page_obj = paginator.get_page(page_number)
+                    data['page_obj'] = page_obj
+                    return render(request, "administrativo/modeloevaluativo/detallemodelo.html", data)
+                except Exception as ex:
+                    print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
         else:
             try:

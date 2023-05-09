@@ -116,14 +116,16 @@
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 </li>
-                                                {% if not idcursoacademia %}
-                                                    <li><a class="dropdown-item border-radius-md"
-                                                           href="?peticion=modeloevaluativo&id={{ fila.pk }}">Añadir modelo
-                                                        evaluativo</a>
-                                                    </li>
-                                                    <li>
-                                                        <hr class="dropdown-divider">
-                                                    </li>
+                                                {% if not fila.idcursoacademia %}
+                                                    {% if not fila.modeloevaluativo %}
+                                                        <li><a class="dropdown-item border-radius-md"
+                                                               href="?peticion=add_modeloevaluativo&id={{ fila.pk }}&idperiodo={{ periodo.id }}">Añadir modelo
+                                                            evaluativo</a>
+                                                        </li>
+                                                        <li>
+                                                            <hr class="dropdown-divider">
+                                                        </li>
+                                                    {% endif %}
                                                 {% endif %}
                                                 {% if not fila.en_uso %}
                                                     <li><a class="dropdown-item border-radius-md text-danger"
