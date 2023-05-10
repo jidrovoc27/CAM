@@ -92,6 +92,17 @@ class Persona(ModeloBase):
             valorpago = total['total']
         return solo_2_decimales(valorpago, 2)
 
+    def calcular_porcentaje(self):
+        total = Rubro.objects.filter(persona_id=self.id, status=True).aggregate(total=Sum('valor'))
+        rubrototal = total['total'] if total['total'] else 0
+        ciento = 100
+        resultado = solo_2_decimales(rubrototal / ciento, 2)
+        lista_rubros = Rubro.objects.filter(persona_id=self.id, status=True).values_list('id')
+        total = Pago.objects.filter(rubro_id__in=lista_rubros, status=True).aggregate(total=Sum('valorfinal'))
+        totalpagado = total['total'] if total['total'] else 0
+        valorporcentaje = solo_2_decimales(totalpagado / resultado, 2)
+        return valorporcentaje
+
     def verificar_estadocuenta(self):
         lista_rubros = Rubro.objects.filter(persona=self, cancelado=False, status=True)
         tienevalorapagar = False
@@ -624,6 +635,10 @@ class SesionCaja(ModeloBase):
 
     def estado_sesioncaja(self):
         return 'success' if self.activo else 'danger'
+
+    def totalfacturado(self):
+        total = Factura.objects.filter(sesioncaja=self, status=True).aggregate(total=Sum('total'))
+        return total['total'] if total['total'] else 0
 
 class CierreSesionCaja(ModeloBase):
     sesioncaja = models.ForeignKey(SesionCaja, on_delete=models.PROTECT, verbose_name=u'Sesión caja', blank=True, null=True)

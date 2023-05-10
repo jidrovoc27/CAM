@@ -202,7 +202,7 @@ def view_sesioncaja(request):
                         sesioncaja = SesionCaja.objects.get(id=int(request.POST['id']))
 
                         totalfacturado = Pago.objects.filter(sesioncaja=sesioncaja, status=True).aggregate(total=Sum('valorfinal'))
-                        totalfacturado = solo_2_decimales(Decimal(totalfacturado), 2) if totalfacturado['total'] else 0
+                        totalfacturado = solo_2_decimales(Decimal(totalfacturado['total']), 2) if totalfacturado['total'] else 0
 
                         cierresesioncaja = CierreSesionCaja(sesioncaja=sesioncaja,
                                                 fechacierre=datetime.now().date(),

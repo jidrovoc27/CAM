@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load adiciones %}
+{#{% load humanize %}#}
+{% block contenido %}
+    <div class="col-lg-9 col-md-8 col-12">
+        <!-- Card -->
+        <div class="card mb-4">
+            <!-- Card header -->
+            <div class="card-header">
+                <h3 class="mb-0">{{ cursoA }}</h3>
+            </div>
+            <!-- Card body -->
+            <div class="card-body">
+                <!-- Form -->
+                <form class="row">
+                    <div class="col-lg-3 col-md-5 col-12">
+                        <select class="selectpicker" data-width="100%">
+                            <option value="">Date Created</option>
+                            <option value="Newest">Newest</option>
+                            <option value="High Rated">High Rated</option>
+                            <option value="Law Rated">Law Rated</option>
+                            <option value="High Earned">High Earned</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <!-- Table -->
+            <div class="table-responsive border-0 overflow-y-hidden">
+                <table class="table mb-0 text-nowrap">
+                    <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="border-0">Item</th>
+                        <th scope="col" class="border-0 text-center">Calificación</th>
+                        <th scope="col" class="border-0 text-center">Rango</th>
+                        {#                                <th scope="col" class="border-0"></th>#}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for detalle in cursoA.detallecalificacion %}
+                        <tr>
+                            <td class="border-top-0">
+                                <div class="ms-lg-3 mt-2 mt-lg-0">
+                                    <h4 class="mb-1 h5">
+                                        <a href="?peticion=detallecalificacion&id={{ micurso.id }}"
+                                           class="text-inherit">
+                                            {{ detalle.nombre }}
+                                        </a>
+                                    </h4>
+                                </div>
+                            </td>
+                            <td class="border-top-0 text-center">
+
+                            </td>
+                            <td class="border-top-0 text-center">
+
+                            </td>
+                        </tr>
+                        {% for detalleactividades in detalle.detalleactividades %}
+                            <tr>
+                                <td class="border-top-0" style="padding-left: 55px">
+                                    <div class="ms-lg-3 mt-2 mt-lg-0">
+                                        <h4 class="mb-1 h5">
+                                            <a href="?peticion=actividad&id={{ detalleactividades.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"
+                                               class="text-inherit">
+                                                {{ detalleactividades.nombre }}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                </td>
+                                <td class="border-top-0 text-center">
+                                    {% with tienenota=detalleactividades|args:inscrito.id|call:'nota_calificada' %}
+                                        {{ tienenota }}
+                                    {% endwith %}
+                                </td>
+                                <td class="border-top-0 text-center">
+                                    {{ detalleactividades.minnota }} - {{ detalleactividades.maxnota }}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td class="border-top-0" style="padding-left: 55px">
+                                    <div class="ms-lg-3 mt-2 mt-lg-0">
+                                        <h4 class="mb-1 h5">
+                                            <a
+                                                    class="text-inherit">
+                                                Sin actividades
+                                            </a>
+                                        </h4>
+                                    </div>
+                                </td>
+                                <td class="border-top-0 text-center">
+                                    --
+                                </td>
+                                <td class="border-top-0 text-center">
+                                    --
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td class="border-top-0" style="padding-left: 55px">
+                                <div class="ms-lg-3 mt-2 mt-lg-0">
+                                    <h4 class="mb-1 h5">
+                                        <a href="?peticion=detallecalificacion&id={{ micurso.id }}"
+                                           class="text-inherit">
+                                            Total {{ detalle.nombre }}
+                                        </a>
+                                    </h4>
+                                </div>
+                            </td>
+                            <td class="border-top-0 text-center">
+                                {{ detalle.total_actividad }}
+                            </td>
+                            <td class="border-top-0 text-center">
+                                0 - {{ detalle.notamaxima }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

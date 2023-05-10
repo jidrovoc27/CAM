@@ -112,14 +112,14 @@
                                                            onclick="eliminar_registro('eliminar_modelo','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
                                                     </li>
                                                 {% endif %}
-                                                {% if fila.finalizado %}
+{#                                                {% if fila.finalizado %}#}
                                                     <li>
                                                         <hr class="dropdown-divider">
                                                     </li>
                                                     <li><a class="dropdown-item border-radius-md"
                                                            href="?peticion=detallemodelo&id={{ fila.pk }}">Adicionar detalle</a>
                                                     </li>
-                                                {% endif %}
+{#                                                {% endif %}#}
                                             </ul>
                                         </div>
                                     </td>

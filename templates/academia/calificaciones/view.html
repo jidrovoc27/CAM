@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contenido %}
+    <div class="col-lg-9 col-md-8 col-12">
+                <!-- Card -->
+                <div class="card mb-4">
+                    <!-- Card header -->
+                    <div class="card-header">
+                        <h3 class="mb-0">Cursos que estoy tomando</h3>
+                    </div>
+                    <!-- Card body -->
+                    <div class="card-body">
+                        <!-- Form -->
+                        <form class="row">
+                            <div class="col-lg-3 col-md-5 col-12">
+                                <select class="selectpicker" data-width="100%">
+                                    <option value="">Date Created</option>
+                                    <option value="Newest">Newest</option>
+                                    <option value="High Rated">High Rated</option>
+                                    <option value="Law Rated">Law Rated</option>
+                                    <option value="High Earned">High Earned</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Table -->
+                    <div class="table-responsive border-0 overflow-y-hidden">
+                        <table class="table mb-0 text-nowrap">
+                            <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="border-0">Curso</th>
+                                <th scope="col" class="border-0 text-center">Calificación</th>
+{#                                <th scope="col" class="border-0"></th>#}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for micurso in miscursos %}
+                                <tr>
+                                <td class="border-top-0">
+                                    <div class="d-lg-flex">
+                                        <div>
+                                            <a href="#">
+                                                <img src="/media/{{ micurso.fondocursos }}" alt=""
+                                                     class="rounded img-4by3-lg"/></a>
+                                        </div>
+                                        <div class="ms-lg-3 mt-2 mt-lg-0">
+                                            <h4 class="mb-1 h5">
+                                                <a href="?peticion=detallecalificacion&id={{ micurso.id }}" class="text-inherit">
+                                                    {{ micurso }}
+                                                </a>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="border-top-0 text-center">
+                                    100
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+{% endblock %}

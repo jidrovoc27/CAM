@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect
 from administrativo.models import *
 from administrativo.funciones import *
 from administrativo.forms import *
+from academia.forms import *
 from CAM import settings
 
 # Create your views here.
@@ -72,6 +73,96 @@ def dashboard(request):
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']
 
+            if peticion == 'misfinanzas':
+                try:
+                    idpersona = int(request.GET['id'])
+                    data['persona'] = persona = Persona.objects.get(id=idpersona)
+                    data['alumno'] = persona
+                    data['rubros'] = Rubro.objects.filter(status=True, persona=persona)
+                    data['is_finanza'] = True
+                    return render(request, "academia/misfinanzas/view.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'calificaciones':
+                try:
+                    idpersona = int(request.GET['id'])
+                    data['alumno'] = alumno = Persona.objects.get(id=idpersona)
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True, inscrito=alumno).order_by('curso_id').distinct('curso_id').values_list('curso_id')
+                    data['miscursos'] = CursoA.objects.filter(status=True, id__in=inscrito)
+                    data['is_calificaciones'] = True
+                    return render(request, "academia/calificaciones/view.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'detallecalificacion':
+                try:
+                    idcurso = int(request.GET['id'])
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['cursoA'] = curso = CursoA.objects.get(status=True, id=idcurso)
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.get(status=True, curso=curso, inscrito=alumno)
+                    data['is_calificaciones'] = True
+                    return render(request, "academia/calificaciones/detallecalificacion.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'actividad':
+                try:
+                    idactividad = int(request.GET['id'])
+                    fechaactual = datetime.now().date()
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=idactividad)
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
+                    data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['curso']))
+                    nota = NotaInscritoActividadA.objects.filter(status=True, inscrito=inscrito, actividad=actividad)
+                    if nota:
+                        data['nota'] = nota.first()
+                    else:
+                        data['nota'] = False
+                    data['tiemporestante'] = 'Fecha de entrega ya pasó'
+                    if actividad.fechamaximasubida > fechaactual:
+                        fecharestante = actividad.fechamaximasubida - fechaactual
+                        numerodias = fecharestante.days
+                        numerosegundos = fecharestante.seconds
+                        numerohoras = numerosegundos // 3600
+                        data['tiemporestante'] = str(numerodias) + " días " + str(numerohoras) + " horas"
+                    if actividad.fechamaximasubida == fechaactual:
+                        fecharestante = actividad.fechamaximasubida - fechaactual
+                        numerodias = fecharestante.days
+                        numerosegundos = fecharestante.seconds
+                        numerohoras = numerosegundos // 3600
+                        data['puedesubirtarea'] = False
+                        if actividad.horalimite.hour >= datetime.now().hour:
+                            horalimite = actividad.horalimite.hour - datetime.now().hour
+                        else:
+                            horalimite = 0
+                        if horalimite > 0:
+                            data['puedesubirtarea'] = True
+                            data['tiemporestante'] = str(numerodias) + " días " + str(horalimite) + " horas"
+                        else:
+                            data['puedesubirtarea'] = True if numerohoras > 0 else False
+                            data['tiemporestante'] = str(numerodias) + " días " + str(numerohoras) + " horas"
+                    data['is_calificaciones'] = True
+                    return render(request, "academia/calificaciones/actividad.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'add_tarea':
+                try:
+                    data['titulo'] = 'Agregar entrega'
+                    data['titulo_formulario'] = 'Adicionar entrega de la tarea'
+                    data['peticion'] = 'add_tarea'
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
+                    data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['curso']))
+                    form = AgregarEntregaForm()
+                    data['form'] = form
+                    data['is_calificaciones'] = True
+                    return render(request, "academia/calificaciones/add_tarea.html", data)
+                except Exception as ex:
+                    pass
+
         else:
             try:
                 data['titulo'] = 'Menú principal'
@@ -80,7 +171,10 @@ def dashboard(request):
                 if not 'CAM' == persona_logeado:
                     mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado, is_alumno=True)
                     data['mis_perfiles'] = mis_perfiles
-                    # if mis_perfiles:
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True, inscrito=alumno).order_by('curso_id').distinct('curso_id').values_list('curso_id')
+                    data['miscursos'] = CursoA.objects.filter(status=True, id__in=inscrito)
+                    data['is_cursos'] = True
                 data['persona_logeado'] = persona_logeado
                 return render(request, "academia/alumno/view.html", data)
 

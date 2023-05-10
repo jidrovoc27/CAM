@@ -38,6 +38,8 @@
 
     <!-- Theme CSS -->
     <link rel="stylesheet" href="{% static 'css/theme.min.css' %}">
+    {% block estilos %}
+    {% endblock %}
     <title>CAM</title>
 </head>
 
@@ -420,13 +422,13 @@
                                             class="fe fe-home nav-icon"></i>Inicio</a>
                                 </li>
                                 <!-- Nav item -->
-                                <li class="nav-item active">
-                                    <a class="nav-link" href="instructor-courses.html"><i
+                                <li class="nav-item {% if is_cursos %}active{% endif %}">
+                                    <a class="nav-link" href="/loginacademia/inicio/"><i
                                             class="fe fe-book nav-icon"></i>Mis cursos</a>
                                 </li>
                                 <!-- Nav item -->
-                                <li class="nav-item">
-                                    <a class="nav-link" href="instructor-reviews.html"><i
+                                <li class="nav-item {% if is_calificaciones %}active{% endif %}">
+                                    <a class="nav-link" href="?peticion=calificaciones&id={{ alumno.id }}"><i
                                             class="fe fe-star nav-icon"></i>Calificaciones</a>
                                 </li>
                                 <!-- Nav item -->
@@ -434,8 +436,8 @@
                                     <a class="nav-link" href="instructor-earning.html"><i
                                             class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="instructor-payouts.html"><i
+                                <li class="nav-item {% if is_finanza %}active{% endif %}">
+                                    <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i
                                             class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
                                 </li>
                             </ul>

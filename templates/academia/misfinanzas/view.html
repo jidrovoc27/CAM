@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block estilos %}
+{% endblock %}
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.png' %}">
+<link href="{% static 'vendor/jqvmap/css/jqvmap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'vendor/chartist/css/chartist.min.css' %}">
+<link href="{% static 'vendor/bootstrap-select/dist/css/bootstrap-select.min.css' %}" rel="stylesheet">
+<link href="{% static 'css/style.css' %}" rel="stylesheet">
+{% block contenido %}
+    <div class="col-lg-9 col-md-8 col-12">
+        <div class="content-body">
+            <!-- row -->
+            <div class="container-fluid">
+                <div class="form-head mb-4">
+                    <h2 class="text-black font-w600 mb-0">Mis finanzas</h2>
+                </div>
+                <div class="row">
+                    <div class="col-xl-9 col-xxl-12">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="card stacked-2">
+                                    <div class="card-header flex-wrap border-0 pb-0 align-items-end">
+                                        <div class="d-flex align-items-center mb-3 me-3">
+                                            <svg class="me-3" width="68" height="68" viewBox="0 0 68 68" fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M59.4999 31.688V19.8333C59.4999 19.0818 59.2014 18.3612 58.6701 17.8298C58.1387 17.2985 57.418 17 56.6666 17H11.3333C10.5818 17 9.86114 16.7014 9.32978 16.1701C8.79843 15.6387 8.49992 14.9181 8.49992 14.1666C8.49992 13.4152 8.79843 12.6945 9.32978 12.1632C9.86114 11.6318 10.5818 11.3333 11.3333 11.3333H56.6666C57.418 11.3333 58.1387 11.0348 58.6701 10.5034C59.2014 9.97208 59.4999 9.25141 59.4999 8.49996C59.4999 7.74851 59.2014 7.02784 58.6701 6.49649C58.1387 5.96514 57.418 5.66663 56.6666 5.66663H11.3333C9.07891 5.66663 6.9169 6.56216 5.32284 8.15622C3.72878 9.75028 2.83325 11.9123 2.83325 14.1666V53.8333C2.83325 56.0876 3.72878 58.2496 5.32284 59.8437C6.9169 61.4378 9.07891 62.3333 11.3333 62.3333H56.6666C57.418 62.3333 58.1387 62.0348 58.6701 61.5034C59.2014 60.9721 59.4999 60.2514 59.4999 59.5V47.6453C61.1561 47.0683 62.5917 45.9902 63.6076 44.5605C64.6235 43.1308 65.1693 41.4205 65.1693 39.6666C65.1693 37.9128 64.6235 36.2024 63.6076 34.7727C62.5917 33.3431 61.1561 32.265 59.4999 31.688ZM53.8333 56.6666H11.3333C10.5818 56.6666 9.86114 56.3681 9.32978 55.8368C8.79843 55.3054 8.49992 54.5847 8.49992 53.8333V22.1453C9.40731 22.4809 10.3658 22.6572 11.3333 22.6666H53.8333V31.1666H45.3333C43.0789 31.1666 40.9169 32.0622 39.3228 33.6562C37.7288 35.2503 36.8333 37.4123 36.8333 39.6666C36.8333 41.921 37.7288 44.083 39.3228 45.677C40.9169 47.2711 43.0789 48.1666 45.3333 48.1666H53.8333V56.6666ZM56.6666 42.5H45.3333C44.5818 42.5 43.8611 42.2015 43.3298 41.6701C42.7984 41.1387 42.4999 40.4181 42.4999 39.6666C42.4999 38.9152 42.7984 38.1945 43.3298 37.6632C43.8611 37.1318 44.5818 36.8333 45.3333 36.8333H56.6666C57.418 36.8333 58.1387 37.1318 58.6701 37.6632C59.2014 38.1945 59.4999 38.9152 59.4999 39.6666C59.4999 40.4181 59.2014 41.1387 58.6701 41.6701C58.1387 42.2015 57.418 42.5 56.6666 42.5Z"
+                                                      fill="#1EAAE7"/>
+                                            </svg>
+                                            <div class="me-auto">
+                                                <h5 class="fs-20 text-black font-w600">Total rubros</h5>
+                                                <span class="text-num text-black font-w600">${{ persona.totalrubros }}</span>
+                                            </div>
+                                            <div class="me-auto">
+                                                <h5 class="fs-20 text-black font-w600">Total pagado</h5>
+                                                <span class="text-num text-black font-w600">${{ persona.totalpagos }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="progress mb-4" style="height:18px;">
+                                            <div class="progress-bar bg-inverse progress-animated" style="width:
+                                                    {% if persona.calcular_porcentaje > 0 %}{{ persona.calcular_porcentaje }}{% else %}0{% endif %}%; height:18px;"
+                                                 role="progressbar">
+                                                <span class="sr-only">{{ persona.calcular_porcentaje }}% Pagado</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-header d-block d-sm-flex border-0">
+                                        <div>
+                                            <h4 class="fs-20 text-black">Rubros</h4>
+                                            <p class="mb-0 fs-13">Rubros generados</p>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive border-0 overflow-y-hidden">
+                                        <table class="table mb-0 text-nowrap">
+                                            <thead class="table-light">
+                                            <tr>
+                                                <th scope="col" class="border-0">Nombre</th>
+                                                <th scope="col" class="border-0">Fecha</th>
+                                                <th scope="col" class="border-0">Valor</th>
+                                                <th scope="col" class="border-0">Saldo</th>
+                                                <th scope="col" class="border-0">Cancelado</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for rubro in rubros %}
+                                                <tr>
+                                                    <td class="border-top-0">
+                                                        {{ rubro.nombre }}
+                                                    </td>
+                                                    <td class="border-top-0">{{ rubro.fecha|date:"d-m-Y" }}</td>
+                                                    <td class="border-top-0">
+                                                        {{ rubro.valor }}
+                                                    </td>
+                                                    <td class="border-top-0">
+                                                        {{ rubro.saldo }}
+                                                    </td>
+                                                    <td class="text-muted border-top-0 text-center">
+                                                        {% if rubro.cancelado %}
+                                                            Si
+                                                        {% else %}
+                                                            No
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-xxl-12">
+                        <div class="row">
+                            <div class="col-xl-12 col-xxl-6 col-sm-6">
+                                <div class="card bg-primary">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center">
+											<span class="bg-white rounded-circle p-3 me-4">
+												<svg width="28" height="28" viewBox="0 0 28 28" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+													<g opacity="0.98" clip-path="">
+													<path d="M9.77812 2.0125C10.1062 2.69062 9.81641 3.51094 9.13828 3.83906C7.25156 4.74688 5.65469 6.15781 4.51719 7.92422C3.35234 9.73437 2.73438 11.8344 2.73438 14C2.73438 20.2125 7.7875 25.2656 14 25.2656C20.2125 25.2656 25.2656 20.2125 25.2656 14C25.2656 11.8344 24.6477 9.73437 23.4883 7.91875C22.3563 6.15234 20.7539 4.74141 18.8672 3.83359C18.1891 3.50547 17.8992 2.69063 18.2273 2.00703C18.5555 1.32891 19.3703 1.03906 20.0539 1.36719C22.4 2.49375 24.3852 4.24375 25.7906 6.44219C27.2344 8.69531 28 11.3094 28 14C28 17.7406 26.5453 21.257 23.8984 23.8984C21.257 26.5453 17.7406 28 14 28C10.2594 28 6.74297 26.5453 4.10156 23.8984C1.45469 21.2516 1.22342e-07 17.7406 1.66948e-07 14C1.99034e-07 11.3094 0.765625 8.69531 2.21484 6.44219C3.62578 4.24922 5.61094 2.49375 7.95156 1.36719C8.63516 1.04453 9.45 1.3289 9.77812 2.0125Z"
+                                                          fill="#1EAAE7"/>
+													<path d="M8.67896 13.2726C8.41099 13.0047 8.27974 12.6547 8.27974 12.3047C8.27974 11.9547 8.41099 11.6047 8.67896 11.3367L12.1188 7.89685C12.6219 7.39373 13.2891 7.12029 13.9946 7.12029C14.7 7.12029 15.3727 7.3992 15.8704 7.89685L19.3102 11.3367C19.8461 11.8726 19.8461 12.7367 19.3102 13.2726C18.7743 13.8086 17.9102 13.8086 17.3743 13.2726L15.3563 11.2547L15.3563 19.0258C15.3563 19.7804 14.7438 20.3929 13.9891 20.3929C13.2344 20.3929 12.6219 19.7804 12.6219 19.0258L12.6219 11.2492L10.604 13.2672C10.079 13.8031 9.21489 13.8031 8.67896 13.2726Z"
+                                                          fill="#1EAAE7"/>
+													</g>
+													<defs>
+													<clipPath id="clip11">
+													<rect width="28" height="28" fill="white"
+                                                          transform="matrix(1.19249e-08 -1 -1 -1.19249e-08 28 28)"/>
+													</clipPath>
+													</defs>
+												</svg>
+											</span>
+                                            <span class="fs-20 text-white">Pagar </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--**********************************
+        Content body end
+    ***********************************-->
+
+    <script src="{% static 'vendor/global/global.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
+    <script src="{% static 'vendor/chart.js/Chart.bundle.min.js' %}"></script>
+    <script src="{% static 'js/custom.min.js' %}"></script>
+    <script src="{% static 'js/deznav-init.js' %}"></script>
+    <script src="{% static 'js/demo.js' %}"></script>
+
+
+    <!-- Chart piety plugin files -->
+    <script src="{% static 'vendor/peity/jquery.peity.min.js' %}"></script>
+
+    <!-- Apex Chart -->
+    <script src="{% static 'vendor/apexchart/apexchart.js' %}"></script>
+
+    <!-- Dashboard 1 -->
+    <script src="{% static 'js/dashboard/my-wallet.js' %}"></script>
+
+{% endblock %}

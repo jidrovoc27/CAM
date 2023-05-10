@@ -474,23 +474,23 @@ def view_periodo(request):
                             detallemodelo = DetalleModeloEvaluativo.objects.filter(status=True, modelo=curso.modeloevaluativo)
                             if detallemodelo.exists():
                                 modeloevaluativo = curso.modeloevaluativo
-                                if not ModeloEvaluativoA.objects.filter(status=True, nombre=modeloevaluativo.nombre, fecha=modeloevaluativo.fecha, notamaxima=modeloevaluativo.notamaxima, notaaprobar=modeloevaluativo.notaaprobar, asistenciaaprobar=modeloevaluativo.asistenciaaprobar, observaciones=modeloevaluativo.observaciones ).exists():
-                                    modevalacademia = ModeloEvaluativoA(nombre=modeloevaluativo.nombre, fecha=modeloevaluativo.fecha, notamaxima=modeloevaluativo.notamaxima, notaaprobar=modeloevaluativo.notaaprobar, asistenciaaprobar=modeloevaluativo.asistenciaaprobar, observaciones=modeloevaluativo.observaciones )
-                                    modevalacademia.save(request)
-                                else:
-                                    modevalacademia = ModeloEvaluativoA.objects.filter(status=True, nombre=modeloevaluativo.nombre,
-                                                                        fecha=modeloevaluativo.fecha,
-                                                                        notamaxima=modeloevaluativo.notamaxima,
-                                                                        notaaprobar=modeloevaluativo.notaaprobar,
-                                                                        asistenciaaprobar=modeloevaluativo.asistenciaaprobar,
-                                                                        observaciones=modeloevaluativo.observaciones).last()
+                                # if not ModeloEvaluativoA.objects.filter(status=True, nombre=modeloevaluativo.nombre, fecha=modeloevaluativo.fecha, notamaxima=modeloevaluativo.notamaxima, notaaprobar=modeloevaluativo.notaaprobar, asistenciaaprobar=modeloevaluativo.asistenciaaprobar, observaciones=modeloevaluativo.observaciones ).exists():
+                                modevalacademia = ModeloEvaluativoA(nombre=modeloevaluativo.nombre, fecha=modeloevaluativo.fecha, notamaxima=modeloevaluativo.notamaxima, notaaprobar=modeloevaluativo.notaaprobar, asistenciaaprobar=modeloevaluativo.asistenciaaprobar, observaciones=modeloevaluativo.observaciones )
+                                modevalacademia.save(request)
+                                # else:
+                                #     modevalacademia = ModeloEvaluativoA.objects.filter(status=True, nombre=modeloevaluativo.nombre,
+                                                                        # fecha=modeloevaluativo.fecha,
+                                                                        # notamaxima=modeloevaluativo.notamaxima,
+                                                                        # notaaprobar=modeloevaluativo.notaaprobar,
+                                                                        # asistenciaaprobar=modeloevaluativo.asistenciaaprobar,
+                                                                        # observaciones=modeloevaluativo.observaciones).first()
                                 cantidadetalle = detallemodelo.count()
                                 cantidadetalleA = 0
                                 for detalle in detallemodelo:
                                     if DetalleModeloEvaluativoA.objects.filter(status=True, modelo=modevalacademia, nombre=detalle.nombre, notaminima=detalle.notaminima, notamaxima=detalle.notamaxima, orden=detalle.orden).exists():
                                         cantidadetalleA += 1
 
-                                if cantidadetalle == cantidadetalleA:
+                                if not cantidadetalle == cantidadetalleA:
                                     for detalle in detallemodelo:
                                         nuevodetalleA = DetalleModeloEvaluativoA(status=True, modelo=modevalacademia,
                                                                                    nombre=detalle.nombre,
@@ -541,6 +541,15 @@ def view_periodo(request):
                                 inscrito.matriculado = True
                                 inscrito.save(request)
                                 nummatriculados += 1
+                            detallemodelo = DetalleModeloEvaluativo.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                            if not DetalleModeloEvaluativoA.objects.filter(status=True, modelo=cursoacademia.modeloevaluativo).exists():
+                                for detalle in detallemodelo:
+                                    nuevodetalleA = DetalleModeloEvaluativoA(status=True, modelo=cursoacademia.modeloevaluativo,
+                                                                             nombre=detalle.nombre,
+                                                                             notaminima=detalle.notaminima,
+                                                                             notamaxima=detalle.notamaxima,
+                                                                             orden=detalle.orden)
+                                    nuevodetalleA.save(request)
                             return JsonResponse({"respuesta": True, "mensaje": "Inscritos matriculados correctamente. Total: " + str(nummatriculados) + " matriculados"})
                         else:
                             return JsonResponse({"respuesta": False, "mensaje": "Por algún motivo el curso no se encuentra enrolado"})

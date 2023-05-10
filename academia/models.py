@@ -59,6 +59,25 @@ class DetalleModeloEvaluativoA(ModeloBase):
         verbose_name_plural = u"Detalles de los modelos evaluativos"
         ordering = ['orden']
 
+    def detalleactividades(self):
+        return DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
+
+    def total_actividad(self):
+        try:
+            detalleactividad = lista_actividades = conteo = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
+            lista_actividades = lista_actividades.values_list('id')
+            conteo = conteo.count()
+            totalnotas = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=detalleactividad).aggregate(total=Sum('nota'))
+
+            totalnotas = totalnotas['total'] if totalnotas['total'] else 0
+            if conteo > 0 and totalnotas:
+                resultado = conteo / totalnotas
+            else:
+                resultado = 0
+            return resultado
+        except Exception as ex:
+            pass
+
 class DocenteA(ModeloBase):
     persona = models.ForeignKey('administrativo.Persona', on_delete=models.CASCADE, null=True, blank=True)
     fechaingreso = models.DateField(verbose_name=u'Fecha ingreso')
@@ -115,6 +134,9 @@ class CursoA(ModeloBase):
     def __str__(self):
         return u'%s' % (self.nombre)
 
+    def detallecalificacion(self):
+        return DetalleModeloEvaluativoA.objects.filter(status=True, modelo=self.modeloevaluativo)
+
 ESTADO_ACTIVIDAD = (
     (1, u'ACTIVO'),
     (2, u'INACTIVO'),
@@ -129,15 +151,22 @@ class DetalleActividadesModeloEvaluativoA(ModeloBase):
     maxnota = models.IntegerField(default=10, verbose_name=u'Nota máxima para aprobar el deber', blank=True, null=True)
     fechaminimasubida = models.DateField(verbose_name=u"Fecha mínima que el inscrito puede comenzar subir el deber", blank=True, null=True)
     fechamaximasubida = models.DateField(verbose_name=u"Fecha máxima que el inscrito puede subir el deber", blank=True, null=True)
+    horalimite = models.TimeField(verbose_name=u'Hora limite', blank=True, null=True)
     estado = models.IntegerField(choices=ESTADO_ACTIVIDAD, blank=True, null=True, verbose_name=u'Estado de la actividad')
 
     def __str__(self):
-        return u'%s: %s a %s' % (self.nombre, self.inicio.strftime('%d-%m-%Y'), self.fin.strftime('%d-%m-%Y'))
+        return u'%s' % (self.nombre)
 
     class Meta:
         verbose_name = u"Tarea que el docente crea"
         verbose_name_plural = u"Tareas que el docente crea"
         ordering = ['-id']
+
+    def nota_calificada(self, inscrito):
+        verifica = NotaInscritoActividadA.objects.filter(status=True, actividad=self, inscrito__inscrito_id=inscrito)
+        if verifica:
+            return verifica.first().nota
+        return '--'
 
 
 
@@ -160,6 +189,7 @@ class NotaInscritoActividadA(ModeloBase):
     tarea = models.FileField(upload_to='tareainscrito', blank=True, null=True, verbose_name=u'Tarea que sube el inscrito')
     nota = models.IntegerField(default=0, verbose_name=u'Nota de la tarea', blank=True, null=True)
     fechasubida = models.DateField(verbose_name=u"Fecha que sube el inscrito", blank=True, null=True)
+    comentario = models.CharField(verbose_name="Comentario de la tarea", default='', max_length=200)
 
     def __str__(self):
         return u'%s' % (self.nota)

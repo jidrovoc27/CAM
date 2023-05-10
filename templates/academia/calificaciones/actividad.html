@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load adiciones %}
+{#{% load humanize %}#}
+{% block contenido %}
+    <div class="col-lg-9 col-md-8 col-12">
+        <!-- Card -->
+        <div class="card mb-4">
+            <!-- Card header -->
+            <div class="card-header">
+                <h3 class="mb-0">{{ cursoA }}</h3>
+            </div>
+            <!-- Card body -->
+            <div class="card-body">
+                <!-- Form -->
+                <form class="row">
+                    <div class="col-lg-3 col-md-5 col-12">
+                        <select class="selectpicker" data-width="100%">
+                            <option value="">Date Created</option>
+                            <option value="Newest">Newest</option>
+                            <option value="High Rated">High Rated</option>
+                            <option value="Law Rated">Law Rated</option>
+                            <option value="High Earned">High Earned</option>
+                        </select>
+                    </div>
+                </form>
+                <h5 class="mb-0">{{ actividad }}</h5><br>
+                <p class="mb-0">{{ actividad.descripcion }}</p>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="mb-0">Entrega</h5><br>
+                <div class="table-responsive border-0 overflow-y-hidden">
+                    <table class="table mb-0 text-nowrap">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="border-0" style="width: 15%">Estado de la entrega</th>
+                            <th scope="col" class="border-0 text-left" style="background: white">{% if nota %}
+                                Entregado{% else %}No entregado{% endif %}</th>
+                        </tr>
+                        <tr>
+                            <th scope="col" class="border-0" style="width: 15%">Estado de la calificación</th>
+                            <th scope="col" class="border-0 text-left" style="background: white">{% if nota %}
+                                {{ nota.nota }}{% else %}<span style="color: red">Sin calificar</span>{% endif %}</th>
+
+                        </tr>
+                        <tr>
+                            <th scope="col" class="border-0" style="width: 15%">Fecha de entrega</th>
+                            <th scope="col" class="border-0 text-left" style="background: white">{% if nota %}
+                                {{ nota.fechasubida|date:"d-m-Y" }}{% else %}
+                                <span style="color: red">Tarea no subida</span>{% endif %}</th>
+
+                        </tr>
+                        <tr>
+                            <th scope="col" class="border-0" style="width: 15%">Tiempo restante</th>
+                            <th scope="col" class="border-0 text-left"
+                                style="background: white">{{ tiemporestante }}</th>
+                        </tr>
+{#                        <tr>#}
+{#                            <th scope="col" class="border-0" style="width: 15%;vertical-align: center">Comentarios</th>#}
+{#                            <th scope="col" class="border-0 text-left" style="background: white">#}
+{#                                {% if nota %}{{ nota.comentario }}{% endif %}<br>#}
+{#                                <input type="text" class="form-control">#}
+{#                            </th>#}
+{#                        </tr>#}
+                        </thead>
+                    </table>
+                    <br>
+                    {% if puedesubirtarea %}
+                        <div class="col-6 text-end" style="float: right">
+                            <a class="btn btn-outline-dark btn-sm mb-0" href="?peticion=add_tarea&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
+                                    class="material-icons text-sm"></i>Agregar entrega</a>
+
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
