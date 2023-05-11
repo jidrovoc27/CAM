@@ -69,6 +69,31 @@ def dashboard(request):
     if request.method == 'POST':
         if 'peticion' in request.POST:
             peticion = request.POST['peticion']
+
+            if peticion == 'add_tarea':
+                try:
+                    form = AgregarEntregaForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        comentario = form.cleaned_data['comentario']
+                        if 'archivo' in request.FILES:
+                            archivo = request.FILES['archivo']
+                            # newfilesd = archivo._name
+                            # ext = newfilesd[newfilesd.rfind("."):]
+                            # if not ext == '.docx' or not ext == '.pdf':
+                            #     return JsonResponse({"respuesta": False, "mensaje": "La tarea es en formato .docx o .pdf"})
+                            entregatarea = NotaInscritoActividadA(inscrito_id=int(request.POST['inscrito']), actividad_id=int(request.POST['actividad']),
+                                                                  tarea=archivo, fechasubida=datetime.now().date())
+                            entregatarea.save(request)
+                            if len(comentario) > 0:
+                                entregatarea.comentario = comentario
+                                entregatarea.save(request)
+                        else:
+                            return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba la tarea."})
+                        return JsonResponse({"respuesta": True, "mensaje": "Tarea cargada correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']

@@ -12,6 +12,8 @@
 {% block class_extra_card_formulario %}col-lg-9 col-md-8 col-12{% endblock %}
 {% block inputs_extras %}
     <input type="hidden" name="peticion" value="{{ peticion }}">
+    <input type="hidden" name="actividad" value="{{ actividad.id }}">
+    <input type="hidden" name="inscrito" value="{{ inscrito.id }}">
 {% endblock %}
 
 {% block news_inputs_form %}
