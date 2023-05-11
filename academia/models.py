@@ -71,7 +71,7 @@ class DetalleModeloEvaluativoA(ModeloBase):
 
             totalnotas = totalnotas['total'] if totalnotas['total'] else 0
             if conteo > 0 and totalnotas:
-                resultado = conteo / totalnotas
+                resultado = totalnotas / conteo
             else:
                 resultado = 0
             return resultado
@@ -183,12 +183,18 @@ class InscritoCursoA(ModeloBase):
         verbose_name_plural = u"Inscritos"
         ordering = ['-id']
 
+ESTADO_TAREA = (
+    (1, 'NO CALIFICADO'),
+    (2, 'CALIFICADO'),
+)
+
 class NotaInscritoActividadA(ModeloBase):
     inscrito = models.ForeignKey(InscritoCursoA, on_delete=models.PROTECT, verbose_name=u'Inscrito que sube la tarea', blank=True, null=True)
     actividad = models.ForeignKey(DetalleActividadesModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'La actividad que sube la tarea', blank=True, null=True)
     tarea = models.FileField(upload_to='tareainscrito', blank=True, null=True, verbose_name=u'Tarea que sube el inscrito')
     nota = models.IntegerField(default=0, verbose_name=u'Nota de la tarea', blank=True, null=True)
     fechasubida = models.DateField(verbose_name=u"Fecha que sube el inscrito", blank=True, null=True)
+    estado = models.IntegerField(choices=ESTADO_TAREA, default=1, verbose_name=u'Estado de la actividad')
     comentario = models.CharField(verbose_name="Comentario de la tarea", default='', max_length=200)
 
     def __str__(self):

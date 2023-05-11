@@ -188,6 +188,30 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'edit_tarea':
+                try:
+                    data['titulo'] = 'Editar entrega'
+                    data['titulo_formulario'] = 'Editar entrega de la tarea'
+                    data['peticion'] = 'edit_tarea'
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
+                    data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['curso']))
+                    data['periodo'] = periodo = Periodo.objects.get(pk=request.GET['id'])
+                    data['nota'] = nota = NotaInscritoActividadA.objects.get(id=int(request.GET['nota']))
+                    form = AgregarEntregaForm(initial={
+                        'archivo': periodo.nombre,
+                        'descripcion': periodo.descripcion,
+                        'inicio': periodo.inicio,
+                        'fin': periodo.fin,
+                        'activo': periodo.activo
+                    })
+                    data['form'] = form
+                    data['is_calificaciones'] = True
+                    return render(request, "academia/calificaciones/add_tarea.html", data)
+                except Exception as ex:
+                    pass
+
         else:
             try:
                 data['titulo'] = 'Menú principal'
