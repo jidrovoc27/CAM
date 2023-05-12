@@ -64,7 +64,10 @@ def campo_solo_lectura(form, campo):
 
 
 class AgregarEntregaForm(forms.Form):
-    archivo = ExtFileField(label=u'Seleccione Archivo',
+    archivo = ExtFileField(label=u'Seleccione Archivo', required=True,
                            help_text=u'Tamaño maximo permitido 2.5Mb, en formato pdf, word',
                            ext_whitelist=(".docx", ".pdf"), max_upload_size=2621440)
     comentario = forms.CharField(label='Comentarios', required=False,widget=forms.Textarea(attrs={'class': 'form-control', }))
+
+    def sin_archivo(self):
+        campo_no_requerido(self, 'archivo')

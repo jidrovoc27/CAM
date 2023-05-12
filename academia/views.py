@@ -54,7 +54,7 @@ def login_academia(request):
             except Exception as ex:
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
-@login_required(redirect_field_name='next', login_url='/login')
+@login_required(redirect_field_name='next', login_url='/loginacademia/')
 @transaction.atomic()
 def dashboard(request):
     global ex
@@ -92,6 +92,27 @@ def dashboard(request):
                         return JsonResponse({"respuesta": True, "mensaje": "Tarea cargada correctamente."})
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'edit_tarea':
+                try:
+                    form = AgregarEntregaForm(request.POST, request.FILES)
+                    # if form.is_valid():
+                    entregatarea = NotaInscritoActividadA.objects.get(id=int(request.POST['id']))
+                    comentario = request.POST['comentario']
+                    if 'archivo' in request.FILES:
+                        archivo = request.FILES['archivo']
+                        entregatarea.inscrito_id=int(request.POST['inscrito'])
+                        entregatarea.actividad_id=int(request.POST['actividad'])
+                        entregatarea.tarea=archivo
+                        entregatarea.save(request)
+                    # if len(comentario) > 0:
+                    entregatarea.comentario = comentario
+                    entregatarea.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Tarea actualizada correctamente."})
+                    # else:
+                    #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
     else:
@@ -197,18 +218,15 @@ def dashboard(request):
                     data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
                     data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['curso']))
-                    data['periodo'] = periodo = Periodo.objects.get(pk=request.GET['id'])
                     data['nota'] = nota = NotaInscritoActividadA.objects.get(id=int(request.GET['nota']))
                     form = AgregarEntregaForm(initial={
-                        'archivo': periodo.nombre,
-                        'descripcion': periodo.descripcion,
-                        'inicio': periodo.inicio,
-                        'fin': periodo.fin,
-                        'activo': periodo.activo
+                        'archivo': nota.tarea,
+                        'comentario': nota.comentario
                     })
+                    form.sin_archivo()
                     data['form'] = form
                     data['is_calificaciones'] = True
-                    return render(request, "academia/calificaciones/add_tarea.html", data)
+                    return render(request, "academia/calificaciones/edit_tarea.html", data)
                 except Exception as ex:
                     pass
 
@@ -233,7 +251,7 @@ def dashboard(request):
 
 def logout_usuario(request):
     logout(request)
-    return HttpResponseRedirect("/login")
+    return HttpResponseRedirect("/loginacademia/")
 
 @transaction.atomic()
 def registrate(request):

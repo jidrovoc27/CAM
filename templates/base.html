@@ -153,8 +153,8 @@
                     <div class="dropdown-divider"></div>
                     <ul class="list-unstyled">
                         <li>
-                            <a class="dropdown-item" href="../index.html">
-                                <i class="fe fe-power me-2"></i>Sign Out
+                            <a class="dropdown-item" href="{% url 'logout_usuario' %}">
+                                <i class="fe fe-power me-2"></i>Cerrar sesión
                             </a>
                         </li>
                     </ul>
@@ -350,11 +350,13 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="../index.html">
-                                            <i class="fe fe-power me-2"></i>Sign Out
+                                        <a class="dropdown-item" href="{% url 'logout_usuario' %}">
+                                            <i class="fe fe-power me-2"></i>Cerrar sesión
                                         </a>
                                     </li>
                                 </ul>
+                            </li>
+                        </ul>
                     </div>
                 </li>
             </ul>
@@ -457,7 +459,8 @@
                                     <a class="nav-link" href="notifications.html"><i class="fe fe-bell nav-icon"></i>Notificaciones</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="../index.html"><i class="fe fe-power nav-icon"></i>Cerrar
+                                    <a class="nav-link" href="{% url 'logout_usuario' %}"><i
+                                            class="fe fe-power nav-icon"></i>Cerrar
                                         sesión</a>
                                 </li>
                             </ul>
@@ -543,7 +546,7 @@
 <script src="{% static 'js/jquery.toast.min.js' %}"></script>
 <script src="{% static 'js/imask.js' %}"></script>
 <script src="{% static 'js/jquery.bootstrap-duallistbox.min.js' %} "></script>
-  <script src="{% static 'js/ruc_jquery_validator.min.js' %}"></script>
+<script src="{% static 'js/ruc_jquery_validator.min.js' %}"></script>
 <script>
 
 

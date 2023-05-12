@@ -1,0 +1,26 @@
+{% extends 'formBaseAcademia.html' %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+{% block titulo %}{{ titulo_formulario }}{% endblock %}
+{% block class_extra_card_formulario %}col-lg-9 col-md-8 col-12{% endblock %}
+{% block inputs_extras %}
+    <input type="hidden" name="peticion" value="{{ peticion }}">
+    <input type="hidden" name="id" value="{{ nota.id }}">
+    <input type="hidden" name="actividad" value="{{ actividad.id }}">
+    <input type="hidden" name="inscrito" value="{{ inscrito.id }}">
+{% endblock %}
+{% block news_inputs_form %}
+
+{% endblock %}
+{% block nombre_boton_submit %}Actualizar{% endblock %}
+{% block location_href_destino %}/loginacademia/inicio/?peticion=actividad&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}{% endblock %}
+{% block botones_extras %}{% endblock %}
+
+
+
+{% block js %}
+
+{% endblock %}
+
