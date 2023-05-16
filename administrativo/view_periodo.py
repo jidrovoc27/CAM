@@ -20,6 +20,7 @@ from administrativo.forms import *
 from administrativo.funciones import *
 from administrativo.models import *
 from academia.models import *
+from django.db.models import Q
 
 def create_mail(user_mail, subject, template_name, context):
     template = get_template(template_name)
@@ -746,11 +747,13 @@ def view_periodo(request):
                     data['persona_logeado'] = persona_logeado
                     idperiodo = int(request.GET['id'])
                     data['periodo'] = periodo = Periodo.objects.get(id=idperiodo)
+                    ruta_paginado = 'peticion=cursos&id=' + str(periodo.id) + '&'
                     lista = Curso.objects.filter(status=True, periodo=periodo).order_by('id')
                     paginator = Paginator(lista, 15)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
+                    data['ruta_paginado'] = ruta_paginado
                     return render(request, "administrativo/cursos/view.html", data)
                 except Exception as ex:
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
@@ -762,13 +765,29 @@ def view_periodo(request):
                     data['persona_logeado'] = persona_logeado
                     idperiodo = int(request.GET['id'])
                     data['curso'] = curso = Curso.objects.get(id=idperiodo)
-                    lista = matriculados = InscritoCurso.objects.filter(status=True, curso=curso).order_by('id')
+                    ruta_paginado = 'peticion=alumnos&id=' + str(curso.id) + '&'
+                    filtro = (Q(status=True) & Q(curso=curso))
+                    if 'var' in request.GET:
+                        var = request.GET['var']
+                        data['var'] = var
+                        filtro = filtro & (Q(alumno__persona__nombres__icontains=var) | Q(alumno__persona__apellidos__icontains=var)
+                                           | Q(alumno__persona__cedula__icontains=var))
+                        ruta_paginado += "var=" + var + "&"
+                    if 'estadoinscrito' in request.GET:
+                        estadoinscrito = int(request.GET['estadoinscrito'])
+                        if estadoinscrito > 0:
+                            data['estadoinscrito'] = estadoinscrito
+                            filtro = filtro & (Q(estado=estadoinscrito))
+                            ruta_paginado += "estadoinscrito=" + str(estadoinscrito) + "&"
+                    lista = matriculados = InscritoCurso.objects.filter(filtro).order_by('id')
                     matriculados = matriculados.filter(matriculado=False).count()
                     data['puedematricular'] = True if matriculados > 0 else False
                     paginator = Paginator(lista, 15)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
+                    data['ruta_paginado'] = ruta_paginado
+                    data['ESTADO_INSCRITO'] = ESTADO_INSCRITO
                     return render(request, "administrativo/inscrito/view.html", data)
                 except Exception as ex:
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))

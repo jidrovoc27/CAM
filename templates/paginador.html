@@ -3,7 +3,7 @@
         <ul class="pagination pagination-secondary">
             {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous"><span
+                    <a class="page-link" href="?{{ ruta_paginado }}page={{ page_obj.previous_page_number }}" aria-label="Previous"><span
                             aria-hidden="true"><span
                             class="material-icons">keyboard_arrow_left</span></span>
                     </a>
@@ -16,13 +16,13 @@
                     </li>
                 {% else %}
                     <li class="page-item ">
-                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                        <a class="page-link" href="?{{ ruta_paginado }}page={{ i }}">{{ i }}</a>
                     </li>
                 {% endif %}
             {% endfor %}
             {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next"> <span aria-hidden="true"><span
+                    <a class="page-link" href="?{{ ruta_paginado }}page={{ page_obj.next_page_number }}" aria-label="Next"> <span aria-hidden="true"><span
                             class="material-icons">keyboard_arrow_right</span></span>
                     </a>
                 </li>
