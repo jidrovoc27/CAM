@@ -362,7 +362,7 @@ class Curso(ModeloBase):
     idcursoacademia = models.ForeignKey(CursoA, on_delete=models.PROTECT, verbose_name=u'Curso académico', blank=True,
                                         null=True)
     nombre = models.CharField(max_length=500, verbose_name=u'Nombre')
-    estado = models.IntegerField(choices=ESTADO_CURSO, blank=True, null=True, verbose_name=u'Estado Curso')
+    estado = models.IntegerField(default=2, choices=ESTADO_CURSO, blank=True, null=True, verbose_name=u'Estado Curso')
     tiporubro = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para cuota",
                                   on_delete=models.PROTECT, blank=True, null=True)
     tiporubroinscripcion = models.ForeignKey(TipoOtroRubro, related_name='+', verbose_name=u"Rubro para inscripcion",
@@ -416,6 +416,15 @@ class Curso(ModeloBase):
 
     def mimodeloevaluativo(self):
         return DetalleModeloEvaluativo.objects.filter(status=True, modelo=self.modeloevaluativo)
+
+    def total_inscritos(self):
+        return InscritoCurso.objects.filter(status=True, curso=self).count()
+
+    def estado_curso(self):
+        if self.estado == 1 or self.estado == 2:
+            return 'success'
+        else:
+            return 'danger'
 
 
 ESTADO_ATENCION = (

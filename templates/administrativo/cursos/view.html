@@ -94,16 +94,16 @@
                                         <span class="text-xs">{{ fila.docente }}</span>
                                     </td>
                                     <td class="text-xs text-center" data-title="¿Activo?">
-                                        {{ fila.fechainicioinscripcion }} - {{ fila.fechafininscripcion }}
+                                        {{ fila.fechainicioinscripcion|date:"d-m-Y" }} - {{ fila.fechafininscripcion|date:"d-m-Y" }}
                                     </td>
                                     <td class="text-xs text-center" data-title="¿Activo?">
                                         ${{ fila.costo }}
                                     </td>
                                     <td class="text-xs text-center" data-title="¿Activo?">
-                                        {{ forloop.counter }}
+                                        {{ fila.total_inscritos }}
                                     </td>
                                     <td class="text-xs text-center" data-title="¿Activo?">
-                                        {{ fila.fechainicio }} - {{ fila.fechafin }}
+                                        {{ fila.fechainicio|date:"d-m-Y" }} - {{ fila.fechafin|date:"d-m-Y" }}
                                     </td>
                                     <td class="text-secondary text-sm font-weight-bolder text-center">
                                         <div class="dropstart">

@@ -203,7 +203,7 @@ def view_periodo(request):
                         curso = Curso(periodo=periodo, docente=docente, nombre=nombre, tiporubro=tiporubro, costo=costo,
                                       fechainicio=fechainicio, fechafin=fechafin, fechainicioinscripcion=fechainicioinscripcion, fechafininscripcion=fechafininscripcion,
                                       horasvirtual=horasvirtual, minasistencia=minasistencia, minnota=minnota, cupo=cupo,
-                                      observacion=observacion, objetivo=objetivo, contenido=contenido, publicarcurso=publicarcurso, gcuotas=gcuotas, oferta=oferta)
+                                      observacion=observacion, objetivo=objetivo, contenido=contenido, publicarcurso=publicarcurso, gcuotas=gcuotas, oferta=oferta, estado=2)
 
                         #VERIFICA SI EL CURSO APLICA INSCRIPCIÓN
                         if inscripcion:
