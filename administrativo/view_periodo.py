@@ -433,7 +433,7 @@ def view_periodo(request):
                         registro = InscritoCurso.objects.get(pk=request.POST['id'])
                         registro.status = False
                         registro.save(request)
-                        rubros = Rubro.objects.filter(status=True, persona=registro.alumno.persona)
+                        rubros = Rubro.objects.filter(status=True, persona=registro.alumno.persona, curso_id=int(request.POST['curso']))
                         idrubros = rubros.values_list('id', flat=True)
                         pagos = Pago.objects.filter(status=True, rubro_id__in=idrubros).update(status=False)
                         if rubros:
@@ -762,7 +762,9 @@ def view_periodo(request):
                     data['persona_logeado'] = persona_logeado
                     idperiodo = int(request.GET['id'])
                     data['curso'] = curso = Curso.objects.get(id=idperiodo)
-                    lista = InscritoCurso.objects.filter(status=True, curso=curso).order_by('id')
+                    lista = matriculados = InscritoCurso.objects.filter(status=True, curso=curso).order_by('id')
+                    matriculados = matriculados.filter(matriculado=False).count()
+                    data['puedematricular'] = True if matriculados > 0 else False
                     paginator = Paginator(lista, 15)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)

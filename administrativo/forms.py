@@ -162,13 +162,13 @@ class PersonaForm(forms.Form):
                                     widget=forms.TextInput(attrs={'class': 'form-control ',}))
     ciudad = forms.CharField(label=u"Ciudad", max_length=50, required=False,
                                      widget=forms.TextInput(
-                                         attrs={'class': 'form-control', 'placeholder': '(Naranjito)'}))
+                                         attrs={'class': 'form-control', 'placeholder': 'Milagro'}))
     direccion = forms.CharField(label=u"Dirección", required=False,
                                      widget=forms.TextInput(
-                                         attrs={'class': 'form-control', 'placeholder': '(Dirección)'}))
+                                         attrs={'class': 'form-control', 'placeholder': 'Av. Quito'}))
     referencia = forms.CharField(label=u"Referencia", max_length=50, required=False,
                                      widget=forms.TextInput(
-                                         attrs={'class': 'form-control', 'placeholder': '(Referencia)'}))
+                                         attrs={'class': 'form-control', 'placeholder': 'A 2 cuadras..'}))
 
 
     def editar(self):
@@ -184,9 +184,9 @@ class DocenteForm(forms.Form):
     genero = forms.ModelChoiceField(label="Género",required=True, queryset=Genero.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))
     telefono_movil = forms.CharField(label="Teléfono móvil", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'(99 123 1234)'}))
     telefono_convencional = forms.CharField(label=u"Teléfono fijo", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control ',}))
-    ciudad = forms.CharField(label=u"Ciudad", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(Naranjito)'}))
-    direccion = forms.CharField(label=u"Dirección", required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(Dirección)'}))
-    referencia = forms.CharField(label=u"Referencia", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(Referencia)'}))
+    ciudad = forms.CharField(label=u"Ciudad", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Milagro'}))
+    direccion = forms.CharField(label=u"Dirección", required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Av. Quito'}))
+    referencia = forms.CharField(label=u"Referencia", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A 2 cuadras..'}))
 
 
     def editar(self):

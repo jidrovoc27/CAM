@@ -22,6 +22,7 @@ from administrativo.view_cargoocupacional import *
 from administrativo.view_paginaweb import *
 from administrativo.view_lead import *
 from administrativo.view_modeloevaluativo import *
+from administrativo.view_miscursos import *
 
 urlpatterns = [
 path(r'', dashboard, name='dashboard'),
@@ -45,6 +46,7 @@ path(r'', dashboard, name='dashboard'),
     path(r'leads/',view_lead ,name='leads'),
     path(r'modeloevaluativo/',view_modeloevaluativo ,name='modeloevaluativo'),
     path(r'paginaweb/',view_pagina ,name='paginaweb'),
+    path(r'miscursos/',view_miscursos ,name='miscursos'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
     path(r'CAM/', paginaweb, name='paginaweb'),
 ]
