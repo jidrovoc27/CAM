@@ -100,9 +100,9 @@
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3"
                                                 aria-labelledby="dropdownMarketingCard" style="">
-                                                {% if not fila.tiene_cursos_vinculados %}
+                                                {% if not fila.tiene_cursos_vinculados or not fila.finalizado %}
                                                     <li><a class="dropdown-item border-radius-md"
-                                                           href="?peticion=edit_caja&id={{ fila.pk }}">Editar</a>
+                                                           href="?peticion=edit_modeloevaluativo&id={{ fila.pk }}">Editar</a>
                                                     </li>
                                                     <li>
                                                         <hr class="dropdown-divider">
@@ -112,14 +112,21 @@
                                                            onclick="eliminar_registro('eliminar_modelo','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
                                                     </li>
                                                 {% endif %}
-{#                                                {% if fila.finalizado %}#}
+                                                {% if not fila.finalizado %}
                                                     <li>
                                                         <hr class="dropdown-divider">
                                                     </li>
                                                     <li><a class="dropdown-item border-radius-md"
                                                            href="?peticion=detallemodelo&id={{ fila.pk }}">Adicionar detalle</a>
                                                     </li>
-{#                                                {% endif %}#}
+                                                {% else %}
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li><a class="dropdown-item border-radius-md"
+                                                           href="?peticion=detallemodelo&id={{ fila.pk }}">Ver detalle</a>
+                                                    </li>
+                                                {% endif %}
                                             </ul>
                                         </div>
                                     </td>

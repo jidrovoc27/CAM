@@ -296,7 +296,7 @@ class ModeloEvaluativo(ModeloBase):
 
 class DetalleModeloEvaluativo(ModeloBase):
     modelo = models.ForeignKey(ModeloEvaluativo, on_delete=models.PROTECT, verbose_name=u"Modelo")
-    nombre = models.CharField(default='', max_length=10, verbose_name=u"Nombre campo")
+    nombre = models.CharField(default='', max_length=200, verbose_name=u"Nombre campo")
     notaminima = models.FloatField(default=0, verbose_name=u'Nota minima')
     notamaxima = models.FloatField(default=0, verbose_name=u'Nota maxima')
     orden = models.IntegerField(default=0, verbose_name=u"Orden en acta")

@@ -112,6 +112,12 @@
     </script>
 
 {% endblock %}
+{% block retroceder %}
+    <a class="  me-sm-1 btn-tooltip" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Atrás"
+       data-container="body" data-animation="true"
+       href="/periodo/?peticion=cursos&id={{ curso.periodo.id }}"><span
+            class="fa fa-arrow-left"></span></a>
+{% endblock %}
 {% block contenido %}
 
     <div class="col-md-12 mb-lg-0 mb-4 ">

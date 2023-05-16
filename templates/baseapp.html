@@ -160,9 +160,11 @@
 
                     </li>
                     <li class="nav-item dropdown pe-2 d-flex align-items-center">
+                    {% block retroceder %}
                          <a class="  me-sm-1 btn-tooltip" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Atrás" data-container="body" data-animation="true"
                            href="{% if request.path == '/' %} /  {% else %}javascript:history.back(){% endif %}"><span
                                 class="fa fa-arrow-left"></span></a>
+                    {% endblock %}
                     </li>
                 </ul>
             </div>

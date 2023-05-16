@@ -3,6 +3,12 @@
 {% block head %}
 
 {% endblock %}
+{% block retroceder %}
+    <a class="  me-sm-1 btn-tooltip" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Atrás"
+       data-container="body" data-animation="true"
+       href="/periodo/"><span
+            class="fa fa-arrow-left"></span></a>
+{% endblock %}
 {% block contenido %}
 
     <div class="col-md-12 mb-lg-0 mb-4 ">
@@ -119,7 +125,8 @@
                                                 {% if not fila.idcursoacademia %}
                                                     {% if not fila.modeloevaluativo %}
                                                         <li><a class="dropdown-item border-radius-md"
-                                                               href="?peticion=add_modeloevaluativo&id={{ fila.pk }}&idperiodo={{ periodo.id }}">Añadir modelo
+                                                               href="?peticion=add_modeloevaluativo&id={{ fila.pk }}&idperiodo={{ periodo.id }}">Añadir
+                                                            modelo
                                                             evaluativo</a>
                                                         </li>
                                                         <li>

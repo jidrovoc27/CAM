@@ -5,57 +5,63 @@
     <script>
         function cerrar_modelo(peticion, id) {
 
-        Swal.fire({
-            title: '¿Estás seguro de finalizar el modelo evaluativo?',
-            text: "Está acción es irrevesible!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, finaliza!',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ reques.path }}',
-                    async: false,
-                    data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',
-                        peticion: peticion,
-                        id: id,
-                    },
-                    dataType: "json",
-                    beforeSend: function () {
+            Swal.fire({
+                title: '¿Estás seguro de finalizar el modelo evaluativo?',
+                text: "Está acción es irrevesible!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, finaliza!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ reques.path }}',
+                        async: false,
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            peticion: peticion,
+                            id: id,
+                        },
+                        dataType: "json",
+                        beforeSend: function () {
 
-                    }
-                }).done(function (data) {
-                    if (data.respuesta === true) {
-                        Swal.fire(
-                            'Finalizado!',
-                            data.mensaje,
-                            'success'
-                        ).then(function () {
-                            location.href='/modeloevaluativo/';
-                        });
-                    } else {
+                        }
+                    }).done(function (data) {
+                        if (data.respuesta === true) {
+                            Swal.fire(
+                                'Finalizado!',
+                                data.mensaje,
+                                'success'
+                            ).then(function () {
+                                location.href = '/modeloevaluativo/?peticion=detallemodelo&id={{ modelo.id }}';
+                            });
+                        } else {
 
-                        Swal.fire(data.mensaje);
-                    }
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
-                }).always(function () {
-                });
-
-
-            }
-
-        })
+                            Swal.fire(data.mensaje);
+                        }
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                        mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
+                    }).always(function () {
+                    });
 
 
-    }
+                }
+
+            })
+
+
+        }
     </script>
 
+{% endblock %}
+{% block retroceder %}
+    <a class="  me-sm-1 btn-tooltip" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Atrás"
+       data-container="body" data-animation="true"
+       href="/modeloevaluativo/"><span
+            class="fa fa-arrow-left"></span></a>
 {% endblock %}
 {% block contenido %}
 
@@ -67,10 +73,14 @@
                         <h6 class="mb-0">{{ titulo_tabla }}</h6>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn btn-outline-dark btn-sm mb-0" href="?peticion=add_detallemodeloevaluativo&id={{ modelo.id }}"><i
-                                class="material-icons text-sm">add</i>&nbsp;&nbsp;Agregar</a>
-                        <a style="background: green;color: white" class="btn btn-outline-dark btn-sm mb-0" onclick="cerrar_modelo('finalizar_modelo', '{{ modelo.id }}')"><i
-                                class="fa fa-sign-out"></i>&nbsp;&nbsp;Cerrar modelo</a>
+                        {% if not modelo.finalizado %}
+                            <a class="btn btn-outline-dark btn-sm mb-0"
+                               href="?peticion=add_detallemodeloevaluativo&id={{ modelo.id }}"><i
+                                    class="material-icons text-sm">add</i>&nbsp;&nbsp;Agregar</a>
+                            <a style="background: green;color: white" class="btn btn-outline-dark btn-sm mb-0"
+                               onclick="cerrar_modelo('finalizar_modelo', '{{ modelo.id }}')"><i
+                                    class="fa fa-sign-out"></i>&nbsp;&nbsp;Cerrar modelo</a>
+                        {% endif %}
 
                     </div>
                     <div class="col-6 text-end">
@@ -145,24 +155,16 @@
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3"
                                                 aria-labelledby="dropdownMarketingCard" style="">
-                                                {% if not fila.tiene_cursos_vinculados %}
+                                                {% if not modelo.finalizado %}
                                                     <li><a class="dropdown-item border-radius-md"
-                                                           href="?peticion=edit_caja&id={{ fila.pk }}">Editar</a>
+                                                           href="?peticion=edit_detallemodeloevaluativo&id={{ fila.pk }}&modelo={{ modelo.id }}">Editar</a>
                                                     </li>
                                                     <li>
                                                         <hr class="dropdown-divider">
                                                     </li>
                                                     <li><a class="dropdown-item border-radius-md text-danger"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_modelo','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
-                                                    </li>
-                                                {% endif %}
-                                                {% if not fila.tiene_detalle_modelo %}
-                                                    <li>
-                                                        <hr class="dropdown-divider">
-                                                    </li>
-                                                    <li><a class="dropdown-item border-radius-md"
-                                                           href="?peticion=edit_caja&id={{ fila.pk }}">Adicionar detalle</a>
+                                                           onclick="eliminar_registro('eliminar_detallemodelo','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
                                                     </li>
                                                 {% endif %}
                                             </ul>
