@@ -601,7 +601,7 @@ def view_periodo(request):
                     data['titulo_tabla'] = 'Documentos'
                     data['paciente_id'] = paciente_id = request.GET['id']
                     lista = Documentos.objects.filter(paciente_id=paciente_id, status=True)
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -774,7 +774,7 @@ def view_periodo(request):
                             filtro = filtro & (Q(estado=estadocurso))
                             ruta_paginado += "estadocurso=" + str(estadocurso) + "&"
                     lista = Curso.objects.filter(filtro).order_by('id')
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -808,7 +808,7 @@ def view_periodo(request):
                     lista = matriculados = InscritoCurso.objects.filter(filtro).order_by('id')
                     matriculados = matriculados.filter(matriculado=False).count()
                     data['puedematricular'] = True if matriculados > 0 else False
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -873,7 +873,7 @@ def view_periodo(request):
                                        Q(descripcion__icontains=var))
                     ruta_paginado += "?var=" + var + "&"
                 lista = Periodo.objects.filter(filtro).order_by('id')
-                paginator = Paginator(lista, 15)
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

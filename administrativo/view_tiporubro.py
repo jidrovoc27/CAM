@@ -20,6 +20,7 @@ from CAM.settings import BASE_DIR
 from administrativo.forms import *
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
+from django.db.models import Q
 
 
 @login_required(redirect_field_name='next', login_url='/login')
@@ -123,7 +124,7 @@ def view_tiporubro(request):
                     data['titulo_tabla'] = 'Documentos'
                     data['paciente_id'] = paciente_id = request.GET['id']
                     lista = Documentos.objects.filter(paciente_id=paciente_id, status=True)
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -202,8 +203,16 @@ def view_tiporubro(request):
                 data['titulo'] = 'Tipo rubros'
                 data['titulo_tabla'] = 'Lista  de tipo de rubros'
                 data['persona_logeado'] = persona_logeado
-                lista = TipoOtroRubro.objects.filter(status=True).order_by('id')
-                paginator = Paginator(lista, 15)
+                filtro = (Q(status=True))
+                ruta_paginado = request.path
+                if 'var' in request.GET:
+                    var = request.GET['var']
+                    data['var'] = var
+                    filtro = filtro & (Q(nombre__icontains=var) |
+                                       Q(descripcion__icontains=var))
+                    ruta_paginado += "?var=" + var + "&"
+                lista = TipoOtroRubro.objects.filter(filtro).order_by('id')
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

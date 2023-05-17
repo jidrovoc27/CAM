@@ -118,7 +118,7 @@ def view_grupo(request):
                 data['titulo_tabla'] = 'Lista  de Grupos'
                 data['persona_logeado'] = persona_logeado
                 lista = Group.objects.all().order_by('id')
-                paginator = Paginator(lista, 15)
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

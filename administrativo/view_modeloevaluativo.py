@@ -296,7 +296,7 @@ def view_modeloevaluativo(request):
                     data['modelo'] = modelo = ModeloEvaluativo.objects.get(id=int(request.GET['id']))
                     data['persona_logeado'] = persona_logeado
                     lista = DetalleModeloEvaluativo.objects.filter(status=True, modelo=modelo)
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -310,7 +310,7 @@ def view_modeloevaluativo(request):
                 data['titulo_tabla'] = 'Lista  de modelos evaluativo'
                 data['persona_logeado'] = persona_logeado
                 lista = ModeloEvaluativo.objects.filter(status=True).order_by('id')
-                paginator = Paginator(lista, 15)
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

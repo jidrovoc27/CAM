@@ -119,7 +119,7 @@ def view_finanzas(request):
                                 puedepagar = True
                     data['persona'] = Persona.objects.get(id=request.GET['id'])
                     lista = Rubro.objects.filter(status=True, persona_id=request.GET['id'])
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -159,7 +159,7 @@ def view_finanzas(request):
                     data['persona_rubro'] = Persona.objects.get(id=request.GET['id'])
                     data['rubro_persona'] = Rubro.objects.get(status=True, id=request.GET['idrubro'])
                     lista = Pago.objects.filter(status=True, rubro_id=request.GET['idrubro'])
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -199,7 +199,7 @@ def view_finanzas(request):
                     data['paciente_rubro'] = Persona.objects.get(id=request.GET['paciente_id'])
                     data['pago_factura'] = Pago.objects.get(id=int(request.GET['id']))
                     lista = Factura.objects.filter(status=True,pago_id=int(request.GET['id']))
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -215,7 +215,7 @@ def view_finanzas(request):
                 data['titulo_tabla'] = 'Listado de personas'
                 data['persona_logeado'] = persona_logeado
                 lista = Persona.objects.filter(status=True)
-                paginator = Paginator(lista, 15)
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

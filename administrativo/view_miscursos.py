@@ -109,7 +109,7 @@ def view_miscursos(request):
                     data['persona_logeado'] = persona_logeado
                     data['curso'] = curso = Curso.objects.get(id=int(request.GET['id']))
                     lista = InscritoCurso.objects.filter(status=True, curso=curso).order_by('id')
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -124,7 +124,7 @@ def view_miscursos(request):
                 data['titulo_tabla'] = 'Lista  de cursos a cargo'
                 data['persona_logeado'] = persona_logeado
                 lista = Curso.objects.filter(status=True, docente__persona=persona_logeado, migrado=True).order_by('id')
-                paginator = Paginator(lista, 15)
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

@@ -20,75 +20,7 @@ from CAM.settings import BASE_DIR
 from administrativo.forms import *
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
-
-def create_mail(user_mail, subject, template_name, context):
-    template = get_template(template_name)
-    content = template.render(context)
-
-    message = EmailMultiAlternatives(
-        subject=subject,
-        body='',
-        from_email=settings.EMAIL_HOST_USER,
-        to=[
-            user_mail
-        ],
-        cc=[]
-    )
-
-    message.attach_alternative(content, 'text/html')
-    return message
-def link_callback(uri, rel):
-    """
-    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
-    resources
-    """
-    path_uri = str(BASE_DIR) + str(uri)
-    result = finders.find(path_uri)
-    if result:
-        if not isinstance(result, (list, tuple)):
-            result = [result]
-        result = list(os.path.realpath(path) for path in result)
-        path = result[0]
-    else:
-        sUrl = settings.STATIC_URL  # Typically /static/
-        sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
-        mUrl = settings.MEDIA_URL  # Typically /media/
-        mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
-
-        if uri.startswith(mUrl):
-            path = os.path.join(mRoot, uri.replace(mUrl, ""))
-        elif uri.startswith(sUrl):
-            path = os.path.join(sRoot, uri.replace(sUrl, ""))
-        else:
-            return uri
-
-    # make sure that file exists
-    if not os.path.isfile(path):
-        raise Exception(
-            'media URI must start with %s or %s' % (sUrl, mUrl)
-        )
-    return path
-
-
-
-
-def render_pdf_view(template_paths,data):
-    template_path = template_paths
-    context = data
-    # Create a Django response object, and specify content_type as pdf
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="factura.pdf"'
-    # find the template and render it.
-    template = get_template(template_path)
-    html = template.render(context)
-
-    # create a pdf
-    pisa_status = pisa.CreatePDF(html, dest=response, link_callback=link_callback)
-    # if error then show some funny view
-    if pisa_status.err:
-       return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
-
+from django.db.models import Q
 
 
 @login_required(redirect_field_name='next', login_url='/login')
@@ -250,21 +182,6 @@ def view_docente(request):
                     transaction.set_rollback(True)
                     pass
 
-            if peticion == 'consultas_realizadas':
-                try:
-                    data['titulo'] = 'Consultas realizadas'
-                    data['titulo_formulario'] = 'Odontograma'
-                    data['peticion'] = 'consultas_realizadas'
-                    lista = Consulta.objects.filter(status=True,paciente__id = request.GET['id'])
-                    paginator = Paginator(lista, 15)
-                    page_number = request.GET.get('page')
-                    page_obj = paginator.get_page(page_number)
-                    data['page_obj'] = page_obj
-                    return render(request, "docente/consultas_realizadas.html", data)
-                except Exception as ex:
-                    transaction.set_rollback(True)
-                    pass
-
             if peticion == 'historial_clinico':
                 try:
                     data['titulo'] = 'Historial clínico'
@@ -275,69 +192,13 @@ def view_docente(request):
                     transaction.set_rollback(True)
                     pass
 
-            if peticion == 'submenu_consultasrealizadas':
-                try:
-                    data['titulo'] = 'Historial clínico'
-                    data['titulo_tabla'] = 'Consultas realizadas'
-                    data['paciente_id'] = paciente_id = request.GET['id']
-                    lista = Consulta.objects.filter(status=True, paciente__id=request.GET['id'], odontograma__tipo=2)
-                    paginator = Paginator(lista, 15)
-                    page_number = request.GET.get('page')
-                    page_obj = paginator.get_page(page_number)
-                    data['page_obj'] = page_obj
-                    return render(request, "docente/menu_historial_clinico/consultas_realizadas.html", data)
-                except Exception as ex:
-                    transaction.set_rollback(True)
-                    pass
-
-            if peticion == 'submenu_tratamientos':
-                try:
-                    data['titulo'] = 'Historial clínico'
-                    data['titulo_tabla'] = 'Tratamientos realizados'
-                    data['paciente_id'] = paciente_id = request.GET['id']
-                    lista_consultas = Consulta.objects.filter(status=True, paciente__id=request.GET['id']).values_list('id')
-                    lista_tratamientosrealizados = ConsultaTratamientoDocente.objects.filter(status=True, consultas_id__in=lista_consultas)
-                    paginator = Paginator(lista_tratamientosrealizados, 15)
-                    page_number = request.GET.get('page')
-                    page_obj = paginator.get_page(page_number)
-                    data['page_obj'] = page_obj
-                    return render(request, "docente/menu_historial_clinico/tratamientos_realizados.html", data)
-                except Exception as ex:
-                    transaction.set_rollback(True)
-                    pass
-
-            if peticion == 'submenu_consulta_odontograma':
-                try:
-                    data['titulo'] = 'Historial clínico'
-                    data['paciente_id'] = paciente_id = request.GET['id']
-                    data['consulta'] = consulta = Consulta.objects.get(pk=request.GET['idconsulta'])
-                    data['histoColores'] = odontograma = consulta.odontograma
-                    return render(request, "docente/menu_historial_clinico/consulta_odontograma.html", data)
-                except Exception as ex:
-                    transaction.set_rollback(True)
-                    pass
-
-            if peticion == 'submenu_odontograma_general':
-                try:
-                    data['titulo'] = 'Historial clínico'
-                    data['paciente_id'] = paciente_id = request.GET['id']
-                    odontograma = Odontograma.objects.filter(paciente_id=paciente_id, tipo=1, status=True)
-                    data['tieneodontogramaprincipal'] = False
-                    if odontograma:
-                        data['histoColores'] = odontograma[0]
-                        data['tieneodontogramaprincipal'] = True
-                    return render(request, "docente/menu_historial_clinico/odontograma_general.html", data)
-                except Exception as ex:
-                    transaction.set_rollback(True)
-                    pass
-
             if peticion == 'submenu_documentos':
                 try:
                     data['titulo'] = 'Documentos'
                     data['titulo_tabla'] = 'Documentos'
                     data['paciente_id'] = paciente_id = request.GET['id']
                     lista = Documentos.objects.filter(paciente_id=paciente_id, status=True)
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -382,96 +243,26 @@ def view_docente(request):
                 except Exception as ex:
                     pass
 
-            if peticion == 'ver_odontograma':
-                try:
-                    data['titulo'] = 'Ver consulta'
-                    data['titulo_formulario'] = 'Ver consulta'
-                    data['consulta'] = consulta = Consulta.objects.get(pk=request.GET['id'])
-                    data['histoColores'] = odontograma= consulta.odontograma
-
-                    return render(request, "docente/ver_consulta.html", data)
-                except Exception as ex:
-                    pass
-
-            if peticion == 'ver_factura':
-                try:
-                    data['titulo'] = 'Ver factura'
-                    data['factura'] = factura = Consulta.objects.get(pk=request.GET['id'])
-
-                    return render(request, "docente/ver_factura.html", data)
-                except Exception as ex:
-                    pass
-
-            if peticion == 'descargar_factura':
-                try:
-                    data['titulo'] = 'factura'
-                    data['factura'] = factura = Consulta.objects.get(pk=request.GET['id'])
-
-                    return render_pdf_view('docente/factura_pdf.html', data)
-                except Exception as ex:
-                    pass
-
-            if peticion == 'generar_certificado':
-                try:
-                    # data['titulo'] = 'factura'
-                    # data['factura'] = factura = Consulta.objects.get(pk=request.GET['id'])
-
-                    return render_pdf_view('docente/certificado_medico.html', data)
-                except Exception as ex:
-                    pass
-
-            if peticion == 'enviar_factura':
-
-                try:
-                    from django.conf import settings
-                    from django.core.mail import send_mail
-                    factura = Consulta.objects.get(pk=request.GET['id'])
-                    mail = create_mail(
-                        factura.paciente.persona.email,
-                        'Esta es tu factura por la consulta realizada en el centro odontologico',
-                        'factura.html',
-                        {
-                            'factura': factura
-                        }
-                    )
-
-                    mail.send(fail_silently=False)
-
-                    return JsonResponse({"respuesta": True, "mensaje": "Factura enviado correctamente."})
-                except Exception as ex:
-                    print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
-
-
-            if peticion == 'descargar_odontograma':
-                try:
-                    data['titulo'] = 'Ver consulta'
-                    data['titulo_formulario'] = 'Ver consulta'
-                    data['consulta'] = consulta = Consulta.objects.get(pk=request.GET['id'])
-                    data['histoColores'] = odontograma = consulta.odontograma
-
-                    return render(request, 'docente/odontograma_pdf.html', data)
-                except Exception as ex:
-                    pass
-
-            if peticion == 'historial_abono_cuota':
-                try:
-                    data['historial_abono'] = historial_abono = AbonoPago.objects.filter(status=True,consulta_id= request.GET['id'])
-                    data['consulta'] = Consulta.objects.get(pk= request.GET['id'])
-                    template = get_template("docente/modal/historial_abono.html")
-                    return JsonResponse({"respuesta": True, 'data': template.render(data)})
-                except Exception as ex:
-                    pass
-
-            if peticion == 'abonar_cuota':
-                try:
-                    data['consulta'] = consulta = Consulta.objects.get(pk=request.GET['id'])
-                    form = AbonarCuotaForm()
-                    data['form'] = form
-                    data['peticion'] = 'abonar_cuota'
-                    template = get_template("docente/modal/formAbonarCuota.html")
-                    return JsonResponse({"respuesta": True, 'data': template.render(data)})
-                except Exception as ex:
-                    pass
+            # if peticion == 'enviar_factura':
+            #
+            #     try:
+            #         from django.conf import settings
+            #         from django.core.mail import send_mail
+            #         factura = Consulta.objects.get(pk=request.GET['id'])
+            #         mail = create_mail(
+            #             factura.paciente.persona.email,
+            #             'Esta es tu factura por la consulta realizada en el centro odontologico',
+            #             'factura.html',
+            #             {
+            #                 'factura': factura
+            #             }
+            #         )
+            #
+            #         mail.send(fail_silently=False)
+            #
+            #         return JsonResponse({"respuesta": True, "mensaje": "Factura enviado correctamente."})
+            #     except Exception as ex:
+            #         print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
             if peticion == 'enviar_correo':
                 try:
@@ -518,8 +309,17 @@ def view_docente(request):
                 data['titulo'] = 'Docentes'
                 data['titulo_tabla'] = 'Lista  de Docentes'
                 data['persona_logeado'] = persona_logeado
-                lista = Docente.objects.filter(status=True).order_by('id')
-                paginator = Paginator(lista, 15)
+                filtro = (Q(status=True))
+                ruta_paginado = request.path
+                if 'var' in request.GET:
+                    var = request.GET['var']
+                    data['var'] = var
+                    filtro = filtro & (Q(persona__nombres__icontains=var) |
+                                       Q(persona__apellidos__icontains=var) |
+                                       Q(persona__cedula__icontains=var))
+                    ruta_paginado += "?var=" + var + "&"
+                lista = Docente.objects.filter(filtro).order_by('id')
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

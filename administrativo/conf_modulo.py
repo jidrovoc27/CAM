@@ -135,7 +135,7 @@ def view_modulo(request):
                 data['titulo_tabla'] = 'Lista  de Módulos'
                 data['persona_logeado'] = persona_logeado
                 lista = Modulo.objects.filter(status=True).order_by('id')
-                paginator = Paginator(lista, 15)
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

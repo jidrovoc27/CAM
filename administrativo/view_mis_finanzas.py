@@ -76,7 +76,7 @@ def view_mis_finanzas(request):
                     data['paciente_rubro'] = Docente.objects.get(id=request.GET['id'])
                     data['rubro_paciente'] = Rubro.objects.get(status=True, id=request.GET['idrubro'])
                     lista = Pago.objects.filter(status=True, rubro_id=request.GET['idrubro'])
-                    paginator = Paginator(lista, 15)
+                    paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
@@ -89,7 +89,7 @@ def view_mis_finanzas(request):
                 data['titulo'] = 'Mis finanzas'
                 data['paciente_rubro'] = Docente.objects.get(persona=persona_logeado)
                 lista = Rubro.objects.filter(status=True, paciente__persona=persona_logeado)
-                paginator = Paginator(lista, 15)
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj

@@ -48,7 +48,7 @@ def view_lead(request):
                 data['titulo_tabla'] = 'Lista  de interesados'
                 data['persona_logeado'] = persona_logeado
                 lista = Lead.objects.filter(status=True).order_by('id')
-                paginator = Paginator(lista, 15)
+                paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj
