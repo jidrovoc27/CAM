@@ -23,6 +23,7 @@ from administrativo.view_paginaweb import *
 from administrativo.view_lead import *
 from administrativo.view_modeloevaluativo import *
 from administrativo.view_miscursos import *
+from administrativo.view_facturas import *
 
 urlpatterns = [
 path(r'', dashboard, name='dashboard'),
@@ -40,6 +41,7 @@ path(r'', dashboard, name='dashboard'),
     path(r'tiporubros/', view_tiporubro, name='tiporubros'),
     path(r'finanzas/',view_finanzas ,name='finanzas'),
     path(r'mis_finanzas/',view_mis_finanzas ,name='mis_finanzas'),
+    path(r'facturas/',view_facturas ,name='facturas'),
     path(r'cajas/',view_cajas ,name='cajas'),
     path(r'sesioncaja/',view_sesioncaja ,name='sesioncaja'),
     path(r'cargos/',view_cargoocupacional ,name='cargos'),
