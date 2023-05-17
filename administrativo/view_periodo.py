@@ -428,6 +428,17 @@ def view_periodo(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'eliminar_periodo':
+                try:
+                    with transaction.atomic():
+                        registro = Periodo.objects.get(pk=request.POST['id'])
+                        registro.status = False
+                        registro.save(request)
+                        return JsonResponse({"respuesta": True, "mensaje": "Registro eliminado correctamente."})
+
+                except Exception as ex:
+                    pass
+
             if peticion == 'eliminar_inscrito':
                 try:
                     with transaction.atomic():
