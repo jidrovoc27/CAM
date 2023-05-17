@@ -19,6 +19,7 @@ from CAM.settings import BASE_DIR
 from administrativo.forms import *
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
+from django.db.models import Q
 
 @login_required(redirect_field_name='next', login_url='/login')
 @transaction.atomic()
@@ -309,7 +310,14 @@ def view_modeloevaluativo(request):
                 data['titulo'] = 'Modelos evaluativos'
                 data['titulo_tabla'] = 'Lista  de modelos evaluativo'
                 data['persona_logeado'] = persona_logeado
-                lista = ModeloEvaluativo.objects.filter(status=True).order_by('id')
+                filtro = (Q(status=True))
+                ruta_paginado = request.path
+                if 'var' in request.GET:
+                    var = request.GET['var']
+                    data['var'] = var
+                    filtro = filtro & (Q(nombre__icontains=var))
+                    ruta_paginado += "?var=" + var + "&"
+                lista = ModeloEvaluativo.objects.filter(filtro).order_by('id')
                 paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
