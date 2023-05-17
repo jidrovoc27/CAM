@@ -10,7 +10,7 @@
             class="fa fa-arrow-left"></span></a>
 {% endblock %}
 {% block contenido %}
-
+    <input type="hidden" name="periodo" id="periodo" value="{{ periodo.id }}">
     <div class="col-md-12 mb-lg-0 mb-4 ">
         <div class="position-relative  card mt-1 ">
             <div class="card-header pb-0 p-3 ">
@@ -29,6 +29,30 @@
                 <div class="row ">
                     <div class="col-6 d-flex align-items-center">
                         <h6 class="mb-0">{{ periodo }}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="card-header pb-0 p-3 ">
+                <div class="row ">
+                    <div class="col-6 d-flex align-items-start">
+                        <input class="form-control"
+                               style="border-style: solid;border-width: 0.2px;width: 309px;padding-left: 10px;margin-right: 10px;height: 30px;"
+                               type="text" id="buscarinfo" placeholder="Curso, apellidos, nombres o cédula de docente"
+                               {% if var %}value="{{ var }}"{% endif %}>
+                        <select id="estadocurso" class="form-control"
+                                style="border-style: solid;border-width: 0.5px;margin-left: 10px;padding-left: 10px;height: 30px;width: 50%!important;"
+                                data-width="30%" name="estadocurso">
+                            <option value="0" {% if estadocurso == 0 %}selected{% endif %}>TODOS</option>
+                            {% for estado in ESTADO_CURSO %}
+                                {% if not estado.0 == 1 %}
+                                    <option value="{{ estado.0 }}"
+                                            {% if estadocurso == estado.0 %}selected{% endif %}>{{ estado.1 }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <button id="buscar" class="btn btn-success m-0 ms-2"
+                                style="height: 30px;vertical-align: center;padding-top: 5px;" type="button">Buscar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -71,16 +95,19 @@
                             {% for fila in page_obj %}
                                 <tr>
                                     <td class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">{{ fila.id }}</td>
-                                    <td data-title="Nombre/ Cedula" class="text-center">
+                                    <td data-title="Nombre/ Cedula" class="text-left">
                                         <div class="d-flex flex-column justify-content-center">
                                             <h6 class="mb-0 text-xs">{{ fila }}</h6>
                                             {% if fila.migrado %}
                                                 <p class="text-xs text-secondary mb-0">
-                                                    <strong style="color: green">MIGRADO</strong></p><br>
+                                                    <strong style="color: green">MIGRADO</strong></p>
                                             {% else %}
                                                 <p class="text-xs text-secondary mb-0">
-                                                    <strong style="color: red">NO MIGRADO</strong></p><br>
+                                                    <strong style="color: red">NO MIGRADO</strong></p>
                                             {% endif %}
+                                            <p class="text-xs text-secondary mb-0">
+                                                    <strong style="color:{% if fila.estado == 1 or fila.estado == 2 %}green{% else %}red{% endif %}">{{ fila.get_estado_display }}</strong></p><br>
+
                                         </div>
                                     </td>
                                     <td data-title="Publicado" class="text-center">
@@ -94,7 +121,8 @@
                                         <span class="text-xs">{{ fila.docente }}</span>
                                     </td>
                                     <td class="text-xs text-center" data-title="¿Activo?">
-                                        {{ fila.fechainicioinscripcion|date:"d-m-Y" }} - {{ fila.fechafininscripcion|date:"d-m-Y" }}
+                                        {{ fila.fechainicioinscripcion|date:"d-m-Y" }}
+                                        - {{ fila.fechafininscripcion|date:"d-m-Y" }}
                                     </td>
                                     <td class="text-xs text-center" data-title="¿Activo?">
                                         ${{ fila.costo }}
@@ -177,8 +205,24 @@
 
 {% block script %}
     <script>
+        $(function () {
+            $("#estadocurso").select2({"width": "10%"});
+        })
 
+    </script>
 
+    <script type="text/javascript">
+        $("#buscar").click(function () {
+            var term = $("#buscarinfo").val().trim().toUpperCase();
+            var periodo = $("#periodo").val();
+            var estadocurso = $("#estadocurso").val();
+            var url = "/periodo/?peticion=cursos&id=" + periodo
+            if (term.length > 0) {
+                url += "&var=" + term;
+            }
+            url += "&estadocurso=" + estadocurso
+            location.href = url
+        });
     </script>
 
 {% endblock %}

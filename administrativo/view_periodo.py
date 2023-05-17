@@ -757,14 +757,29 @@ def view_periodo(request):
                     data['titulo_tabla'] = 'Lista  de cursos'
                     data['persona_logeado'] = persona_logeado
                     idperiodo = int(request.GET['id'])
+                    filtro = (Q(status=True))
                     data['periodo'] = periodo = Periodo.objects.get(id=idperiodo)
                     ruta_paginado = 'peticion=cursos&id=' + str(periodo.id) + '&'
-                    lista = Curso.objects.filter(status=True, periodo=periodo).order_by('id')
+                    if 'var' in request.GET:
+                        var = request.GET['var']
+                        data['var'] = var
+                        filtro = filtro & (Q(nombre__icontains=var) | Q(docente__persona__nombres__icontains=var) |
+                                           Q(docente__persona__apellidos__icontains=var) |
+                                           Q(docente__persona__cedula__icontains=var))
+                        ruta_paginado += "var=" + var + "&"
+                    if 'estadocurso' in request.GET:
+                        estadocurso = int(request.GET['estadocurso'])
+                        if estadocurso > 0:
+                            data['estadocurso'] = estadocurso
+                            filtro = filtro & (Q(estado=estadocurso))
+                            ruta_paginado += "estadocurso=" + str(estadocurso) + "&"
+                    lista = Curso.objects.filter(filtro).order_by('id')
                     paginator = Paginator(lista, 15)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
                     data['ruta_paginado'] = ruta_paginado
+                    data['ESTADO_CURSO'] = ESTADO_CURSO
                     return render(request, "administrativo/cursos/view.html", data)
                 except Exception as ex:
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
