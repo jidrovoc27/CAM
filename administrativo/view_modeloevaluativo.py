@@ -296,11 +296,19 @@ def view_modeloevaluativo(request):
                     data['titulo_tabla'] = 'Detalle del modelo evaluativo'
                     data['modelo'] = modelo = ModeloEvaluativo.objects.get(id=int(request.GET['id']))
                     data['persona_logeado'] = persona_logeado
-                    lista = DetalleModeloEvaluativo.objects.filter(status=True, modelo=modelo)
+                    ruta_paginado = 'peticion=detallemodelo&id=' + str(modelo.id) + '&'
+                    filtro = (Q(status=True) & Q(modelo=modelo))
+                    if 'var' in request.GET:
+                        var = request.GET['var']
+                        data['var'] = var
+                        filtro = filtro & (Q(nombre__icontains=var))
+                        ruta_paginado += "var=" + var + "&"
+                    lista = DetalleModeloEvaluativo.objects.filter(filtro)
                     paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
+                    data['ruta_paginado'] = ruta_paginado
                     return render(request, "administrativo/modeloevaluativo/detallemodelo.html", data)
                 except Exception as ex:
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
