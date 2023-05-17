@@ -19,58 +19,7 @@ from CAM.settings import BASE_DIR
 from administrativo.forms import *
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
-
-def link_callback(uri, rel):
-    """
-    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
-    resources
-    """
-    path_uri = str(BASE_DIR) + str(uri)
-    result = finders.find(path_uri)
-    if result:
-        if not isinstance(result, (list, tuple)):
-            result = [result]
-        result = list(os.path.realpath(path) for path in result)
-        path = result[0]
-    else:
-        sUrl = settings.STATIC_URL  # Typically /static/
-        sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
-        mUrl = settings.MEDIA_URL  # Typically /media/
-        mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
-
-        if uri.startswith(mUrl):
-            path = os.path.join(mRoot, uri.replace(mUrl, ""))
-        elif uri.startswith(sUrl):
-            path = os.path.join(sRoot, uri.replace(sUrl, ""))
-        else:
-            return uri
-
-    # make sure that file exists
-    if not os.path.isfile(path):
-        raise Exception(
-            'media URI must start with %s or %s' % (sUrl, mUrl)
-        )
-    return path
-
-
-
-
-def render_pdf_view(template_paths,data):
-    template_path = template_paths
-    context = data
-    # Create a Django response object, and specify content_type as pdf
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="factura.pdf"'
-    # find the template and render it.
-    template = get_template(template_path)
-    html = template.render(context)
-
-    # create a pdf
-    pisa_status = pisa.CreatePDF(html, dest=response, link_callback=link_callback)
-    # if error then show some funny view
-    if pisa_status.err:
-       return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
+from django.db.models import Q
 
 
 
@@ -178,7 +127,14 @@ def view_cargoocupacional(request):
                 data['titulo'] = 'Cargos ocupacionales'
                 data['titulo_tabla'] = 'Lista  de cargos'
                 data['persona_logeado'] = persona_logeado
-                lista = Cargo.objects.filter(status=True).order_by('id')
+                filtro = (Q(status=True))
+                ruta_paginado = request.path
+                if 'var' in request.GET:
+                    var = request.GET['var']
+                    data['var'] = var
+                    filtro = filtro & (Q(nombre__icontains=var))
+                    ruta_paginado += "?var=" + var + "&"
+                lista = Cargo.objects.filter(filtro).order_by('id')
                 paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
