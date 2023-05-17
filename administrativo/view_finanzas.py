@@ -11,6 +11,7 @@ from administrativo.funciones import add_data_aplication
 from administrativo.models import *
 from django.db.models import Sum
 from django.template.loader import get_template
+from django.db.models import Q
 
 
 @login_required(redirect_field_name='next', login_url='/login')
@@ -24,6 +25,7 @@ def view_finanzas(request):
         persona_logeado = Persona.objects.get(usuario=usuario_logeado, status=True)
     else:
         persona_logeado = 'CAM'
+    data['persona_logeado'] = persona_logeado
     if request.method == 'POST':
         if 'peticion' in request.POST:
             peticion = request.POST['peticion']
@@ -117,13 +119,15 @@ def view_finanzas(request):
                             sesioncajadisponible = SesionCaja.objects.filter(status=True, caja=cajadisponible.first(), activo=True, inicio=fechaactual)
                             if sesioncajadisponible:
                                 puedepagar = True
-                    data['persona'] = Persona.objects.get(id=request.GET['id'])
+                    data['persona'] = persona = Persona.objects.get(id=request.GET['id'])
+                    ruta_paginado = "peticion=ver_rubro&id=" + str(persona.id) + '&'
                     lista = Rubro.objects.filter(status=True, persona_id=request.GET['id'])
                     paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
                     data['puedepagar'] = puedepagar
+                    data['ruta_paginado'] = ruta_paginado
                     return render(request, "administrativo/finanzas/rubros.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
@@ -214,7 +218,16 @@ def view_finanzas(request):
                 data['titulo'] = 'Finanzas'
                 data['titulo_tabla'] = 'Listado de personas'
                 data['persona_logeado'] = persona_logeado
-                lista = Persona.objects.filter(status=True)
+                filtro = (Q(status=True))
+                ruta_paginado = request.path
+                if 'var' in request.GET:
+                    var = request.GET['var']
+                    data['var'] = var
+                    filtro = filtro & (Q(nombres__icontains=var) |
+                                       Q(apellidos__icontains=var) |
+                                       Q(cedula__icontains=var))
+                    ruta_paginado += "?var=" + var + "&"
+                lista = Persona.objects.filter(filtro)
                 paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
