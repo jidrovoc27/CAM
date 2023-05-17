@@ -19,6 +19,7 @@ from CAM.settings import BASE_DIR
 from administrativo.forms import *
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
+from django.db.models import Q
 
 @login_required(redirect_field_name='next', login_url='/login')
 @transaction.atomic()
@@ -108,11 +109,21 @@ def view_miscursos(request):
                     data['titulo_tabla'] = 'Alumnos matriculados'
                     data['persona_logeado'] = persona_logeado
                     data['curso'] = curso = Curso.objects.get(id=int(request.GET['id']))
-                    lista = InscritoCurso.objects.filter(status=True, curso=curso).order_by('id')
+                    ruta_paginado = 'peticion=veralumnos&id=' + str(curso.id) + '&'
+                    filtro = (Q(status=True) & Q(curso=curso))
+                    if 'var' in request.GET:
+                        var = request.GET['var']
+                        data['var'] = var
+                        filtro = filtro & (Q(alumno__persona__nombres__icontains=var) |
+                                           Q(alumno__persona__apellidos__icontains=var) |
+                                           Q(alumno__persona__cedula__icontains=var))
+                        ruta_paginado += "var=" + var + "&"
+                    lista = InscritoCurso.objects.filter(filtro).order_by('id')
                     paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
+                    data['ruta_paginado'] = ruta_paginado
                     return render(request, "administrativo/miscursos/misalumnos.html", data)
                 except Exception as ex:
                     transaction.set_rollback(True)
@@ -123,7 +134,14 @@ def view_miscursos(request):
                 data['titulo'] = 'Mis cursos'
                 data['titulo_tabla'] = 'Lista  de cursos a cargo'
                 data['persona_logeado'] = persona_logeado
-                lista = Curso.objects.filter(status=True, docente__persona=persona_logeado, migrado=True).order_by('id')
+                filtro = (Q(status=True) & Q(docente__persona=persona_logeado) & Q(migrado=True))
+                ruta_paginado = request.path
+                if 'var' in request.GET:
+                    var = request.GET['var']
+                    data['var'] = var
+                    filtro = filtro & (Q(nombre__icontains=var))
+                    ruta_paginado += "?var=" + var + "&"
+                lista = Curso.objects.filter(filtro).order_by('id')
                 paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
