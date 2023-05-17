@@ -838,7 +838,15 @@ def view_periodo(request):
                 data['titulo'] = 'Periodos'
                 data['titulo_tabla'] = 'Lista  de periodos'
                 data['persona_logeado'] = persona_logeado
-                lista = Periodo.objects.filter(status=True).order_by('id')
+                filtro = (Q(status=True))
+                ruta_paginado = request.path
+                if 'var' in request.GET:
+                    var = request.GET['var']
+                    data['var'] = var
+                    filtro = filtro & (Q(nombre__icontains=var) |
+                                       Q(descripcion__icontains=var))
+                    ruta_paginado += "?var=" + var + "&"
+                lista = Periodo.objects.filter(filtro).order_by('id')
                 paginator = Paginator(lista, 15)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)

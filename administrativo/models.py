@@ -228,6 +228,9 @@ class Periodo(ModeloBase):
     def total_cursos(self):
         return Curso.objects.filter(status=True, periodo=self).count()
 
+    def puede_eliminar(self):
+        return Curso.objects.filter(status=True, periodo=self).exists()
+
 
 ESTADO_CURSO = (
     (1, u'CREADO'),
