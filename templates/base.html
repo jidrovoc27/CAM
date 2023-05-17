@@ -347,14 +347,14 @@
                                     {% for perfil in mis_perfiles %}
                                         {% if perfil.is_profesor %}
                                             <li>
-                                                <a class="dropdown-item" href="/loginacademia/inicio/?peticion=cambioperfil&tipoperfil=is_profesor">
+                                                <a class="dropdown-item {% if identificadorperfil == 'is_profesor' %}active{% endif %}" href="/loginacademia/inicio/?peticion=cambioperfil&tipoperfil=is_profesor">
                                                     <i class="fe fe-settings me-2"></i>Perfil docente
                                                 </a>
                                             </li>
                                         {% endif %}
                                         {% if perfil.is_alumno %}
                                             <li>
-                                                <a class="dropdown-item" href="/loginacademia/inicio/?peticion=cambioperfil&tipoperfil=is_alumno">
+                                                <a class="dropdown-item {% if identificadorperfil == 'is_alumno' %}active{% endif %}" href="/loginacademia/inicio/?peticion=cambioperfil&tipoperfil=is_alumno">
                                                     <i class="fe fe-settings me-2"></i>Perfil alumno
                                                 </a>
                                             </li>
@@ -407,7 +407,7 @@
                         </div>
                         <div class="lh-1">
                             <h2 class="mb-0">{{ persona_logeado }}</h2>
-                            <p class="mb-0 d-block">{{ persona_logeado }}@hotmail.com</p>
+                            <p class="mb-0 d-block">{{ persona_logeado.email }}</p>
                         </div>
                     </div>
                 </div>
@@ -435,32 +435,56 @@
                         <div class="navbar-nav flex-column">
                             <!-- Navbar header -->
                             <span class="navbar-header">Menú</span>
-                            <ul class="list-unstyled ms-n2 mb-4">
-                                <!-- Nav item -->
-                                <li class="nav-item">
-                                    <a class="nav-link" href="dashboard-instructor.html"><i
-                                            class="fe fe-home nav-icon"></i>Inicio</a>
-                                </li>
-                                <!-- Nav item -->
-                                <li class="nav-item {% if is_cursos %}active{% endif %}">
-                                    <a class="nav-link" href="/loginacademia/inicio/"><i
-                                            class="fe fe-book nav-icon"></i>Mis cursos</a>
-                                </li>
-                                <!-- Nav item -->
-                                <li class="nav-item {% if is_calificaciones %}active{% endif %}">
-                                    <a class="nav-link" href="?peticion=calificaciones&id={{ alumno.id }}"><i
-                                            class="fe fe-star nav-icon"></i>Calificaciones</a>
-                                </li>
-                                <!-- Nav item -->
-                                <li class="nav-item">
-                                    <a class="nav-link" href="instructor-earning.html"><i
-                                            class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
-                                </li>
-                                <li class="nav-item {% if is_finanza %}active{% endif %}">
-                                    <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i
-                                            class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
-                                </li>
-                            </ul>
+                            {% if identificadorperfil == 'is_alumno' %}
+                                <ul class="list-unstyled ms-n2 mb-4">
+                                    <!-- Nav item -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="dashboard-instructor.html"><i
+                                                class="fe fe-home nav-icon"></i>Inicio</a>
+                                    </li>
+                                    <!-- Nav item -->
+                                    <li class="nav-item {% if is_cursos %}active{% endif %}">
+                                        <a class="nav-link" href="/loginacademia/inicio/"><i
+                                                class="fe fe-book nav-icon"></i>Mis cursos</a>
+                                    </li>
+                                    <!-- Nav item -->
+                                    <li class="nav-item {% if is_calificaciones %}active{% endif %}">
+                                        <a class="nav-link" href="?peticion=calificaciones&id={{ alumno.id }}"><i
+                                                class="fe fe-star nav-icon"></i>Calificaciones</a>
+                                    </li>
+                                    <!-- Nav item -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="instructor-earning.html"><i
+                                                class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
+                                    </li>
+                                    <li class="nav-item {% if is_finanza %}active{% endif %}">
+                                        <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i
+                                                class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
+                                    </li>
+                                </ul>
+                            {% else %}
+                                <ul class="list-unstyled ms-n2 mb-4">
+                                    <!-- Nav item -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="dashboard-instructor.html"><i
+                                                class="fe fe-home nav-icon"></i>Inicio</a>
+                                    </li>
+                                    <!-- Nav item -->
+                                    <li class="nav-item {% if is_cursos %}active{% endif %}">
+                                        <a class="nav-link" href="/loginacademia/inicio/"><i
+                                                class="fe fe-book nav-icon"></i>Mis cursos</a>
+                                    </li>
+                                    <!-- Nav item -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="instructor-earning.html"><i
+                                                class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
+                                    </li>
+                                    <li class="nav-item {% if is_finanza %}active{% endif %}">
+                                        <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i
+                                                class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
+                                    </li>
+                                </ul>
+                            {% endif %}
                             <!-- Navbar header -->
                             <span class="navbar-header">Configuración</span>
                             <ul class="list-unstyled ms-n2 mb-0">

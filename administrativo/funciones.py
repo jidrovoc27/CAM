@@ -157,11 +157,11 @@ def add_data_aplication_academia(request,data):
             persona_logeada = 'CAM'
             request.session['persona'] = 'CAM'
         # request.session.save()
+    if not request.session['persona'] == 'CAM':
+        mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
+        tipoperfil = mis_perfiles.first()
 
     if 'perfil_principal' not in request.session:
-        if not request.session['persona'] == 'CAM':
-            mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
-            tipoperfil = mis_perfiles.first()
             # if tipoperfil.is_administrador == True:
             #     grupo_administrativo = Group.objects.filter(name='Administrativo')
             #     if grupo_administrativo:
@@ -177,6 +177,13 @@ def add_data_aplication_academia(request,data):
 
             request.session['perfil_principal'] = model_to_dict(mis_perfiles.first())
         # request.session.save()
+
+    if 'identificadorperfil' not in request.session:
+        if tipoperfil.is_alumno == True:
+            request.session['identificadorperfil'] = 'is_alumno'
+        elif tipoperfil.is_profesor == True:
+            request.session['identificadorperfil'] = 'is_profesor'
+
 
     if request.method == 'GET' and request.path:
         if Modulo.objects.values("id").filter(ruta=request.path[1:],status=True).exists():
@@ -259,7 +266,7 @@ def act_data_aplication_academia(request,data):
     del request.session['persona']
     del request.session['perfil_principal']
     del request.session['tipoperfil']
-
+    del request.session['identificadorperfil']
 
     if 'lista_url_ruta' not in request.session:
         request.session['lista_url_ruta'] = [['/', 'Inicio']]
@@ -284,16 +291,19 @@ def act_data_aplication_academia(request,data):
             #     if grupo_administrativo:
             #         request.session['tipoperfil'] = grupo_administrativo.first().id
             if data['tipoperfil'] == 'is_alumno':
+                request.session['identificadorperfil'] = data['tipoperfil']
                 grupo_alumno = Group.objects.filter(name='Alumno')
                 if grupo_alumno:
                     request.session['tipoperfil'] = grupo_alumno.first().id
             elif data['tipoperfil'] == 'is_profesor':
+                request.session['identificadorperfil'] = data['tipoperfil']
                 grupo_profesor = Group.objects.filter(name='Docente')
                 if grupo_profesor:
                     request.session['tipoperfil'] = grupo_profesor.first().id
 
         request.session['perfil_principal'] = model_to_dict(mis_perfiles.first())
         # request.session.save()
+
 
     if request.method == 'GET' and request.path:
         if Modulo.objects.values("id").filter(ruta=request.path[1:],status=True).exists():

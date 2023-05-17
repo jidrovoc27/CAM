@@ -65,6 +65,11 @@ def dashboard(request):
         persona_logeado = Persona.objects.get(usuario=usuario_logeado, status=True)
     else:
         persona_logeado = 'CAM'
+    data['persona_logeado'] = persona_logeado
+    data['identificadorperfil'] = identificadorperfil = request.session['identificadorperfil']
+    if not 'CAM' == persona_logeado:
+        mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado)
+        data['mis_perfiles'] = mis_perfiles
 
     if request.method == 'POST':
         if 'peticion' in request.POST:
@@ -255,15 +260,22 @@ def dashboard(request):
                 data['titulo'] = 'Menú principal'
                 mis_perfiles = None
                 #obtener perfiles
-                if not 'CAM' == persona_logeado:
-                    mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado)
-                    data['mis_perfiles'] = mis_perfiles
-                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
-                    data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True, inscrito=alumno).order_by('curso_id').distinct('curso_id').values_list('curso_id')
-                    data['miscursos'] = CursoA.objects.filter(status=True, id__in=inscrito)
+                if identificadorperfil == 'is_alumno':
+                    if not 'CAM' == persona_logeado:
+                        # mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado)
+                        # data['mis_perfiles'] = mis_perfiles
+                        data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                        data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True, inscrito=alumno).order_by('curso_id').distinct('curso_id').values_list('curso_id')
+                        data['miscursos'] = CursoA.objects.filter(status=True, id__in=inscrito)
+                        data['is_cursos'] = True
+                    return render(request, "academia/alumno/view.html", data)
+                elif identificadorperfil == 'is_profesor':
+                    data['alumno'] = persona = Persona.objects.get(id=persona_logeado.id)
+                    data['docente'] = docente = DocenteA.objects.get(persona=persona)
+                    data['miscursos'] = CursoA.objects.filter(status=True, docente=docente).order_by('-id')
                     data['is_cursos'] = True
-                data['persona_logeado'] = persona_logeado
-                return render(request, "academia/alumno/view.html", data)
+                    return render(request, "academia/docente/view.html", data)
+
 
 
             except Exception as ex:

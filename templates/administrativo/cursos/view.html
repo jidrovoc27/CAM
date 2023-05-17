@@ -162,7 +162,7 @@
                                                         </li>
                                                     {% endif %}
                                                 {% endif %}
-                                                {% if not fila.en_uso %}
+                                                {% if fila.total_inscritos <= 0 %}
                                                     <li><a class="dropdown-item border-radius-md text-danger"
                                                            href="javascript:;"
                                                            onclick="eliminar_registro('eliminar_curso','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
