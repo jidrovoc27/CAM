@@ -51,7 +51,7 @@
                                         </div>
                                         <div class="ms-lg-3 mt-2 mt-lg-0">
                                             <h4 class="mb-1 h5">
-                                                <a href="#" class="text-inherit">
+                                                <a href="?peticion=admcourse&id={{ micurso.id }}" class="text-inherit">
                                                     {{ micurso }}
                                                 </a>
                                             </h4>
@@ -80,7 +80,7 @@
                                 </td>
                                 <td class="border-top-0">{{ micurso.fechainicio|date:"d-m-Y" }} / {{ micurso.fechafin|date:"d-m-Y" }}</td>
                                 <td class="border-top-0 text-center">
-                                    {{ micurso.minasistencia }}
+                                    {{ micurso.minnota }}
                                 </td>
                                 <td class="border-top-0 text-center">
                                     <span class="badge bg-success">{{ micurso.get_estado_display }}</span>

@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load adiciones %}
-{#{% load humanize %}#}
 {% block contenido %}
     <div class="col-lg-9 col-md-8 col-12">
         <!-- Card -->
@@ -109,7 +108,10 @@
                                 </div>
                             </td>
                             <td class="border-top-0 text-center">
-                                {{ detalle.total_actividad|floatformat:2 }}
+                                {% with notarpom=detalle|args:inscrito.id|call:'total_actividad' %}
+                                    {{ notarpom|floatformat:2 }}
+                                {% endwith %}
+                                {#                                {{ detalle.total_actividad|floatformat:2 }}#}
                             </td>
                             <td class="border-top-0 text-center">
                                 0 - {{ detalle.notamaxima }}

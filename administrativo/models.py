@@ -111,6 +111,12 @@ class Persona(ModeloBase):
             tienevalorapagar = True
         return tienevalorapagar
 
+    def miscargos(self):
+        docente = Docente.objects.filter(status=True, persona=self)
+        if docente:
+            return docente.first().cargo
+        return ''
+
 
 class PersonaPerfil(ModeloBase):
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE)

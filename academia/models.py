@@ -44,6 +44,9 @@ class ModeloEvaluativoA(ModeloBase):
         self.nombre = self.nombre.upper()
         super(ModeloEvaluativoA, self).save(*args, **kwargs)
 
+    def detallecalificacion(self):
+        return DetalleModeloEvaluativoA.objects.filter(status=True, modelo=self)
+
 class DetalleModeloEvaluativoA(ModeloBase):
     modelo = models.ForeignKey(ModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u"Modelo", blank=True, null=True)
     nombre = models.CharField(default='', max_length=10, verbose_name=u"Nombre campo", blank=True, null=True)
@@ -62,12 +65,12 @@ class DetalleModeloEvaluativoA(ModeloBase):
     def detalleactividades(self):
         return DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
 
-    def total_actividad(self):
+    def total_actividad(self, inscrito_id):
         try:
             detalleactividad = lista_actividades = conteo = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
             lista_actividades = lista_actividades.values_list('id')
             conteo = conteo.count()
-            totalnotas = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=detalleactividad).aggregate(total=Sum('nota'))
+            totalnotas = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=detalleactividad, inscrito_id=inscrito_id).aggregate(total=Sum('nota'))
 
             totalnotas = totalnotas['total'] if totalnotas['total'] else 0
             if conteo > 0 and totalnotas:
@@ -117,9 +120,9 @@ class CursoA(ModeloBase):
     docente = models.ForeignKey(DocenteA, on_delete=models.PROTECT, verbose_name=u"Docente", blank=True, null=True)
     fechainicio = models.DateField(blank=True, null=True)
     fechafin = models.DateField(blank=True, null=True)
-    observacion = models.TextField(blank=True, null=True, verbose_name=u"Observacion")
-    objetivo = models.TextField(blank=True, null=True, verbose_name=u"Objetivo")
-    contenido = models.TextField(blank=True, null=True, verbose_name=u"Contenido")
+    observacion = models.TextField(blank=True, null=True, verbose_name=u"Observacion", max_length=1000)
+    objetivo = models.TextField(blank=True, null=True, verbose_name=u"Objetivo", max_length=1000)
+    contenido = models.TextField(blank=True, null=True, verbose_name=u"Contenido", max_length=1000)
     visualizar = models.BooleanField(default=False, verbose_name=u"Visualizar")
     planificacion = models.FileField(upload_to='planificacioncurso', verbose_name='Planificación', null=True, blank=True)
     fondoweb = models.ImageField(verbose_name="Fondo para página web", upload_to='fondoweb', null=True, blank=True)
@@ -137,10 +140,33 @@ class CursoA(ModeloBase):
     def detallecalificacion(self):
         return DetalleModeloEvaluativoA.objects.filter(status=True, modelo=self.modeloevaluativo)
 
+    def misrecursos(self):
+        return RecursosCurso.objects.filter(status=True, curso=self)
+
 ESTADO_ACTIVIDAD = (
     (1, u'ACTIVO'),
     (2, u'INACTIVO'),
 )
+
+TIPO_RECURSOS = (
+    (1, u'RECURSO'),
+    (2, u'ENLACE'),
+)
+
+class RecursosCurso(ModeloBase):
+    curso = models.ForeignKey(CursoA, on_delete=models.PROTECT, verbose_name=u'Curso', blank=True, null=True)
+    nombre = models.CharField(max_length=500, verbose_name=u'Nombre del recurso', blank=True, null=True)
+    tipo = models.IntegerField(default=1, choices=TIPO_RECURSOS, blank=True, null=True, verbose_name=u'Tipo de recurso')
+    archivo = models.FileField(upload_to='recursos', verbose_name='Archivo recurso', null=True, blank=True)
+    enlace = models.CharField(max_length=500, verbose_name=u'Enlace', blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Recurso"
+        verbose_name_plural = "Recursos"
+        ordering = ['id']
+
+    def __str__(self):
+        return u'%s' % (self.nombre)
 
 class DetalleActividadesModeloEvaluativoA(ModeloBase):
     detalle = models.ForeignKey(DetalleModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'N1, N2, N3, etc.', blank=True, null=True)

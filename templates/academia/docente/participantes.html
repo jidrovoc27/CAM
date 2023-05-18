@@ -1,0 +1,35 @@
+{% extends 'academia/docente/admcourse.html' %}
+{% load static %}
+{% load adiciones %}
+{% block contentadicional %}
+    <div class="table-responsive border-0 overflow-y-hidden">
+        <br>
+        <br>
+        <table class="table mb-0 text-nowrap">
+            <thead class="table-light">
+            <tr>
+                <th scope="col" class="border-0">Participante</th>
+                {% for detalle in curso.modeloevaluativo.detallecalificacion %}
+                    <th scope="col" class="border-0 text-center">{{ detalle.nombre }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for inscrito in inscritos %}
+                <tr>
+                    <td class="border-top-0">
+                        {{ inscrito }}
+                    </td>
+                    {% for detalle in curso.modeloevaluativo.detallecalificacion %}
+                        <td class="border-top-0 text-center">
+                            {% with notarpom=detalle|args:inscrito.id|call:'total_actividad' %}
+                                {{ notarpom|floatformat:2 }}
+                            {% endwith %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -255,6 +255,38 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'admcourse':
+                try:
+                    data['titulo'] = 'Mis cursos'
+                    data['is_cursos'] = 'is_cursos'
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    if 'option' in request.GET:
+                        data['option'] = option = request.GET['option']
+                        if option == 'summary':
+                            data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                            return render(request, "academia/docente/resumen.html", data)
+                        elif option == 'participants':
+                            data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by('inscrito__apellidos')
+                            return render(request, "academia/docente/participantes.html", data)
+                        elif option == 'addactv':
+                            data['infoactv'] = True
+                            data['actividades'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+
+                            if 'detalle' in request.GET:
+                                data['detalle'] = detalle = int(request.GET['detalle'])
+                                data['listadodetalles'] = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle_id=detalle)
+                            return render(request, "academia/docente/actividades.html", data)
+                        elif option == 'addclass':
+                            data['infoclass'] = True
+                            return render(request, "academia/docente/resumen.html", data)
+                    else:
+                        data['option'] = 'summary'
+                        data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                        return render(request, "academia/docente/resumen.html", data)
+                except Exception as ex:
+                    pass
+
         else:
             try:
                 data['titulo'] = 'Menú principal'
