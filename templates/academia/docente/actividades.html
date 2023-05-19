@@ -37,6 +37,11 @@
                         style="height: 30px;vertical-align: center;padding-top: 3px;" type="button">Buscar
                 </button>
             </div>
+            <div class="col-6 text-end">
+                <a class="btn btn-outline-dark btn-sm mb-0" href="{{ request.path }}?peticion=add_actividad&id={{ curso.id }}"><i
+                        class="material-icons text-sm"></i>&nbsp;&nbsp;Agregar actividad</a>
+
+            </div>
         </div>
         <div class="table-responsive border-0">
             <table class="table mb-0 text-nowrap">
@@ -80,6 +85,10 @@
                                 </span>
                             </span>
                         </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center">Sin actividades</td>
                     </tr>
                 {% endfor %}
                 </tbody>

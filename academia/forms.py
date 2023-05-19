@@ -71,3 +71,21 @@ class AgregarEntregaForm(forms.Form):
 
     def sin_archivo(self):
         campo_no_requerido(self, 'archivo')
+
+class AgregarActividadForm(forms.Form):
+    detalle = forms.ModelChoiceField(label=u"Actividad",required=True, queryset=DetalleModeloEvaluativoA.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))
+    nombre = forms.CharField(label='Título', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
+    descripcion = forms.CharField(label='Descripción', required=True, widget=forms.Textarea(attrs={'class': 'form-control', }))
+    minnota = forms.CharField(label=u"Nota mínima", max_length=50, required=True, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    maxnota = forms.CharField(label=u"Nota máxima", max_length=50, required=True, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '50'}))
+    fechamaximasubida = forms.DateField(label=u"Fecha máxima de subida", input_formats=['%Y-%m-%d'], required=False, widget=DateTimeInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}))
+    horalimite = forms.TimeField(label=u"Hora máxima", required=True, input_formats=['%H:%M'], widget=DateTimeInput(format='%H:%M', attrs={'class': 'form-control'}))
+    imagen = ExtFileField(label=u'Seleccione imagen', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png, jpeg', ext_whitelist=(".jpg", ".png", ".jpeg"), max_upload_size=2621440)
+    archivo = ExtFileField(label=u'Seleccione archivo', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato pdf, word', ext_whitelist=(".docx", ".pdf"), max_upload_size=2621440)
+
+
+    def sin_archivo(self):
+        campo_no_requerido(self, 'archivo')
+
+    def sin_imagen(self):
+        campo_no_requerido(self, 'imagen')

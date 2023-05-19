@@ -100,6 +100,36 @@ def dashboard(request):
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
+            if peticion == 'add_actividad':
+                try:
+                    form = AgregarActividadForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        detalle = form.cleaned_data['detalle']
+                        nombre = form.cleaned_data['nombre']
+                        descripcion = form.cleaned_data['descripcion']
+                        minnota = form.cleaned_data['minnota']
+                        maxnota = form.cleaned_data['maxnota']
+                        fechamaximasubida = form.cleaned_data['fechamaximasubida']
+                        horalimite = form.cleaned_data['horalimite']
+                        actividad = DetalleActividadesModeloEvaluativoA(detalle=detalle, nombre=nombre, descripcion=descripcion, minnota=minnota,
+                                                                        maxnota=maxnota, fechamaximasubida=fechamaximasubida,
+                                                                        horalimite=horalimite)
+                        actividad.save(request)
+                        if 'archivo' in request.FILES:
+                            archivo = request.FILES['archivo']
+                            actividad.archivo = archivo
+                            actividad.save(request)
+
+                        if 'imagen' in request.FILES:
+                            imagen = request.FILES['imagen']
+                            actividad.imagen = imagen
+                            actividad.save(request)
+                        return JsonResponse({"respuesta": True, "mensaje": "Actividad cargada correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
             if peticion == 'edit_tarea':
                 try:
                     form = AgregarEntregaForm(request.POST, request.FILES)
@@ -284,6 +314,19 @@ def dashboard(request):
                         data['option'] = 'summary'
                         data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
                         return render(request, "academia/docente/resumen.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'add_actividad':
+                try:
+                    data['titulo'] = 'Agregar actividad'
+                    data['titulo_formulario'] = 'Adicionar actividad'
+                    data['peticion'] = 'add_actividad'
+                    data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
+                    form = AgregarActividadForm()
+                    form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=cursoA.modeloevaluativo)
+                    data['form'] = form
+                    return render(request, "academia/docente/add_actividad.html", data)
                 except Exception as ex:
                     pass
 

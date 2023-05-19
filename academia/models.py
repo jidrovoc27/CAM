@@ -171,8 +171,9 @@ class RecursosCurso(ModeloBase):
 class DetalleActividadesModeloEvaluativoA(ModeloBase):
     detalle = models.ForeignKey(DetalleModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'N1, N2, N3, etc.', blank=True, null=True)
     nombre = models.CharField(max_length=500, verbose_name=u'Nombre', blank=True, null=True)
-    descripcion = models.CharField(max_length=500, verbose_name=u'Descripción de la actividad a realizar', blank=True, null=True)
+    descripcion = models.CharField(max_length=5000, verbose_name=u'Descripción de la actividad a realizar', blank=True, null=True)
     imagen = models.FileField(upload_to='imagenactividad', blank=True, null=True, verbose_name=u'Imagen del deber')
+    archivo = models.FileField(upload_to='archivoactividad', blank=True, null=True, verbose_name=u'Archivo como ayuda del deber')
     minnota = models.IntegerField(default=7, verbose_name=u'Nota mínima para aprobar el deber', blank=True, null=True)
     maxnota = models.IntegerField(default=10, verbose_name=u'Nota máxima para aprobar el deber', blank=True, null=True)
     fechaminimasubida = models.DateField(verbose_name=u"Fecha mínima que el inscrito puede comenzar subir el deber", blank=True, null=True)
