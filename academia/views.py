@@ -305,7 +305,8 @@ def dashboard(request):
 
                             if 'detalle' in request.GET:
                                 data['detalle'] = detalle = int(request.GET['detalle'])
-                                data['listadodetalles'] = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle_id=detalle)
+                                if detalle > 0:
+                                    data['listadodetalles'] = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle_id=detalle)
                             return render(request, "academia/docente/actividades.html", data)
                         elif option == 'addclass':
                             data['infoclass'] = True
