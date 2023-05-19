@@ -18,6 +18,7 @@
             location.href = url
         });
     </script>
+
 {% endblock %}
 {% block contentadicional %}
     <input type="hidden" value="admcourse" name="peticion" id="peticion">
@@ -38,21 +39,22 @@
                 </button>
             </div>
             <div class="col-6 text-end">
-                <a class="btn btn-outline-dark btn-sm mb-0" href="{{ request.path }}?peticion=add_actividad&id={{ curso.id }}"><i
+                <a class="btn btn-outline-dark btn-sm mb-0"
+                   href="{{ request.path }}?peticion=add_actividad&id={{ curso.id }}"><i
                         class="material-icons text-sm"></i>&nbsp;&nbsp;Agregar actividad</a>
 
             </div>
         </div>
         <div class="table-responsive border-0">
-            <table class="table mb-0 text-nowrap">
+            <table class="table mb-0">
                 <thead class="table-light">
                 <tr>
-                    <th scope="col" class="border-0">Nombre</th>
-                    <th scope="col" class="border-0" style="width: 10px">Descripción</th>
+                    <th scope="col" class="border-0" style="width: 20%">Nombre</th>
+                    <th scope="col" class="border-0" style="width: 40%">Descripción</th>
                     <th scope="col" class="border-0">Nota mínima</th>
                     <th scope="col" class="border-0">Nota máxima</th>
                     <th scope="col" class="border-0">Fecha máxima subida</th>
-                    <th scope="col" class="border-0">Acciones</th>
+                    <th scope="col" class="border-0 text-center">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -61,12 +63,12 @@
                         <td class="border-top-0">
                             {{ detalleactividad.nombre }}
                         </td>
-                        <td class="border-top-0" style="flex-wrap: nowrap">{{ detalleactividad.descripcion }}</td>
+                        <td class="border-top-0" style=""><textarea style="height: 140px;border-style: none">{{ detalleactividad.descripcion }}</textarea> </td>
                         <td class="border-top-0 text-center">{{ detalleactividad.minnota }}</td>
                         <td class="border-top-0 text-center">{{ detalleactividad.maxnota }}</td>
                         <td class="border-top-0 text-center">{{ detalleactividad.fechamaximasubida }}</td>
                         <td class="text-muted border-top-0">
-                            <span class="dropdown dropstart">
+                            <span class="dropdown dropstart" style="float: right">
                                 <a class="btn-icon btn btn-ghost btn-sm rounded-circle "
                                    href="#"
                                    role="button" id="courseDropdown"
@@ -77,10 +79,11 @@
                                 </a>
                                 <span class="dropdown-menu"
                                       aria-labelledby="courseDropdown">
-                                    <span class="dropdown-header">Setting </span>
-                                    <a class="dropdown-item" href="#"><i
+                                    <span class="dropdown-header">Acciones</span>
+                                    <a class="dropdown-item"
+                                       href="?peticion=edit_actividad&id={{ detalleactividad.id }}&curso={{ curso.id }}"><i
                                             class="fe fe-edit dropdown-item-icon"></i>Editar</a>
-                                    <a class="dropdown-item" href="#"><i
+                                    <a class="dropdown-item" style="cursor: pointer" onclick="eliminar_registro('eliminar_actividad','{{ detalleactividad }}','{{ detalleactividad.pk }}')"><i
                                             class="fe fe-trash dropdown-item-icon"></i>Eliminar</a>
                                 </span>
                             </span>
@@ -96,5 +99,4 @@
         </div>
     </div>
     <br>
-
 {% endblock %}

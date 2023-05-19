@@ -150,6 +150,50 @@ def dashboard(request):
                     #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'edit_actividad':
+                try:
+                    form = AgregarActividadForm(request.POST, request.FILES)
+                    # if form.is_valid():
+                    actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.POST['id']))
+                    detalle = request.POST['detalle']
+                    nombre = request.POST['nombre']
+                    descripcion = request.POST['descripcion']
+                    minnota = request.POST['minnota']
+                    maxnota = request.POST['maxnota']
+                    fechamaximasubida = request.POST['fechamaximasubida']
+                    horalimite = request.POST['horalimite']
+                    actividad.detalle_id=int(detalle)
+                    actividad.nombre=nombre
+                    actividad.descripcion=descripcion
+                    actividad.minnota=minnota
+                    actividad.maxnota=maxnota
+                    actividad.fechamaximasubida=fechamaximasubida
+                    actividad.horalimite=horalimite
+                    actividad.save(request)
+                    if 'archivo' in request.FILES:
+                        archivo = request.FILES['archivo']
+                        actividad.archivo = archivo
+                        actividad.save(request)
+
+                    if 'imagen' in request.FILES:
+                        imagen = request.FILES['imagen']
+                        actividad.imagen = imagen
+                        actividad.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Actividad actualizada correctamente."})
+                    # else:
+                    #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'eliminar_actividad':
+                try:
+                    actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.POST['id']))
+                    actividad.status = False
+                    actividad.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Actividad eliminada correctamente."})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']
@@ -227,6 +271,7 @@ def dashboard(request):
                         numerosegundos = fecharestante.seconds
                         numerohoras = numerosegundos // 3600
                         data['tiemporestante'] = str(numerodias) + " días " + str(numerohoras) + " horas"
+                        data['puedesubirtarea'] = True
                     if actividad.fechamaximasubida == fechaactual:
                         fecharestante = actividad.fechamaximasubida - fechaactual
                         numerodias = fecharestante.days
@@ -282,6 +327,32 @@ def dashboard(request):
                     data['form'] = form
                     data['is_calificaciones'] = True
                     return render(request, "academia/calificaciones/edit_tarea.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'edit_actividad':
+                try:
+                    data['titulo'] = 'Editar actividad'
+                    data['titulo_formulario'] = 'Editar actividad'
+                    data['peticion'] = 'edit_actividad'
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['curso']))
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                    form = AgregarActividadForm(initial={
+                        'detalle': actividad.detalle,
+                        'nombre': actividad.nombre,
+                        'descripcion': actividad.descripcion,
+                        'minnota': actividad.minnota,
+                        'maxnota': actividad.maxnota,
+                        'fechamaximasubida': actividad.fechamaximasubida,
+                        'horalimite': actividad.horalimite,
+                        'imagen': actividad.imagen,
+                        'archivo': actividad.archivo,
+                    })
+                    form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                    form.sin_archivo()
+                    form.sin_imagen()
+                    data['form'] = form
+                    return render(request, "academia/docente/edit_actividad.html", data)
                 except Exception as ex:
                     pass
 
