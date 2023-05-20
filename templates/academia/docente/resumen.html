@@ -81,7 +81,7 @@
                                 <img src="{% static 'img/tarea.png' %}"
                                      class="activityicon " alt="book icon">
                             </div>
-                            <a href="#" style="margin-top: 12px;margin-left: 5px">{{ actividad }}</a>
+                            <a href="?peticion=calificar&course={{ curso.id }}&id={{ actividad.id }}&option=summary" style="margin-top: 12px;margin-left: 5px">{{ actividad }}</a>
                         </div>
                     </div>
                 {% empty %}

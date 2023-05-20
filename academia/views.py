@@ -389,6 +389,18 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'calificar':
+                try:
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['course']))
+                    data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by('inscrito__apellidos')
+                    data['alumno'] = persona_logeado.id
+                    data['option'] = option = request.GET['option']
+                    data['is_cursos'] = 'is_cursos'
+                    return render(request, "academia/docente/calificar.html", data)
+                except Exception as ex:
+                    pass
+
             if peticion == 'add_actividad':
                 try:
                     data['titulo'] = 'Agregar actividad'
