@@ -3,6 +3,33 @@
 {% load adiciones %}
 {% block script %}
     <script type="text/javascript">
+        function calificar_deber(actividad, inscrito, peticion, id) {
+            var nota = $("#" + id).val();
+            $.ajax({
+                type: "POST",
+                url: '/loginacademia/inicio/',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'peticion': peticion,
+                    'actividad': actividad,
+                    'inscrito': inscrito,
+                    'nota': nota,
+                },
+                success: function (data) {
+                    if (data.respuesta === true) {
+                        location.reload();
+                    } else {
+                        Swal.fire(data.mensaje);
+                    }
+                },
+                error: function () {
+                    alert("Error de conexión.");
+                },
+
+            });
+        }
+    </script>
+    <script type="text/javascript">
         $(document).ready(function () {
             $("select").select2({"width": "100%"});
         });
@@ -18,6 +45,8 @@
             location.href = url
         });
     </script>
+
+
 
 {% endblock %}
 {% block contentadicional %}
@@ -36,41 +65,111 @@
                 <tr>
                     <th scope="col" class="border-0" style="width: 20%">Participante</th>
                     <th scope="col" class="border-0 text-center" style="width: 40%">Nota</th>
-                    <th scope="col" class="border-0 text-center">Entrega</th>
-                    <th scope="col" class="border-0 text-center">Estado</th>
-{#                    <th scope="col" class="border-0 text-center">Acciones</th>#}
+                    <th scope="col" class="border-0 text-center">Tarea</th>
+                    <th scope="col" class="border-0 text-center">Entregado</th>
+                    <th scope="col" class="border-0 text-center">Calificado</th>
+                    {#                    <th scope="col" class="border-0 text-center">Acciones</th>#}
                 </tr>
                 </thead>
                 <tbody>
                 {% for inscrito in inscritos %}
                     <tr>
                         <td class="border-top-0">
-                            {{ inscrito }}
+                            {{ inscrito }} <br>
+                            <h5 style="font-size: 10px">CI: {{ inscrito.inscrito.cedula }}</h5>
                         </td>
-                        <td class="border-top-0" style=""><input type="number" step="0.01" class="form-control"> </td>
-                        <td class="border-top-0 text-center">Entregado</td>
-                        <td class="border-top-0 text-center"><a class="btn btn-success" href="/media/" target="_blank">Descargar</a></td>
-{#                        <td class="text-muted border-top-0">#}
-{#                            <span class="dropdown dropstart" style="float: right">#}
-{#                                <a class="btn-icon btn btn-ghost btn-sm rounded-circle "#}
-{#                                   href="#"#}
-{#                                   role="button" id="courseDropdown"#}
-{#                                   data-bs-toggle="dropdown"#}
-{#                                   data-bs-offset="-20,20"#}
-{#                                   aria-expanded="false">#}
-{#                                    <i class="fe fe-more-vertical"></i>#}
-{#                                </a>#}
-{#                                <span class="dropdown-menu"#}
-{#                                      aria-labelledby="courseDropdown">#}
-{#                                    <span class="dropdown-header">Acciones</span>#}
-{#                                    <a class="dropdown-item"#}
-{#                                       href="?peticion=edit_actividad&id={{ detalleactividad.id }}&curso={{ curso.id }}"><i#}
-{#                                            class="fe fe-edit dropdown-item-icon"></i>Editar</a>#}
-{#                                    <a class="dropdown-item" style="cursor: pointer" onclick="eliminar_registro('eliminar_actividad','{{ detalleactividad }}','{{ detalleactividad.pk }}')"><i#}
-{#                                            class="fe fe-trash dropdown-item-icon"></i>Eliminar</a>#}
-{#                                </span>#}
-{#                            </span>#}
-{#                        </td>#}
+                        <td class="border-top-0" style="width: 40px">
+                            {% with registraactividad=actividad|args:inscrito.id|call:'registra_actividad' %}
+                                {% if registraactividad %}
+                                    {% with nota_calificada=actividad|args:inscrito.id|call:'nota_calificada' %}
+                                        <input id="sicalifica" type="number" step="0.01" style="text-align: center;width: 120px"
+                                               class="form-control calificar_deber"
+                                               onblur="calificar_deber('{{ actividad.id }}', '{{ inscrito.id }}', 'calificar_deber', 'sicalifica')"
+                                               value="{{ nota_calificada|floatformat:2 }}">
+                                        </td>
+                                    {% endwith %}
+                                {% else %}
+                                    <input id="nocalifica" type="number" step="0.01"
+                                           class="form-control calificar_deber" value="0.00"
+                                           style="text-align: center;width: 120px"
+                                           onblur="calificar_deber('{{ actividad.id }}', '{{ inscrito.id }}', 'calificar_deber', 'nocalifica')">
+                                    </td>
+                                {% endif %}
+                            {% endwith %}
+                        <td class="border-top-0 text-center">
+                            {% with registraactividad=actividad|args:inscrito.id|call:'registra_actividad' %}
+                                {% if registraactividad %}
+                                    {% with tiene_tarea=actividad|args:inscrito.id|call:'tiene_tarea' %}
+                                        {% if tiene_tarea %}
+                                            <a class="btn btn-success" href="/media/{{ tiene_tarea }}" target="_blank" style="">&#8595;</a>
+                                        {% else %}
+                                            ---
+                                        {% endif %}
+                                    {% endwith %}
+
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="border-top-0 text-center">
+                            {% with registraactividad=actividad|args:inscrito.id|call:'registra_actividad' %}
+                                {% if registraactividad %}
+                                    {% with actividad_entregada=actividad|args:inscrito.id|call:'actividad_entregada' %}
+                                        {% if actividad_entregada.entregado %}
+                                            <a class="btn btn-outline-success btn-sm mb-0"><i
+                                                    class="material-icons text-sm"></i>Entregado</a>
+                                        {% else %}
+                                            <a class="btn btn-outline-warning btn-sm mb-0"><i
+                                                    class="material-icons text-sm"></i>No entregado</a>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    <a class="btn btn-outline-warning btn-sm mb-0"><i
+                                            class="material-icons text-sm"></i>No entregado</a>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="border-top-0 text-center">
+                            {% with registraactividad=actividad|args:inscrito.id|call:'registra_actividad' %}
+                                {% if registraactividad %}
+                                    {% with actividad_entregada=actividad|args:inscrito.id|call:'actividad_entregada' %}
+                                        {% if actividad_entregada.calificado %}
+                                            <a class="btn btn-outline-success btn-sm mb-0"><i
+                                                    class="material-icons text-sm"></i>Calificado</a>
+                                        {% else %}
+                                            <a class="btn btn-outline-warning btn-sm mb-0"><i
+                                                    class="material-icons text-sm"></i>No calificado</a>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    <a class="btn btn-outline-warning btn-sm mb-0"><i
+                                                    class="material-icons text-sm"></i>No calificado</a>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+
+                        {#                        <td class="text-muted border-top-0">#}
+                        {#                            <span class="dropdown dropstart" style="float: right">#}
+                        {#                                <a class="btn-icon btn btn-ghost btn-sm rounded-circle "#}
+                        {#                                   href="#"#}
+                        {#                                   role="button" id="courseDropdown"#}
+                        {#                                   data-bs-toggle="dropdown"#}
+                        {#                                   data-bs-offset="-20,20"#}
+                        {#                                   aria-expanded="false">#}
+                        {#                                    <i class="fe fe-more-vertical"></i>#}
+                        {#                                </a>#}
+                        {#                                <span class="dropdown-menu"#}
+                        {#                                      aria-labelledby="courseDropdown">#}
+                        {#                                    <span class="dropdown-header">Acciones</span>#}
+                        {#                                    <a class="dropdown-item"#}
+                        {#                                       href="?peticion=edit_actividad&id={{ detalleactividad.id }}&curso={{ curso.id }}"><i#}
+                        {#                                            class="fe fe-edit dropdown-item-icon"></i>Editar</a>#}
+                        {#                                    <a class="dropdown-item" style="cursor: pointer" onclick="eliminar_registro('eliminar_actividad','{{ detalleactividad }}','{{ detalleactividad.pk }}')"><i#}
+                        {#                                            class="fe fe-trash dropdown-item-icon"></i>Eliminar</a>#}
+                        {#                                </span>#}
+                        {#                            </span>#}
+                        {#                        </td>#}
                     </tr>
                 {% empty %}
                     <tr>

@@ -87,7 +87,7 @@ def dashboard(request):
                             # if not ext == '.docx' or not ext == '.pdf':
                             #     return JsonResponse({"respuesta": False, "mensaje": "La tarea es en formato .docx o .pdf"})
                             entregatarea = NotaInscritoActividadA(inscrito_id=int(request.POST['inscrito']), actividad_id=int(request.POST['actividad']),
-                                                                  tarea=archivo, fechasubida=datetime.now().date())
+                                                                  tarea=archivo, fechasubida=datetime.now().date(), entregado=True)
                             entregatarea.save(request)
                             if len(comentario) > 0:
                                 entregatarea.comentario = comentario
@@ -194,6 +194,25 @@ def dashboard(request):
                     return JsonResponse({"respuesta": True, "mensaje": "Actividad eliminada correctamente."})
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'calificar_deber':
+                try:
+                    nota = request.POST['nota']
+                    actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.POST['actividad']))
+                    inscrito = InscritoCursoA.objects.get(id=int(request.POST['inscrito']))
+                    deber = NotaInscritoActividadA.objects.filter(status=True, inscrito=inscrito, actividad=actividad)
+                    if deber:
+                        deber = deber.first()
+                        deber.nota = Decimal(nota)
+                        deber.estado = 2
+                        deber.calificado = True
+                        deber.save(request)
+                    else:
+                        newdeber = NotaInscritoActividadA(inscrito=inscrito, actividad=actividad, nota=nota, estado=2, calificado=True)
+                        newdeber.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Actividad calificada correctamente."})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Error al calificar"})
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']
@@ -394,7 +413,7 @@ def dashboard(request):
                     data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
                     data['curso'] = curso = CursoA.objects.get(id=int(request.GET['course']))
                     data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by('inscrito__apellidos')
-                    data['alumno'] = persona_logeado.id
+                    data['alumno'] = persona_logeado
                     data['option'] = option = request.GET['option']
                     data['is_cursos'] = 'is_cursos'
                     return render(request, "academia/docente/calificar.html", data)

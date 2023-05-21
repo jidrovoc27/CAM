@@ -42,13 +42,15 @@
                         <tr>
                             <th scope="col" class="border-0" style="width: 15%">Estado de la calificación</th>
                             <th scope="col" class="border-0 text-left" style="background: white">{% if nota %}
-                                {% if nota.estado == 2 %}{{ nota.nota }}{% else %}---{% endif %}{% else %}<span style="color: red">Sin calificar</span>{% endif %}</th>
+                                {% if nota.estado == 2 %}{{ nota.nota }}{% else %}---{% endif %}{% else %}
+                                <span style="color: red">Sin calificar</span>{% endif %}</th>
 
                         </tr>
                         <tr>
                             <th scope="col" class="border-0" style="width: 15%">Revisión</th>
                             <th scope="col" class="border-0 text-left"
-                                style="background: white">{% if nota %}{{ nota.get_estado_display }}{% else %}---{% endif %}</th>
+                                style="background: white">
+                                {% if nota %}{{ nota.get_estado_display }}{% else %}---{% endif %}</th>
                         </tr>
                         <tr>
                             <th scope="col" class="border-0" style="width: 15%">Fecha de entrega</th>
@@ -64,15 +66,25 @@
                         </tr>
                         <tr>
                             <th scope="col" class="border-0" style="width: 15%">Tarea</th>
-                            <th scope="col" class="border-0 text-left" style="background: white">{% if nota %}
-                                <a class="btn btn-success" href="/media/{{ nota.tarea }}" target="_blank">Descargar</a>{% else %}
-                                <span style="color: red">Sin archivo</span>{% endif %}</th>
+                            <th scope="col" class="border-0 text-left" style="background: white">
+                                {% if nota %}
+                                    {% if nota.tarea %}
+                                        <a class="btn btn-success" href="/media/{{ nota.tarea }}"
+                                           target="_blank">Descargar</a>
+                                    {% else %}
+                                        <span style="color: red">Sin archivo</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span style="color: red">Sin archivo</span>
+                                {% endif %}
+                            </th>
 
                         </tr>
                         <tr>
                             <th scope="col" class="border-0" style="width: 15%;vertical-align: center">Comentarios</th>
                             <th scope="col" class="border-0 text-left" style="background: white">
-                                <input readonly type="text" class="form-control" {% if nota %}value="{{ nota.comentario }}"{% endif %}>
+                                <input readonly type="text" class="form-control"
+                                       {% if nota %}value="{{ nota.comentario }}"{% endif %}>
 
                             </th>
                         </tr>
@@ -80,21 +92,23 @@
                     </table>
                     <br>
                     {% if puedesubirtarea %}
-                        {% if nota  %}
+                        {% if nota %}
                             {% if nota.estado == 1 %}
                                 <div class="col-6 text-end" style="float: right">
-                                    <a class="btn btn-outline-dark btn-sm mb-0" href="?peticion=edit_tarea&nota={{ nota.id }}&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
-                                            class="material-icons text-sm"></i>Editar entrega</a>
+                                <a class="btn btn-outline-dark btn-sm mb-0"
+                                   href="?peticion=edit_tarea&nota={{ nota.id }}&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
+                                        class="material-icons text-sm"></i>Editar entrega</a>
                             {% endif %}
                         {% else %}
                             <div class="col-6 text-end" style="float: right">
-                                <a class="btn btn-outline-dark btn-sm mb-0" href="?peticion=add_tarea&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
+                                <a class="btn btn-outline-dark btn-sm mb-0"
+                                   href="?peticion=add_tarea&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
                                         class="material-icons text-sm"></i>Agregar entrega</a>
                             </div>
                         {% endif %}
                     {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 {% endblock %}

@@ -190,10 +190,28 @@ class DetalleActividadesModeloEvaluativoA(ModeloBase):
         ordering = ['-id']
 
     def nota_calificada(self, inscrito):
-        verifica = NotaInscritoActividadA.objects.filter(status=True, actividad=self, inscrito__inscrito_id=inscrito)
+        verifica = NotaInscritoActividadA.objects.filter(status=True, actividad=self, inscrito_id=inscrito)
         if verifica:
             return verifica.first().nota
         return '--'
+
+    def registra_actividad(self, inscrito):
+        verifica = NotaInscritoActividadA.objects.filter(status=True, actividad=self, inscrito_id=inscrito)
+        if verifica:
+            return True
+        return False
+
+    def actividad_entregada(self, inscrito):
+        verifica = NotaInscritoActividadA.objects.filter(status=True, actividad=self, inscrito_id=inscrito)
+        if verifica:
+            return verifica.first()
+        return False
+
+    def tiene_tarea(self, inscrito):
+        nota = NotaInscritoActividadA.objects.filter(status=True, actividad=self, inscrito_id=inscrito)
+        if nota:
+            return nota.first().tarea
+        return False
 
 
 
@@ -219,9 +237,11 @@ class NotaInscritoActividadA(ModeloBase):
     inscrito = models.ForeignKey(InscritoCursoA, on_delete=models.PROTECT, verbose_name=u'Inscrito que sube la tarea', blank=True, null=True)
     actividad = models.ForeignKey(DetalleActividadesModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'La actividad que sube la tarea', blank=True, null=True)
     tarea = models.FileField(upload_to='tareainscrito', blank=True, null=True, verbose_name=u'Tarea que sube el inscrito')
-    nota = models.IntegerField(default=0, verbose_name=u'Nota de la tarea', blank=True, null=True)
+    nota = models.FloatField(default=0, verbose_name=u'Nota de la tarea', blank=True, null=True)
     fechasubida = models.DateField(verbose_name=u"Fecha que sube el inscrito", blank=True, null=True)
     estado = models.IntegerField(choices=ESTADO_TAREA, default=1, verbose_name=u'Estado de la actividad')
+    entregado = models.BooleanField(default=False, verbose_name=u'El deber fue entregado o no')
+    calificado = models.BooleanField(default=False, verbose_name=u'El deber fue calificado o no')
     comentario = models.CharField(verbose_name="Comentario de la tarea", default='', max_length=200)
 
     def __str__(self):
