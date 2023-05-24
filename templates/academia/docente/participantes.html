@@ -12,6 +12,7 @@
                 {% for detalle in curso.modeloevaluativo.detallecalificacion %}
                     <th scope="col" class="border-0 text-center">{{ detalle.nombre }}</th>
                 {% endfor %}
+                <th scope="col" class="border-0 text-center">PROMEDIO</th>
             </tr>
             </thead>
             <tbody>
@@ -27,6 +28,11 @@
                             {% endwith %}
                         </td>
                     {% endfor %}
+                    <td class="border-top-0 text-center">
+                        {% with modelo=inscrito|args:curso.id|call:'calcularpromedio' %}
+                            {{ modelo|floatformat:2 }}
+                        {% endwith %}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

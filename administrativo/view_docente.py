@@ -89,6 +89,10 @@ def view_docente(request):
                             referencia=referencia
                         )
                         persona.save(request)
+                        if 'foto' in request.FILES:
+                            foto = request.FILES['foto']
+                            persona.foto = foto
+                            persona.save(request)
 
                         persona_perfil = PersonaPerfil(
                             persona=persona,
@@ -130,6 +134,9 @@ def view_docente(request):
                         persona.referencia=request.POST['referencia']
                         persona.telefono_movil=request.POST['telefono_movil']
                         persona.telefono_convencional=request.POST['telefono_convencional']
+                        if 'foto' in request.FILES:
+                            foto = request.FILES['foto']
+                            persona.foto = foto
                         persona.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro Modificado correctamente."})
 
@@ -235,7 +242,8 @@ def view_docente(request):
                         'direccion':docente.persona.direccion,
                         'referencia':docente.persona.referencia,
                         'telefono_movil': docente.persona.telefono_movil,
-                        'telefono_convencional': docente.persona.telefono_convencional
+                        'telefono_convencional': docente.persona.telefono_convencional,
+                        'foto': docente.persona.foto
                     })
                     form.editar()
                     data['form'] = form

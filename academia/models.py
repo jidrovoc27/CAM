@@ -228,6 +228,27 @@ class InscritoCursoA(ModeloBase):
         verbose_name_plural = u"Inscritos"
         ordering = ['-id']
 
+    def calcularpromedio(self, curso_id):
+        cursoacad = CursoA.objects.get(id=int(curso_id))
+        modeloadm = cursoacad.modeloevaluativo
+        detalles = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=modeloadm)
+        conteo = detalles.count()
+        sumnotas = 0
+        for detalle in detalles:
+            actividad = conteosum = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=detalle)
+            actividad = actividad.values_list('id', flat=True)
+            conteosum = conteosum.count()
+            totalnota = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=actividad, inscrito=self).aggregate(total=Sum('nota'))
+            if totalnota['total']:
+                conteosum = solo_2_decimales(totalnota['total'] / conteosum, 2)
+                sumnotas += conteosum
+
+        if conteo > 0 and sumnotas:
+            resultado = sumnotas / conteo
+        else:
+            resultado = 0
+        return resultado
+
 ESTADO_TAREA = (
     (1, 'NO CALIFICADO'),
     (2, 'CALIFICADO'),

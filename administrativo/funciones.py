@@ -96,20 +96,21 @@ def add_data_aplication(request,data):
     if 'lista_url_ruta' not in request.session:
         request.session['lista_url_ruta'] = [['/', 'Inicio']]
     lista_url_ruta = request.session['lista_url_ruta']
-    if 'persona' not in request.session:
-        usuariologeado = request.user
-        personalogeada = Persona.objects.filter(usuario=usuariologeado, status=True)
-        # data['personalogeada'] = personalogeada[0]
-        if personalogeada:
-            request.session['persona'] = model_to_dict(personalogeada.first())
-        else:
-            persona_logeada = 'CAM'
-            request.session['persona'] = 'CAM'
+    # if 'persona' not in request.session:
+    #     usuariologeado = request.user
+    #     personalogeada = Persona.objects.filter(usuario=usuariologeado, status=True)
+    #     # data['personalogeada'] = personalogeada[0]
+    #     if personalogeada:
+    #         request.session['persona'] = model_to_dict(personalogeada.first())
+    #     else:
+    #         persona_logeada = 'CAM'
+    #         request.session['persona'] = 'CAM'
         # request.session.save()
 
     if 'perfil_principal' not in request.session:
-        if not request.session['persona'] == 'CAM':
-            mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
+        # if not request.session['persona'] == 'CAM':
+        mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
+        if mis_perfiles:
             tipoperfil = mis_perfiles.first()
             if tipoperfil.is_administrador == True:
                 grupo_administrativo = Group.objects.filter(name='Administrativo')
@@ -147,19 +148,19 @@ def add_data_aplication_academia(request,data):
     if 'lista_url_ruta' not in request.session:
         request.session['lista_url_ruta'] = [['/', 'Inicio']]
     lista_url_ruta = request.session['lista_url_ruta']
-    if 'persona' not in request.session:
-        usuariologeado = request.user
-        personalogeada = Persona.objects.filter(usuario=usuariologeado, status=True)
-        # data['personalogeada'] = personalogeada[0]
-        if personalogeada:
-            request.session['persona'] = model_to_dict(personalogeada.first())
-        else:
-            persona_logeada = 'CAM'
-            request.session['persona'] = 'CAM'
+    # if 'persona' not in request.session:
+    #     usuariologeado = request.user
+    #     personalogeada = Persona.objects.filter(usuario=usuariologeado, status=True)
+    #     # data['personalogeada'] = personalogeada[0]
+    #     if personalogeada:
+    #         request.session['persona'] = model_to_dict(personalogeada.first())
+    #     else:
+    #         persona_logeada = 'CAM'
+    #         request.session['persona'] = 'CAM'
         # request.session.save()
-    if not request.session['persona'] == 'CAM':
-        mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
-        tipoperfil = mis_perfiles.first()
+    # if not request.session['persona'] == 'CAM':
+    mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
+    tipoperfil = mis_perfiles.first()
 
     if 'perfil_principal' not in request.session:
             # if tipoperfil.is_administrador == True:
@@ -205,7 +206,7 @@ def act_data_aplication(request,data):
     from administrativo.models import Modulo, Persona, PersonaPerfil
 
     del request.session['lista_url_ruta']
-    del request.session['persona']
+    # del request.session['persona']
     del request.session['perfil_principal']
     del request.session['tipoperfil']
 
@@ -213,33 +214,33 @@ def act_data_aplication(request,data):
     if 'lista_url_ruta' not in request.session:
         request.session['lista_url_ruta'] = [['/', 'Inicio']]
     lista_url_ruta = request.session['lista_url_ruta']
-    if 'persona' not in request.session:
-        usuariologeado = request.user
-        personalogeada = Persona.objects.filter(usuario=usuariologeado, status=True)
-        data['personalogeada'] = personalogeada[0]
-        if personalogeada:
-            request.session['persona'] = model_to_dict(personalogeada.first())
-        else:
-            persona_logeada = 'CAM'
-            request.session['persona'] = 'CAM'
+    # if 'persona' not in request.session:
+    #     usuariologeado = request.user
+    #     personalogeada = Persona.objects.filter(usuario=usuariologeado, status=True)
+    #     data['personalogeada'] = personalogeada[0]
+    #     if personalogeada:
+    #         request.session['persona'] = model_to_dict(personalogeada.first())
+    #     else:
+    #         persona_logeada = 'CAM'
+    #         request.session['persona'] = 'CAM'
         # request.session.save()
 
     if 'perfil_principal' not in request.session:
-        if not request.session['persona'] == 'CAM':
-            mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
-            tipoperfil = mis_perfiles.first()
-            if data['tipoperfil'] == 'is_administrador':
-                grupo_administrativo = Group.objects.filter(name='Administrativo')
-                if grupo_administrativo:
-                    request.session['tipoperfil'] = grupo_administrativo.first().id
-            elif data['tipoperfil'] == 'is_profesor':
-                grupo_profesor = Group.objects.filter(name='Docente')
-                if grupo_profesor:
-                    request.session['tipoperfil'] = grupo_profesor.first().id
-            elif data['tipoperfil'] == 'is_alumno':
-                grupo_alumno = Group.objects.filter(name='Alumno')
-                if grupo_alumno:
-                    request.session['tipoperfil'] = grupo_alumno.first().id
+        # if not request.session['persona'] == 'CAM':
+        mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
+        tipoperfil = mis_perfiles.first()
+        if data['tipoperfil'] == 'is_administrador':
+            grupo_administrativo = Group.objects.filter(name='Administrativo')
+            if grupo_administrativo:
+                request.session['tipoperfil'] = grupo_administrativo.first().id
+        elif data['tipoperfil'] == 'is_profesor':
+            grupo_profesor = Group.objects.filter(name='Docente')
+            if grupo_profesor:
+                request.session['tipoperfil'] = grupo_profesor.first().id
+        elif data['tipoperfil'] == 'is_alumno':
+            grupo_alumno = Group.objects.filter(name='Alumno')
+            if grupo_alumno:
+                request.session['tipoperfil'] = grupo_alumno.first().id
         request.session['perfil_principal'] = model_to_dict(mis_perfiles.first())
         # request.session.save()
 
@@ -263,7 +264,7 @@ def act_data_aplication_academia(request,data):
     from administrativo.models import Modulo, Persona, PersonaPerfil
 
     del request.session['lista_url_ruta']
-    del request.session['persona']
+    # del request.session['persona']
     del request.session['perfil_principal']
     del request.session['tipoperfil']
     del request.session['identificadorperfil']
@@ -271,35 +272,35 @@ def act_data_aplication_academia(request,data):
     if 'lista_url_ruta' not in request.session:
         request.session['lista_url_ruta'] = [['/', 'Inicio']]
     lista_url_ruta = request.session['lista_url_ruta']
-    if 'persona' not in request.session:
-        usuariologeado = request.user
-        personalogeada = Persona.objects.filter(usuario=usuariologeado, status=True)
-        data['personalogeada'] = personalogeada[0]
-        if personalogeada:
-            request.session['persona'] = model_to_dict(personalogeada.first())
-        else:
-            persona_logeada = 'CAM'
-            request.session['persona'] = 'CAM'
+    # if 'persona' not in request.session:
+    #     usuariologeado = request.user
+    #     personalogeada = Persona.objects.filter(usuario=usuariologeado, status=True)
+    #     data['personalogeada'] = personalogeada[0]
+    #     if personalogeada:
+    #         request.session['persona'] = model_to_dict(personalogeada.first())
+    #     else:
+    #         persona_logeada = 'CAM'
+    #         request.session['persona'] = 'CAM'
         # request.session.save()
 
     if 'perfil_principal' not in request.session:
-        if not request.session['persona'] == 'CAM':
-            mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
-            tipoperfil = mis_perfiles.first()
-            # if data['tipoperfil'] == 'is_administrador':
-            #     grupo_administrativo = Group.objects.filter(name='Administrativo')
-            #     if grupo_administrativo:
-            #         request.session['tipoperfil'] = grupo_administrativo.first().id
-            if data['tipoperfil'] == 'is_alumno':
-                request.session['identificadorperfil'] = data['tipoperfil']
-                grupo_alumno = Group.objects.filter(name='Alumno')
-                if grupo_alumno:
-                    request.session['tipoperfil'] = grupo_alumno.first().id
-            elif data['tipoperfil'] == 'is_profesor':
-                request.session['identificadorperfil'] = data['tipoperfil']
-                grupo_profesor = Group.objects.filter(name='Docente')
-                if grupo_profesor:
-                    request.session['tipoperfil'] = grupo_profesor.first().id
+        # if not request.session['persona'] == 'CAM':
+        mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=request.user.persona_set.filter(status=True).first())
+        tipoperfil = mis_perfiles.first()
+        # if data['tipoperfil'] == 'is_administrador':
+        #     grupo_administrativo = Group.objects.filter(name='Administrativo')
+        #     if grupo_administrativo:
+        #         request.session['tipoperfil'] = grupo_administrativo.first().id
+        if data['tipoperfil'] == 'is_alumno':
+            request.session['identificadorperfil'] = data['tipoperfil']
+            grupo_alumno = Group.objects.filter(name='Alumno')
+            if grupo_alumno:
+                request.session['tipoperfil'] = grupo_alumno.first().id
+        elif data['tipoperfil'] == 'is_profesor':
+            request.session['identificadorperfil'] = data['tipoperfil']
+            grupo_profesor = Group.objects.filter(name='Docente')
+            if grupo_profesor:
+                request.session['tipoperfil'] = grupo_profesor.first().id
 
         request.session['perfil_principal'] = model_to_dict(mis_perfiles.first())
         # request.session.save()

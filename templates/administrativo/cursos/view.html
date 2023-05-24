@@ -106,7 +106,8 @@
                                                     <strong style="color: red">NO MIGRADO</strong></p>
                                             {% endif %}
                                             <p class="text-xs text-secondary mb-0">
-                                                    <strong style="color:{% if fila.estado == 1 or fila.estado == 2 %}green{% else %}red{% endif %}">{{ fila.get_estado_display }}</strong></p><br>
+                                                <strong style="color:{% if fila.estado == 1 or fila.estado == 2 %}green{% else %}red{% endif %}">{{ fila.get_estado_display }}</strong>
+                                            </p><br>
 
                                         </div>
                                     </td>
@@ -141,17 +142,29 @@
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3"
                                                 aria-labelledby="dropdownMarketingCard" style="">
-                                                <li><a class="dropdown-item border-radius-md"
-                                                       href="?peticion=edit_curso&id={{ fila.pk }}">Editar</a></li>
-                                                <li>
+                                                {% if fila.total_inscritos <= 0 %}
+                                                    <li><a class="dropdown-item border-radius-md text-danger"
+                                                           href="javascript:;"
+                                                           onclick="eliminar_registro('eliminar_curso','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
+                                                    </li>
                                                     <hr class="dropdown-divider">
+                                                    <li><a class="dropdown-item border-radius-md"
+                                                           href="?peticion=edit_curso&id={{ fila.pk }}">Editar</a></li>
+                                                    <li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+
+                                                {% endif %}
+
                                                 <li><a class="dropdown-item border-radius-md"
                                                        href="?peticion=alumnos&id={{ fila.pk }}">Alumnos</a></li>
-                                                <li>
-                                                    <hr class="dropdown-divider">
-                                                </li>
+
                                                 {% if not fila.idcursoacademia %}
                                                     {% if not fila.modeloevaluativo %}
+                                                        <li>
+                                                            <hr class="dropdown-divider">
+                                                        </li>
                                                         <li><a class="dropdown-item border-radius-md"
                                                                href="?peticion=add_modeloevaluativo&id={{ fila.pk }}&idperiodo={{ periodo.id }}">Añadir
                                                             modelo
@@ -161,13 +174,6 @@
                                                             <hr class="dropdown-divider">
                                                         </li>
                                                     {% endif %}
-                                                {% endif %}
-                                                {% if fila.total_inscritos <= 0 %}
-                                                    <li><a class="dropdown-item border-radius-md text-danger"
-                                                           href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_curso','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
-                                                    </li>
-
                                                 {% endif %}
                                             </ul>
                                         </div>

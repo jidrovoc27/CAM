@@ -61,12 +61,12 @@ class Persona(ModeloBase):
     email = models.CharField(default='', max_length=200, verbose_name=u"Correo electronico personal")
     cedula = models.CharField(max_length=10, verbose_name=u'Cédula', null=True, blank=True)
     telefono_movil = models.CharField(max_length=10, verbose_name=u"Teléfono móvil", null=True, blank=True)
-    telefono_convencional = models.CharField(max_length=10, verbose_name=u"Teléfono convencional", null=True,
-                                             blank=True)
+    telefono_convencional = models.CharField(max_length=10, verbose_name=u"Teléfono convencional", null=True, blank=True)
     genero = models.ForeignKey(Genero, null=True, on_delete=models.CASCADE)
     direccion = models.CharField(max_length=300, verbose_name=u'Direccion', null=True, blank=True)
     referencia = models.CharField(max_length=400, verbose_name=u'Referencia', null=True, blank=True)
     ciudad = models.CharField(max_length=400, verbose_name=u'Referencia', null=True, blank=True)
+    foto = models.FileField(upload_to='fotopersona', blank=True, null=True, verbose_name=u'Foto persona')
 
     class Meta:
         verbose_name = "Persona"

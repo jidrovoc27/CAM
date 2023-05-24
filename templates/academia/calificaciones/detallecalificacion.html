@@ -100,7 +100,7 @@
                             <td class="border-top-0" style="padding-left: 55px">
                                 <div class="ms-lg-3 mt-2 mt-lg-0">
                                     <h4 class="mb-1 h5">
-                                        <a href="?peticion=detallecalificacion&id={{ micurso.id }}"
+                                        <a href="#"
                                            class="text-inherit">
                                             Total {{ detalle.nombre }}
                                         </a>
@@ -118,6 +118,23 @@
                             </td>
                         </tr>
                     {% endfor %}
+                    <tr>
+                        <td class="border-top-0">
+                            <div class="ms-lg-3 mt-2 mt-lg-0">
+                                <h4 class="mb-1 h5">
+                                    <a href=""
+                                       class="text-inherit">
+                                        PROMEDIO
+                                    </a>
+                                </h4>
+                            </div>
+                        </td>
+                        <td class="border-top-0 text-center">
+                            {% with modelo=inscrito|args:cursoA.id|call:'calcularpromedio' %}
+                                {{ modelo|floatformat:2 }}
+                            {% endwith %}
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>

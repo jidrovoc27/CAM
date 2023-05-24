@@ -7,7 +7,7 @@
             var nota = $("#" + id).val();
             $.ajax({
                 type: "POST",
-                url: '/loginacademia/inicio/',
+                url: '/moodle/',
                 data: {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                     'peticion': peticion,

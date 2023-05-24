@@ -50,8 +50,8 @@
     <div class="container-fluid px-0">
         <a class="navbar-brand" href="../index.html"
         >
-            {#            <img src="{% static 'images/brand/logo/logo.svg' %}" alt=""/>#}
-            CAM
+{#                        <img src="{% static 'images/brand/logo/logo.svg' %}" alt=""/>#}
+{#            CAM#}
         </a>
         <!-- Mobile view nav wrap -->
         <ul
@@ -326,7 +326,7 @@
                         <div class="avatar avatar-md avatar-indicators avatar-online">
                             <img
                                     alt="avatar"
-                                    src="../assets/images/avatar/avatar-1.jpg"
+                                    src="/media/{{ persona_logeado.foto }}"
                                     class="rounded-circle"
                             />
                         </div>
@@ -348,7 +348,7 @@
                                         {% if perfil.is_profesor %}
                                             <li>
                                                 <a class="dropdown-item {% if identificadorperfil == 'is_profesor' %}active{% endif %}"
-                                                   href="/loginacademia/inicio/?peticion=cambioperfil&tipoperfil=is_profesor">
+                                                   href="/moodle/?peticion=cambioperfil&tipoperfil=is_profesor">
                                                     <i class="fe fe-settings me-2"></i>Perfil docente
                                                 </a>
                                             </li>
@@ -356,7 +356,7 @@
                                         {% if perfil.is_alumno %}
                                             <li>
                                                 <a class="dropdown-item {% if identificadorperfil == 'is_alumno' %}active{% endif %}"
-                                                   href="/loginacademia/inicio/?peticion=cambioperfil&tipoperfil=is_alumno">
+                                                   href="/moodle/?peticion=cambioperfil&tipoperfil=is_alumno">
                                                     <i class="fe fe-settings me-2"></i>Perfil alumno
                                                 </a>
                                             </li>
@@ -390,22 +390,22 @@
             <!-- User info -->
             <div class="col-xl-12 col-lg-12 col-md-12 col-12">
                 <!-- Bg -->
-                <div class="pt-16 rounded-top-md" style="
-                        background: url({% static 'images/background/profile-bg.jpg' %}) no-repeat;
-                        background-size: cover;
-                        "></div>
+{#                <div class="pt-16 rounded-top-md" style="#}
+{#                        background: url({% static 'images/background/profile-bg.jpg' %}) no-repeat;#}
+{#                        background-size: cover;#}
+{#                        "></div>#}
                 <div
                         class="d-flex align-items-end justify-content-between bg-white px-4 pt-2 pb-4 rounded-none rounded-bottom-md shadow-sm">
                     <div class="d-flex align-items-center">
-                        <div class="me-2 position-relative d-flex justify-content-end align-items-end mt-n5">
-                            <img src="../assets/images/avatar/avatar-1.jpg"
+                        <div class="">
+                            <img src="/media/{{ persona_logeado.foto }}"
                                  class="avatar-xl rounded-circle border border-4 border-white position-relative"
                                  alt=""/>
-                            <a href="#" class="position-absolute top-0 end-0" data-bs-toggle="tooltip"
-                               data-placement="top"
-                               title="Verified">
-                                <img src="../assets/images/svg/checked-mark.svg" alt="" height="30" width="30"/>
-                            </a>
+{#                            <a href="#" class="position-absolute top-0 end-0" data-bs-toggle="tooltip"#}
+{#                               data-placement="top"#}
+{#                               title="Verified">#}
+{#                                <img src="../assets/images/svg/checked-mark.svg" alt="" height="30" width="30"/>#}
+{#                            </a>#}
                         </div>
                         <div class="lh-1">
                             <h2 class="mb-0">{{ persona_logeado }}</h2>
@@ -440,13 +440,13 @@
                             {% if identificadorperfil == 'is_alumno' %}
                                 <ul class="list-unstyled ms-n2 mb-4">
                                     <!-- Nav item -->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="dashboard-instructor.html"><i
-                                                class="fe fe-home nav-icon"></i>Inicio</a>
-                                    </li>
+{#                                    <li class="nav-item">#}
+{#                                        <a class="nav-link" href="dashboard-instructor.html"><i#}
+{#                                                class="fe fe-home nav-icon"></i>Inicio</a>#}
+{#                                    </li>#}
                                     <!-- Nav item -->
                                     <li class="nav-item {% if is_cursos %}active{% endif %}">
-                                        <a class="nav-link" href="/loginacademia/inicio/"><i
+                                        <a class="nav-link" href="/moodle/"><i
                                                 class="fe fe-book nav-icon"></i>Mis cursos</a>
                                     </li>
                                     <!-- Nav item -->
@@ -473,7 +473,7 @@
                                     {#                                    </li>#}
                                     <!-- Nav item -->
                                     <li class="nav-item {% if is_cursos %}active{% endif %}">
-                                        <a class="nav-link" href="/loginacademia/inicio/"><i
+                                        <a class="nav-link" href="/moodle/"><i
                                                 class="fe fe-book nav-icon"></i>Mis cursos</a>
                                     </li>
                                     <!-- Nav item -->
@@ -503,7 +503,7 @@
                                     <a class="nav-link" href="notifications.html"><i class="fe fe-bell nav-icon"></i>Notificaciones</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'logout_usuario' %}"><i
+                                    <a class="nav-link" href="{% url 'logout_usuario_a' %}"><i
                                             class="fe fe-power nav-icon"></i>Cerrar
                                         sesión</a>
                                 </li>

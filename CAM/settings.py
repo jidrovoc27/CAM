@@ -28,6 +28,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# settings.py - Configuración para la aplicación "app1"
+SESSION_COOKIE_NAME = 'administrativo_session'
+
+# settings.py - Configuración para la aplicación "app2"
+SESSION_COOKIE_NAME = 'academia_session'
+
 
 # Application definition
 
@@ -151,7 +157,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL='/'
 
 #ACADEMIA
-LOGIN_REDIRECT_URL_ACADEMIA = 'inicio/'
+LOGIN_REDIRECT_URL_ACADEMIA = '/moodle/'
 LOGOUT_REDIRECT_URL_ACADEMIA ='logoutacademia/'
 
 

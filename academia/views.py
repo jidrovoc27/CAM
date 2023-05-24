@@ -233,7 +233,7 @@ def dashboard(request):
                     modulos = Modulo.objects.filter(status=True, activo=True, pk__in=menu)
                     data['persona_logeado'] = persona_logeado
                     data['modulos'] = modulos
-                    return HttpResponseRedirect("/loginacademia/inicio/")
+                    return HttpResponseRedirect("/moodle/")
                 except Exception as ex:
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
@@ -252,8 +252,9 @@ def dashboard(request):
                 try:
                     idpersona = int(request.GET['id'])
                     data['alumno'] = alumno = Persona.objects.get(id=idpersona)
-                    data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True, inscrito=alumno).order_by('curso_id').distinct('curso_id').values_list('curso_id')
-                    data['miscursos'] = CursoA.objects.filter(status=True, id__in=inscrito)
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True, inscrito=alumno)
+                    inscritos = inscrito.order_by('curso_id').distinct('curso_id').values_list('curso_id')
+                    data['miscursos'] = CursoA.objects.filter(status=True, id__in=inscritos)
                     data['is_calificaciones'] = True
                     return render(request, "academia/calificaciones/view.html", data)
                 except Exception as ex:

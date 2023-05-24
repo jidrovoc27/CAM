@@ -187,6 +187,7 @@ class DocenteForm(forms.Form):
     ciudad = forms.CharField(label=u"Ciudad", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Milagro'}))
     direccion = forms.CharField(label=u"Dirección", required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Av. Quito'}))
     referencia = forms.CharField(label=u"Referencia", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A 2 cuadras..'}))
+    foto = ExtFileField(label=u'Seleccione foto', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato png, jpg, jpeg', ext_whitelist=(".png", ".jpg", ".jpeg"), max_upload_size=2621440)
 
 
     def editar(self):
