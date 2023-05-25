@@ -212,6 +212,12 @@ class EditarPerfilForm(forms.Form):
         campo_solo_lectura(self, 'cedula')
         campo_solo_lectura(self, 'genero')
 
+class ActualizarSeguridadForm(forms.Form):
+    claveactual = forms.CharField(label='Clave actual', required=False, widget=forms.TextInput(attrs={'class': ' form-control','type':'password' }))
+    clavenueva = forms.CharField(label='Nueva clave', required=False, widget=forms.TextInput(attrs={'class': ' form-control','type':'password' }))
+    clavenuevaverifica = forms.CharField(label='Repetir nueva clave', required=False, widget=forms.TextInput(attrs={'class': ' form-control','type':'password' }))
+
+
 class PeriodoForm(forms.Form):
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
     descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))

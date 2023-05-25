@@ -12,11 +12,21 @@ from administrativo.funciones import *
 from administrativo.forms import *
 from academia.forms import *
 from CAM import settings
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 from django.urls import reverse_lazy
 
 # Create your views here.
+@transaction.atomic()
+def verificar_clave(usuario, clave):
+    user = authenticate(username=usuario, password=clave)
+    if user is not None:
+        # La clave es válida
+        return True
+    else:
+        # La clave es incorrecta
+        return False
 
 @transaction.atomic()
 def login_academia(request):
@@ -95,6 +105,31 @@ def dashboard(request):
                             persona.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Datos actualizados correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'actseguridad':
+                try:
+                    form = ActualizarSeguridadForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        claveactual = form.cleaned_data['claveactual']
+                        clavenueva = form.cleaned_data['clavenueva']
+                        clavenuevaverifica = form.cleaned_data['clavenuevaverifica']
+                        persona = Persona.objects.get(id=int(request.POST['id']))
+                        usuario = User.objects.get(id=persona.usuario_id)
+                        claveactualmake = verificar_clave(usuario.username, claveactual)
+                        if claveactualmake:
+                            if clavenueva == clavenuevaverifica:
+                                usuario.set_password(clavenueva)
+                                usuario.save()
+                            else:
+                                return JsonResponse({"respuesta": False, "mensaje": "Ingrese correctamente la nueva clave"})
+                        else:
+                            return JsonResponse({"respuesta": False, "mensaje": "Clave actual ingresada incorrectamente"})
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Clave actualizada correctamente."})
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
@@ -275,7 +310,7 @@ def dashboard(request):
 
             if peticion == 'editperfil':
                 try:
-                    data['titulo'] = 'Agregar entrega'
+                    data['titulo'] = 'Editar perfil'
                     data['titulo_formulario'] = 'Editar perfil'
                     data['peticion'] = 'editperfil'
                     data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
@@ -286,6 +321,19 @@ def dashboard(request):
                                                      'foto': alumno.foto})
                     data['form'] = form
                     data['is_editperfil'] = True
+                    return render(request, "academia/docente/edit_perfil.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'actseguridad':
+                try:
+                    data['titulo'] = 'Actualizar clave'
+                    data['titulo_formulario'] = 'Actualizar clave'
+                    data['peticion'] = 'actseguridad'
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    form = ActualizarSeguridadForm()
+                    data['form'] = form
+                    data['is_security'] = True
                     return render(request, "academia/docente/edit_perfil.html", data)
                 except Exception as ex:
                     pass
