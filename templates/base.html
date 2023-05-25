@@ -20,6 +20,7 @@
 
     <!-- Libs CSS -->
     <link href="{% static 'fonts/feather/feather.css' %}" rel="stylesheet">
+    <link href="{% static 'fonts/feather/feather.css' %}" rel="stylesheet">
     <link href="{% static 'libs/bootstrap-icons/font/bootstrap-icons.css' %}" rel="stylesheet"/>
     <link href="{% static 'libs/dragula/dist/dragula.min.css" rel="stylesheet' %}"/>
     <link href="{% static 'libs/%40mdi/font/css/materialdesignicons.min.css' %}" rel="stylesheet"/>
@@ -455,8 +456,8 @@
                                                 class="fe fe-star nav-icon"></i>Calificaciones</a>
                                     </li>
                                     <!-- Nav item -->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="instructor-earning.html"><i
+                                    <li class="nav-item {% if is_mensajes %}active{% endif %}">
+                                        <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"><i
                                                 class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
                                     </li>
                                     <li class="nav-item {% if is_finanza %}active{% endif %}">

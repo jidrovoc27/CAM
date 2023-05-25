@@ -542,6 +542,18 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'chats':
+                try:
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['is_mensajes'] = 'is_mensajes'
+                    user = request.user.profile
+                    friends = user.friends.all()
+                    data['friends'] = friends
+                    data['user'] = user
+                    return render(request, "chat/index.html", data)
+                except Exception as ex:
+                    pass
+
         else:
             try:
                 data['titulo'] = 'Menú principal'
