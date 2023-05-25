@@ -34,7 +34,7 @@
                         {% endblock %}
 
                         <div class="d-flex justify-content-end ">
-                            <a href="javascript:history.back()" name="button" class="btn btn-light m-0">Cancelar</a>
+                            {% block cancelar %}<a href="javascript:history.back()" name="button" class="btn btn-light m-0">Cancelar</a>{% endblock %}
                             <button id="submit" type="submit" class="btn btn-success m-0 ms-2">
                                 {% block nombre_boton_submit %}{% endblock %}</button>
                             {% block botones_extras %}

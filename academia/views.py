@@ -75,6 +75,31 @@ def dashboard(request):
         if 'peticion' in request.POST:
             peticion = request.POST['peticion']
 
+            if peticion == 'editperfil':
+                try:
+                    form = EditarPerfilForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        persona = Persona.objects.get(id=int(request.POST['id']))
+                        persona.email = form.cleaned_data['email']
+                        persona.genero_id = form.cleaned_data['genero']
+                        persona.telefono_movil = form.cleaned_data['telefono_movil']
+                        persona.telefono_convencional = form.cleaned_data['telefono_convencional']
+                        persona.ciudad = form.cleaned_data['ciudad']
+                        persona.direccion = form.cleaned_data['direccion']
+                        persona.referencia = form.cleaned_data['referencia']
+                        persona.save(request)
+
+                        if 'foto' in request.FILES:
+                            foto = request.FILES['foto']
+                            persona.foto = foto
+                            persona.save(request)
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Datos actualizados correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
             if peticion == 'add_tarea':
                 try:
                     form = AgregarEntregaForm(request.POST, request.FILES)
@@ -238,6 +263,34 @@ def dashboard(request):
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
             if peticion == 'misfinanzas':
+                try:
+                    idpersona = int(request.GET['id'])
+                    data['persona'] = persona = Persona.objects.get(id=idpersona)
+                    data['alumno'] = persona
+                    data['rubros'] = Rubro.objects.filter(status=True, persona=persona)
+                    data['is_finanza'] = True
+                    return render(request, "academia/misfinanzas/view.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'editperfil':
+                try:
+                    data['titulo'] = 'Agregar entrega'
+                    data['titulo_formulario'] = 'Editar perfil'
+                    data['peticion'] = 'editperfil'
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    form = EditarPerfilForm(initial={'nombres':alumno.nombres, 'apellidos':alumno.apellidos,
+                                                     'email':alumno.email, 'cedula':alumno.cedula, 'genero':alumno.genero,
+                                                     'telefono_movil': alumno.telefono_movil, 'telefono_convencional': alumno.telefono_convencional,
+                                                     'ciudad': alumno.ciudad, 'direccion': alumno.direccion, 'referencia': alumno.referencia,
+                                                     'foto': alumno.foto})
+                    data['form'] = form
+                    data['is_editperfil'] = True
+                    return render(request, "academia/docente/edit_perfil.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'security':
                 try:
                     idpersona = int(request.GET['id'])
                     data['persona'] = persona = Persona.objects.get(id=idpersona)

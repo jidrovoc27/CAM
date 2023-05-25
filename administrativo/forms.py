@@ -194,6 +194,24 @@ class DocenteForm(forms.Form):
         campo_solo_lectura(self, 'cedula')
         campo_solo_lectura(self, 'genero')
 
+class EditarPerfilForm(forms.Form):
+    nombres = forms.CharField(label='Nombres', required=False, widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)', 'readonly':'readonly' }))
+    apellidos = forms.CharField(label='Apellidos', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', 'readonly':'readonly' }))
+    email = forms.CharField(label="Correo electrónico", max_length=200, required=False, widget=forms.TextInput(attrs={'class': 'form-control',}))
+    cedula = forms.CharField(label="Cédula", max_length=10, required=False, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_numeros(event)', 'readonly':'readonly', 'style':'width:50%'}))
+    genero = forms.ModelChoiceField(label="Género",required=True, queryset=Genero.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))
+    telefono_movil = forms.CharField(label="Teléfono móvil", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'(99 123 1234)'}))
+    telefono_convencional = forms.CharField(label=u"Teléfono fijo", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control ',}))
+    ciudad = forms.CharField(label=u"Ciudad", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Milagro'}))
+    direccion = forms.CharField(label=u"Dirección", required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Av. Quito'}))
+    referencia = forms.CharField(label=u"Referencia", max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A 2 cuadras..'}))
+    foto = ExtFileField(label=u'Seleccione foto', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato png, jpg, jpeg', ext_whitelist=(".png", ".jpg", ".jpeg"), max_upload_size=2621440)
+
+
+    def editar(self):
+        campo_solo_lectura(self, 'cedula')
+        campo_solo_lectura(self, 'genero')
+
 class PeriodoForm(forms.Form):
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': ' form-control',  }))
     descripcion = forms.CharField(label='Descripción', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))

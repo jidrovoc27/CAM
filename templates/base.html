@@ -491,18 +491,17 @@
                             <span class="navbar-header">Configuración</span>
                             <ul class="list-unstyled ms-n2 mb-0">
                                 <!-- Nav item -->
-                                <li class="nav-item">
-                                    <a class="nav-link" href="profile-edit.html"><i class="fe fe-settings nav-icon"></i>Editar
-                                        perfil</a>
+                                <li class="nav-item {% if is_editperfil %}active{% endif %}">
+                                    <a class="nav-link" href="?peticion=editperfil&id={{ alumno.id }}"><i class="fe fe-settings nav-icon"></i>Editar perfil</a>
                                 </li>
                                 <!-- Nav item -->
-                                <li class="nav-item">
-                                    <a class="nav-link" href="security.html"><i class="fe fe-user nav-icon"></i>Seguridad</a>
+                                <li class="nav-item {% if is_security %}active{% endif %}">
+                                    <a class="nav-link" href="?peticion=security&id={{ alumno.id }}"><i class="fe fe-user nav-icon"></i>Seguridad</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="notifications.html"><i class="fe fe-bell nav-icon"></i>Notificaciones</a>
-                                </li>
-                                <li class="nav-item">
+{#                                <li class="nav-item">#}
+{#                                    <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i class="fe fe-bell nav-icon"></i>Notificaciones</a>#}
+{#                                </li>#}
+                                <li class="nav-item {% if is_cerrasesion %}active{% endif %}">
                                     <a class="nav-link" href="{% url 'logout_usuario_a' %}"><i
                                             class="fe fe-power nav-icon"></i>Cerrar
                                         sesión</a>
