@@ -3,6 +3,8 @@ from django.db import models
 # Create your models here.
 from administrativo.models import *
 from administrativo.funciones import *
+from django.db.models import Q, F, Count
+from django.apps import apps
 
 class PeriodoA(ModeloBase):
     nombre = models.CharField(default='', max_length=200, verbose_name=u'Nombre', blank=True, null=True)
@@ -272,6 +274,4 @@ class NotaInscritoActividadA(ModeloBase):
         verbose_name = u"Tarea que el inscrito sube"
         verbose_name_plural = u"Tareas que el inscrito sube"
         ordering = ['-id']
-
-
 

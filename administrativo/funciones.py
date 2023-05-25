@@ -13,6 +13,7 @@ from django.template.loader import get_template
 # from io import StringIO
 import io as StringIO
 from xhtml2pdf import pisa
+import uuid
 
 
 def link_callback(uri, rel):
@@ -90,6 +91,14 @@ class ModeloBase(models.Model):
         else:
             self.usuario_creacion_id = usuario
         models.Model.save(self)
+
+class ModelBaseChat(models.Model):
+	id = models.UUIDField(default=uuid.uuid4, primary_key=True, db_index=True, editable=False)
+	tiempo = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+	actualizar = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+	class Meta:
+		abstract = True
 
 def add_data_aplication(request,data):
     from administrativo.models import Modulo, Persona, PersonaPerfil

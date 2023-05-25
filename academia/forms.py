@@ -89,3 +89,6 @@ class AgregarActividadForm(forms.Form):
 
     def sin_imagen(self):
         campo_no_requerido(self, 'imagen')
+
+class FormMensajes(forms.Form):
+	mensaje = forms.CharField(widget=forms.Textarea(attrs = {"class": "formulario_ms", "placeholder":"Escribe tu mensaje"}))

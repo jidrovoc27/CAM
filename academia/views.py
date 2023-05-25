@@ -5,14 +5,18 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.views import PasswordChangeView
 from django.db import transaction
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from administrativo.models import *
 from administrativo.funciones import *
 from administrativo.forms import *
 from academia.forms import *
 from CAM import settings
-from django.contrib.auth.hashers import make_password
+from django.views.generic import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.views.generic.edit import FormMixin
+from django.views.generic import View
 
 # Create your views here.
 from django.urls import reverse_lazy
@@ -121,11 +125,14 @@ def dashboard(request):
                         usuario = User.objects.get(id=persona.usuario_id)
                         claveactualmake = verificar_clave(usuario.username, claveactual)
                         if claveactualmake:
-                            if clavenueva == clavenuevaverifica:
-                                usuario.set_password(clavenueva)
-                                usuario.save()
+                            if claveactual != clavenueva:
+                                if clavenueva == clavenuevaverifica:
+                                    usuario.set_password(clavenueva)
+                                    usuario.save()
+                                else:
+                                    return JsonResponse({"respuesta": False, "mensaje": "Ingrese correctamente la nueva clave"})
                             else:
-                                return JsonResponse({"respuesta": False, "mensaje": "Ingrese correctamente la nueva clave"})
+                                return JsonResponse({"respuesta": False, "mensaje": "La nueva clave debe de ser distinta a la actual"})
                         else:
                             return JsonResponse({"respuesta": False, "mensaje": "Clave actual ingresada incorrectamente"})
 
