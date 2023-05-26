@@ -478,8 +478,8 @@
                                                 class="fe fe-book nav-icon"></i>Mis cursos</a>
                                     </li>
                                     <!-- Nav item -->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="instructor-earning.html"><i
+                                    <li class="nav-item {% if is_mensajes %}active{% endif %}">
+                                        <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"><i
                                                 class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
                                     </li>
                                     <li class="nav-item {% if is_finanza %}active{% endif %}">

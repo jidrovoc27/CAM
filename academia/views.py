@@ -12,6 +12,8 @@ from administrativo.funciones import *
 from administrativo.forms import *
 from academia.forms import *
 from CAM import settings
+from chat.models import *
+from chat.forms import *
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -551,6 +553,35 @@ def dashboard(request):
                     data['friends'] = friends
                     data['user'] = user
                     return render(request, "chat/index.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'chat':
+                try:
+                    data['is_mensajes'] = 'is_mensajes'
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    friend = Friend.objects.get(profile_id=int(request.GET['pk']))
+                    user = request.user.profile
+                    profile = Profile.objects.get(id=friend.profile.id)
+                    chats = ChatMessage.objects.all()
+                    rec_chats = ChatMessage.objects.filter(msg_sender=profile, msg_receiver=user, seen=False)
+                    rec_chats.update(seen=True)
+                    form = ChatMessageForm()
+                    if request.method == "POST":
+                        form = ChatMessageForm(request.POST)
+                        if form.is_valid():
+                            chat_message = form.save(commit=False)
+                            chat_message.msg_sender = user
+                            chat_message.msg_receiver = profile
+                            chat_message.save()
+                            return redirect("detail", pk=friend.profile.id)
+                    data['friend'] = friend
+                    data['form'] = form
+                    data['user'] = user
+                    data['profile'] = profile
+                    data['chats'] = chats
+                    data['num'] = rec_chats.count()
+                    return render(request, "chat/mensajeria.html", data)
                 except Exception as ex:
                     pass
 
