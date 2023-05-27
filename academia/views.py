@@ -23,6 +23,7 @@ from django.views.generic import View
 # Create your views here.
 from django.urls import reverse_lazy
 
+
 # Create your views here.
 @transaction.atomic()
 def verificar_clave(usuario, clave):
@@ -34,6 +35,7 @@ def verificar_clave(usuario, clave):
         # La clave es incorrecta
         return False
 
+
 @transaction.atomic()
 def login_academia(request):
     global ex
@@ -43,15 +45,18 @@ def login_academia(request):
             peticion = request.POST['peticion']
             if peticion == 'login_usuario':
                 try:
-                    usuario = authenticate(username=request.POST['usuario'].lower().strip(), password=request.POST['clave'])
+                    usuario = authenticate(username=request.POST['usuario'].lower().strip(),
+                                           password=request.POST['clave'])
                     if usuario is not None:
                         if usuario.is_active:
                             login(request, usuario)
                             return JsonResponse({"respuesta": True, "url": settings.LOGIN_REDIRECT_URL_ACADEMIA})
                         else:
-                            return JsonResponse({"respuesta": False, 'mensaje': u'Inicio de sesión incorrecto, usuario no activo.'})
+                            return JsonResponse(
+                                {"respuesta": False, 'mensaje': u'Inicio de sesión incorrecto, usuario no activo.'})
                     else:
-                        return JsonResponse({"respuesta": False,'mensaje': u'Inicio de sesión incorrecto, usuario o clave no coinciden.'})
+                        return JsonResponse({"respuesta": False,
+                                             'mensaje': u'Inicio de sesión incorrecto, usuario o clave no coinciden.'})
                 except Exception as ex:
                     transaction.set_rollback(True)
                     return JsonResponse(
@@ -70,6 +75,7 @@ def login_academia(request):
             except Exception as ex:
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
+
 @login_required(redirect_field_name='next', login_url='/loginacademia/')
 @transaction.atomic()
 def dashboard(request):
@@ -77,7 +83,7 @@ def dashboard(request):
     data = {}
     add_data_aplication_academia(request, data)
     usuario_logeado = request.user
-    if  Persona.objects.filter(usuario=usuario_logeado, status=True).exists():
+    if Persona.objects.filter(usuario=usuario_logeado, status=True).exists():
         persona_logeado = Persona.objects.get(usuario=usuario_logeado, status=True)
     else:
         persona_logeado = 'CAM'
@@ -132,13 +138,46 @@ def dashboard(request):
                                     usuario.set_password(clavenueva)
                                     usuario.save()
                                 else:
-                                    return JsonResponse({"respuesta": False, "mensaje": "Ingrese correctamente la nueva clave"})
+                                    return JsonResponse(
+                                        {"respuesta": False, "mensaje": "Ingrese correctamente la nueva clave"})
                             else:
-                                return JsonResponse({"respuesta": False, "mensaje": "La nueva clave debe de ser distinta a la actual"})
+                                return JsonResponse(
+                                    {"respuesta": False, "mensaje": "La nueva clave debe de ser distinta a la actual"})
                         else:
-                            return JsonResponse({"respuesta": False, "mensaje": "Clave actual ingresada incorrectamente"})
+                            return JsonResponse(
+                                {"respuesta": False, "mensaje": "Clave actual ingresada incorrectamente"})
 
                         return JsonResponse({"respuesta": True, "mensaje": "Clave actualizada correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'add_profile':
+                try:
+                    form = AgregarProfile(request.POST)
+                    if form.is_valid():
+                        contacto = form.cleaned_data['contacto']
+                        usuario = contacto.usuario
+                        persona = Persona.objects.get(id=persona_logeado.id)
+                        perfil = Profile.objects.filter(user=persona.usuario)
+                        if perfil:
+                            perfil = perfil.first()
+                            perfilusuario = Profile.objects.filter(user=usuario)
+                            if perfilusuario:
+                                perfilusuario = perfilusuario.first()
+                                newfriend = Friend.objects.filter(profile=perfilusuario)
+                                if newfriend:
+                                    newfriend = newfriend.first()
+                                else:
+                                    newfriend = Friend(profile=perfilusuario)
+                                    newfriend.save(request)
+                                perfil.friends.add(newfriend)
+                            else:
+                                return JsonResponse(
+                                    {"respuesta": False, "mensaje": "La persona no tiene perfil para contactarse"})
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Contacto añadido correctamente."})
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
@@ -155,8 +194,10 @@ def dashboard(request):
                             # ext = newfilesd[newfilesd.rfind("."):]
                             # if not ext == '.docx' or not ext == '.pdf':
                             #     return JsonResponse({"respuesta": False, "mensaje": "La tarea es en formato .docx o .pdf"})
-                            entregatarea = NotaInscritoActividadA(inscrito_id=int(request.POST['inscrito']), actividad_id=int(request.POST['actividad']),
-                                                                  tarea=archivo, fechasubida=datetime.now().date(), entregado=True)
+                            entregatarea = NotaInscritoActividadA(inscrito_id=int(request.POST['inscrito']),
+                                                                  actividad_id=int(request.POST['actividad']),
+                                                                  tarea=archivo, fechasubida=datetime.now().date(),
+                                                                  entregado=True)
                             entregatarea.save(request)
                             if len(comentario) > 0:
                                 entregatarea.comentario = comentario
@@ -180,8 +221,10 @@ def dashboard(request):
                         maxnota = form.cleaned_data['maxnota']
                         fechamaximasubida = form.cleaned_data['fechamaximasubida']
                         horalimite = form.cleaned_data['horalimite']
-                        actividad = DetalleActividadesModeloEvaluativoA(detalle=detalle, nombre=nombre, descripcion=descripcion, minnota=minnota,
-                                                                        maxnota=maxnota, fechamaximasubida=fechamaximasubida,
+                        actividad = DetalleActividadesModeloEvaluativoA(detalle=detalle, nombre=nombre,
+                                                                        descripcion=descripcion, minnota=minnota,
+                                                                        maxnota=maxnota,
+                                                                        fechamaximasubida=fechamaximasubida,
                                                                         horalimite=horalimite)
                         actividad.save(request)
                         if 'archivo' in request.FILES:
@@ -207,9 +250,9 @@ def dashboard(request):
                     comentario = request.POST['comentario']
                     if 'archivo' in request.FILES:
                         archivo = request.FILES['archivo']
-                        entregatarea.inscrito_id=int(request.POST['inscrito'])
-                        entregatarea.actividad_id=int(request.POST['actividad'])
-                        entregatarea.tarea=archivo
+                        entregatarea.inscrito_id = int(request.POST['inscrito'])
+                        entregatarea.actividad_id = int(request.POST['actividad'])
+                        entregatarea.tarea = archivo
                         entregatarea.save(request)
                     # if len(comentario) > 0:
                     entregatarea.comentario = comentario
@@ -232,13 +275,13 @@ def dashboard(request):
                     maxnota = request.POST['maxnota']
                     fechamaximasubida = request.POST['fechamaximasubida']
                     horalimite = request.POST['horalimite']
-                    actividad.detalle_id=int(detalle)
-                    actividad.nombre=nombre
-                    actividad.descripcion=descripcion
-                    actividad.minnota=minnota
-                    actividad.maxnota=maxnota
-                    actividad.fechamaximasubida=fechamaximasubida
-                    actividad.horalimite=horalimite
+                    actividad.detalle_id = int(detalle)
+                    actividad.nombre = nombre
+                    actividad.descripcion = descripcion
+                    actividad.minnota = minnota
+                    actividad.maxnota = maxnota
+                    actividad.fechamaximasubida = fechamaximasubida
+                    actividad.horalimite = horalimite
                     actividad.save(request)
                     if 'archivo' in request.FILES:
                         archivo = request.FILES['archivo']
@@ -277,7 +320,8 @@ def dashboard(request):
                         deber.calificado = True
                         deber.save(request)
                     else:
-                        newdeber = NotaInscritoActividadA(inscrito=inscrito, actividad=actividad, nota=nota, estado=2, calificado=True)
+                        newdeber = NotaInscritoActividadA(inscrito=inscrito, actividad=actividad, nota=nota, estado=2,
+                                                          calificado=True)
                         newdeber.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Actividad calificada correctamente."})
                 except Exception as ex:
@@ -298,7 +342,8 @@ def dashboard(request):
                     act_data_aplication_academia(request, data)
                     tipoperfil = request.session['tipoperfil']
 
-                    menu = AccesoModulo.objects.values_list('modulo_id').filter(status=True, activo=True, grupo_id=tipoperfil)
+                    menu = AccesoModulo.objects.values_list('modulo_id').filter(status=True, activo=True,
+                                                                                grupo_id=tipoperfil)
                     modulos = Modulo.objects.filter(status=True, activo=True, pk__in=menu)
                     data['persona_logeado'] = persona_logeado
                     data['modulos'] = modulos
@@ -323,10 +368,13 @@ def dashboard(request):
                     data['titulo_formulario'] = 'Editar perfil'
                     data['peticion'] = 'editperfil'
                     data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
-                    form = EditarPerfilForm(initial={'nombres':alumno.nombres, 'apellidos':alumno.apellidos,
-                                                     'email':alumno.email, 'cedula':alumno.cedula, 'genero':alumno.genero,
-                                                     'telefono_movil': alumno.telefono_movil, 'telefono_convencional': alumno.telefono_convencional,
-                                                     'ciudad': alumno.ciudad, 'direccion': alumno.direccion, 'referencia': alumno.referencia,
+                    form = EditarPerfilForm(initial={'nombres': alumno.nombres, 'apellidos': alumno.apellidos,
+                                                     'email': alumno.email, 'cedula': alumno.cedula,
+                                                     'genero': alumno.genero,
+                                                     'telefono_movil': alumno.telefono_movil,
+                                                     'telefono_convencional': alumno.telefono_convencional,
+                                                     'ciudad': alumno.ciudad, 'direccion': alumno.direccion,
+                                                     'referencia': alumno.referencia,
                                                      'foto': alumno.foto})
                     data['form'] = form
                     data['is_editperfil'] = True
@@ -429,7 +477,8 @@ def dashboard(request):
                     data['titulo_formulario'] = 'Adicionar entrega de la tarea'
                     data['peticion'] = 'add_tarea'
                     data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
-                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(
+                        id=int(request.GET['id']))
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
                     data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['curso']))
                     form = AgregarEntregaForm()
@@ -445,7 +494,8 @@ def dashboard(request):
                     data['titulo_formulario'] = 'Editar entrega de la tarea'
                     data['peticion'] = 'edit_tarea'
                     data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
-                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(
+                        id=int(request.GET['id']))
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
                     data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['curso']))
                     data['nota'] = nota = NotaInscritoActividadA.objects.get(id=int(request.GET['nota']))
@@ -466,7 +516,8 @@ def dashboard(request):
                     data['titulo_formulario'] = 'Editar actividad'
                     data['peticion'] = 'edit_actividad'
                     data['curso'] = curso = CursoA.objects.get(id=int(request.GET['curso']))
-                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(
+                        id=int(request.GET['id']))
                     form = AgregarActividadForm(initial={
                         'detalle': actividad.detalle,
                         'nombre': actividad.nombre,
@@ -478,7 +529,8 @@ def dashboard(request):
                         'imagen': actividad.imagen,
                         'archivo': actividad.archivo,
                     })
-                    form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                    form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True,
+                                                                                              modelo=curso.modeloevaluativo)
                     form.sin_archivo()
                     form.sin_imagen()
                     data['form'] = form
@@ -495,35 +547,42 @@ def dashboard(request):
                     if 'option' in request.GET:
                         data['option'] = option = request.GET['option']
                         if option == 'summary':
-                            data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                            data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True,
+                                                                                            modelo=curso.modeloevaluativo)
                             return render(request, "academia/docente/resumen.html", data)
                         elif option == 'participants':
-                            data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by('inscrito__apellidos')
+                            data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by(
+                                'inscrito__apellidos')
                             return render(request, "academia/docente/participantes.html", data)
                         elif option == 'addactv':
                             data['infoactv'] = True
-                            data['actividades'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                            data['actividades'] = DetalleModeloEvaluativoA.objects.filter(status=True,
+                                                                                          modelo=curso.modeloevaluativo)
 
                             if 'detalle' in request.GET:
                                 data['detalle'] = detalle = int(request.GET['detalle'])
                                 if detalle > 0:
-                                    data['listadodetalles'] = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle_id=detalle)
+                                    data['listadodetalles'] = DetalleActividadesModeloEvaluativoA.objects.filter(
+                                        status=True, detalle_id=detalle)
                             return render(request, "academia/docente/actividades.html", data)
                         elif option == 'addclass':
                             data['infoclass'] = True
                             return render(request, "academia/docente/resumen.html", data)
                     else:
                         data['option'] = 'summary'
-                        data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                        data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True,
+                                                                                        modelo=curso.modeloevaluativo)
                         return render(request, "academia/docente/resumen.html", data)
                 except Exception as ex:
                     pass
 
             if peticion == 'calificar':
                 try:
-                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(
+                        id=int(request.GET['id']))
                     data['curso'] = curso = CursoA.objects.get(id=int(request.GET['course']))
-                    data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by('inscrito__apellidos')
+                    data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by(
+                        'inscrito__apellidos')
                     data['alumno'] = persona_logeado
                     data['option'] = option = request.GET['option']
                     data['is_cursos'] = 'is_cursos'
@@ -538,7 +597,8 @@ def dashboard(request):
                     data['peticion'] = 'add_actividad'
                     data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
                     form = AgregarActividadForm()
-                    form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=cursoA.modeloevaluativo)
+                    form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True,
+                                                                                              modelo=cursoA.modeloevaluativo)
                     data['form'] = form
                     return render(request, "academia/docente/add_actividad.html", data)
                 except Exception as ex:
@@ -548,11 +608,51 @@ def dashboard(request):
                 try:
                     data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
                     data['is_mensajes'] = 'is_mensajes'
-                    user = request.user.profile
+                    if Profile.objects.filter(user=request.user):
+                        user = request.user.profile
+                    else:
+                        user = Profile(user=request.user)
+                        user.name = alumno.__str__()
+                        user.pic = alumno.foto
+                        user.save(request)
+                    mensajes = ChatMessage.objects.filter(msg_receiver_id=user).order_by('msg_sender_id').distinct('msg_sender_id').values_list('msg_sender_id')
+                    amigos = Friend.objects.filter(id__in=mensajes)
+                    listado = amigos.values_list('id', flat=True)
+                    existe = Profile.objects.filter(id=user.id, friend__id__in=listado)
+                    if not existe:
+                        usuario_recibe = Profile.objects.filter(id=user.id)
+                        if usuario_recibe:
+                            usuario_recibe = usuario_recibe.first()
+                            for amigo in amigos:
+                                existe = Profile.objects.filter(id=user.id, friend__id=amigo.id)
+                                if not existe:
+                                    usuario_recibe.friends.add(amigo)
                     friends = user.friends.all()
                     data['friends'] = friends
                     data['user'] = user
                     return render(request, "chat/index.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'add_profile':
+                try:
+                    data['titulo'] = 'Agregar contacto'
+                    data['titulo_formulario'] = 'Adicionar contacto'
+                    data['peticion'] = 'add_profile'
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['inscrito'] = listadocursos = InscritoCursoA.objects.filter(status=True, inscrito=alumno).values_list('curso_id', flat=True)
+                    data['inscritos'] = inscritos = InscritoCursoA.objects.filter(status=True, curso_id__in=listadocursos).exclude(inscrito=alumno).order_by('inscrito_id').distinct('inscrito_id').values_list('inscrito_id')
+                    data['miscontactos'] = miscontactos = Profile.objects.get(user=alumno.usuario).friends.values_list('id', flat=True)
+                    friends = Friend.objects.filter(id__in=miscontactos).values_list('profile_id', flat=True)
+                    perfiles_amigos = Profile.objects.filter(id__in=friends).values_list('user_id', flat=True)
+                    lista_usuarios = User.objects.filter(id__in=perfiles_amigos)
+                    excluir_personas = Persona.objects.filter(status=True, usuario_id__in=lista_usuarios).values_list('id', flat=True)
+                    data['personas'] = personas = Persona.objects.filter(status=True, id__in=inscritos).exclude(id__in=excluir_personas)
+                    form = AgregarProfile()
+                    form.fields['contacto'].queryset = personas
+                    data['form'] = form
+                    data['is_mensajes'] = 'is_mensajes'
+                    return render(request, "chat/add_profile.html", data)
                 except Exception as ex:
                     pass
 
@@ -563,7 +663,7 @@ def dashboard(request):
                     friend = Friend.objects.get(profile_id=int(request.GET['pk']))
                     user = request.user.profile
                     profile = Profile.objects.get(id=friend.profile.id)
-                    chats = ChatMessage.objects.all()
+                    chats = ChatMessage.objects.filter().order_by('id')
                     rec_chats = ChatMessage.objects.filter(msg_sender=profile, msg_receiver=user, seen=False)
                     rec_chats.update(seen=True)
                     form = ChatMessageForm()
@@ -589,13 +689,15 @@ def dashboard(request):
             try:
                 data['titulo'] = 'Menú principal'
                 mis_perfiles = None
-                #obtener perfiles
+                # obtener perfiles
                 if identificadorperfil == 'is_alumno':
                     if not 'CAM' == persona_logeado:
                         # mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado)
                         # data['mis_perfiles'] = mis_perfiles
                         data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
-                        data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True, inscrito=alumno).order_by('curso_id').distinct('curso_id').values_list('curso_id')
+                        data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True,
+                                                                                    inscrito=alumno).order_by(
+                            'curso_id').distinct('curso_id').values_list('curso_id')
                         data['miscursos'] = CursoA.objects.filter(status=True, id__in=inscrito)
                         data['is_cursos'] = True
                     return render(request, "academia/alumno/view.html", data)
@@ -611,9 +713,11 @@ def dashboard(request):
             except Exception as ex:
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
+
 def logout_usuario(request):
     logout(request)
     return HttpResponseRedirect("/loginacademia/")
+
 
 @transaction.atomic()
 def registrate(request):
@@ -645,7 +749,7 @@ def registrate(request):
                         usuario = User.objects.create_user(username, email, password)
                         usuario.save()
 
-                        grupo = Group.objects.get(pk=4)  # docente
+                        grupo = Group.objects.get(name='Docente')  # docente
                         grupo.user_set.add(usuario)
                         nombres = nombre1 + ' ' + nombre2
                         apellidos = apellido1 + ' ' + apellido2

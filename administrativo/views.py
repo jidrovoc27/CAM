@@ -176,7 +176,7 @@ def registrate(request):
                         usuario = User.objects.create_user(username, email, password)
                         usuario.save()
 
-                        grupo = Group.objects.get(pk=4)  # docente
+                        grupo = Group.objects.get(name='Docente')  # docente
                         grupo.user_set.add(usuario)
                         nombres = nombre1 + ' ' + nombre2
                         apellidos = apellido1 + ' ' + apellido2

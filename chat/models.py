@@ -28,6 +28,7 @@ class ChatMessage(models.Model):
     msg_sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="msg_sender")
     msg_receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="msg_receiver")
     seen = models.BooleanField(default=False)
+    fecha_creacion = models.DateTimeField(verbose_name='Fecha creación', auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return self.body

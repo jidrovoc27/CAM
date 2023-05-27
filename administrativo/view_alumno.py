@@ -70,7 +70,7 @@ def view_alumno(request):
                         usuario = User.objects.create_user(username, email, password)
                         usuario.save()
 
-                        grupo = Group.objects.get(pk=3)  # ALUMNO
+                        grupo = Group.objects.get(name='Alumno')  # ALUMNO
                         grupo.user_set.add(usuario)
 
                         persona = Persona(

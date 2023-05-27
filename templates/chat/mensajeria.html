@@ -260,17 +260,22 @@
             padding: 10px 10px;
             border-radius: 10px;
         {#float: left;#} clear: both;
-            width: 50%
-        }
-
-        .chat-box-sent {
+            width: 50%;
             background-color: rebeccapurple;
             color: white;
             float: left;
             clear: both;
             width: 50%;
-
         }
+
+        {#.chat-box-sent {#}
+        {#    background-color: rebeccapurple;#}
+        {#    color: white;#}
+        {#    float: left;#}
+        {#    clear: both;#}
+        {#    width: 50%;#}
+        {##}
+        {#}#}
 
         .forms {
             border: 1px solid slateblue;
@@ -308,7 +313,7 @@
             <h3>{{ friend.profile.name }}</h3>
 
             <div class="pro-pic">
-                <img src="{{ friend.profile.pic.url }}" alt="profile-picture">
+                <img src="/media/{{ friend.profile.pic }}" alt="">
             </div>
 
 
@@ -321,15 +326,16 @@
 
 
                 {% for chat in chats %}
+
                     {% if chat.msg_sender == user and chat.msg_receiver == profile %}
 
                         <div class="chat-box-received">
-                            {{ chat }}
+                            <a style="word-wrap: break-word;width:99%">{{ chat }}<h5 style="color: white;font-size: 10px">{{ chat.fecha_creacion|date:"d-m-Y H:i" }}</h5></a>
                         </div>
 
                     {% elif chat.msg_sender == profile and chat.msg_receiver == user %}
-                        <div class="chat-box-sent">
-                            {{ chat }}
+                        <div class="chat-box-sent" style="">
+                            <a style="word-wrap: break-word;width:99%">{{ chat }}<h5 style="color: white;font-size: 10px">{{ chat.fecha_creacion|date:"d-m-Y H:i" }}</h5></a>
                         </div>
 
                     {% endif %}
@@ -412,8 +418,17 @@
                     console.log('Success:', data);
                     let chat_body = document.getElementById('chat-body')
                     let chatMessageBox = document.createElement("div")
-                    chatMessageBox.classList.add("chat-box-sent")
-                    chatMessageBox.innerText = data
+                    chatMessageBox.classList.add("chat-box-received")
+                    let aElement = document.createElement("a");
+                    aElement.style.wordWrap = "break-word";
+                    aElement.style.width = "99%";
+                    aElement.innerHTML = data.new_chat_message;
+                    let h5Element = document.createElement("h5");
+                    h5Element.style.color = "white";
+                    h5Element.style.fontSize = "10px";
+                    h5Element.innerText = data.fecha_envio;
+                    aElement.appendChild(h5Element);
+                    chatMessageBox.appendChild(aElement);
                     chat_body.append(chatMessageBox)
                     document.getElementById("id_body").value = ""
                     var div = document.getElementById('chat-body');
@@ -446,8 +461,8 @@
 
                         if (data.length == 0) {
                         } else {
-
-                            let lastMsg = data[data.length - 1]
+                            let lastMsg = data[data.length - 2]
+                            let fecha = data[data.length - 1]
 
                             if (counter == data.length) {
                                 console.log("there is no new chat")
@@ -457,8 +472,17 @@
                                 let chat_body = document.getElementById('chat-body')
                                 let chatMessageBox = document.createElement("div")
 
-                                chatMessageBox.classList.add("chat-box-received")
-                                chatMessageBox.innerText = lastMsg
+                                chatMessageBox.classList.add("chat-box-sent")
+                                let aElement = document.createElement("a");
+                                aElement.style.wordWrap = "break-word";
+                                aElement.style.width = "99%";
+                                aElement.innerHTML = lastMsg;
+                                let h5Element = document.createElement("h5");
+                                h5Element.style.color = "white";
+                                h5Element.style.fontSize = "10px";
+                                h5Element.innerText = fecha;
+                                aElement.appendChild(h5Element);
+                                chatMessageBox.appendChild(aElement);
                                 chat_body.append(chatMessageBox)
                                 document.getElementById("id_body").value = ""
                                 console.log()

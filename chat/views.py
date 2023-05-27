@@ -4,6 +4,9 @@ from .models import ChatMessage, Profile, Friend
 from .forms import ChatMessageForm
 from django.http import JsonResponse
 import json
+import datetime
+from datetime import datetime
+from django.forms import model_to_dict
 
 # Create your views here.
 def index(request):
@@ -34,29 +37,69 @@ def detail(request,pk):
     return render(request, "chat/detail.html", context)
 
 def sentMessages(request, pk):
-    user = request.user.profile
-    friend = Friend.objects.get(profile_id=pk)
-    profile = Profile.objects.get(id=friend.profile.id)
-    data = json.loads(request.body)
-    new_chat = data["msg"]
-    new_chat_message = ChatMessage.objects.create(body=new_chat, msg_sender=user, msg_receiver=profile, seen=False )
-    print(new_chat)
-    return JsonResponse(new_chat_message.body, safe=False)
+    try:
+        info = {}
+        user = request.user.profile
+        usuario_envia = Friend.objects.filter(profile_id=user.id)
+        if usuario_envia:
+            usuario_envia = usuario_envia.first()
+        else:
+            usuario_envia = Friend(profile_id=user.id)
+            usuario_envia.save(request)
+        friend = Friend.objects.get(profile_id=pk)
+        profile = Profile.objects.get(id=friend.profile.id)
+        existe = Profile.objects.filter(user=profile.user, friends__id=usuario_envia.id).exists()
+        relacion_creada = False
+        if not existe:
+            usuario_recibe = Profile.objects.filter(user=profile.user)
+            if usuario_recibe:
+                usuario_recibe = usuario_recibe.first()
+                usuario_recibe.friends.add(usuario_envia)
+                relacion_creada = True
+        data = json.loads(request.body)
+        new_chat = data["msg"]
+        new_chat_message = ChatMessage.objects.create(body=new_chat, msg_sender=user, msg_receiver=profile, seen=False, fecha_creacion=datetime.now() )
+        print(new_chat)
+        info['new_chat_message'] = new_chat_message.body
+        info['fecha_envio'] = str(new_chat_message.fecha_creacion.date()) + " " + str(new_chat_message.fecha_creacion.hour) + ":" + str(new_chat_message.fecha_creacion.minute)
+        info['relacion_creada'] = relacion_creada
+        return JsonResponse(info, safe=False)
+    except Exception as ex:
+        pass
 
 def receivedMessages(request, pk):
-    user = request.user.profile
-    friend = Friend.objects.get(profile_id=pk)
-    profile = Profile.objects.get(id=friend.profile.id)
-    arr = []
-    chats = ChatMessage.objects.filter(msg_sender=profile, msg_receiver=user)
-    for chat in chats:
-        arr.append(chat.body)
-    return JsonResponse(arr, safe=False)
+    try:
+        user = request.user.profile
+        friend = Friend.objects.get(profile_id=pk)
+        profile = Profile.objects.get(id=friend.profile.id)
+        arr = []
+        chats = ChatMessage.objects.filter(msg_sender=profile, msg_receiver=user, seen=False)
+        for chat in chats:
+            fecha = str(chat.fecha_creacion.date()) + " " + str(chat.fecha_creacion.hour) + ":" + str(chat.fecha_creacion.minute)
+            arr.append(chat.body)
+            arr.append(fecha)
+        chats.update(seen=True)
+        return JsonResponse(arr, safe=False)
+    except Exception as ex:
+        pass
 
 
 def chatNotification(request):
     user = request.user.profile
     friends = user.friends.all()
+    mensajes = ChatMessage.objects.filter(msg_receiver_id=user).order_by('msg_sender_id').distinct('msg_sender_id').values_list('msg_sender_id')
+    amigos = Friend.objects.filter(id__in=mensajes)
+    listado = amigos.values_list('id', flat=True)
+    existe = Profile.objects.filter(id=user.id, friend__id__in=listado)
+    if not existe:
+        usuario_recibe = Profile.objects.filter(id=user.id)
+        if usuario_recibe:
+            usuario_recibe = usuario_recibe.first()
+            for amigo in amigos:
+                existe = Profile.objects.filter(id=user.id, friend__id=amigo.id)
+                if not existe:
+                    usuario_recibe.friends.add(amigo)
+            relacion_creada = True
     arr = []
     for friend in friends:
         chats = ChatMessage.objects.filter(msg_sender__id=friend.profile.id, msg_receiver=user, seen=False)
