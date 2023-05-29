@@ -2,111 +2,142 @@
 {% load static %}
 {% block contenido %}
     <div class="col-lg-9 col-md-8 col-12">
-                <!-- Card -->
-                <div class="card mb-4">
-                    <!-- Card header -->
-                    <div class="card-header">
-                        <h3 class="mb-0">Cursos</h3>
-                        <span>Administre sus cursos y su actualización.</span>
-                    </div>
-                    <!-- Card body -->
-                    <div class="card-body">
-                        <!-- Form -->
-                        <form class="row">
-                            <div class="col-lg-9 col-md-7 col-12 mb-lg-0 mb-2">
-                                <input type="search" class="form-control" placeholder="Buscar cursos"/>
-                            </div>
-                            <div class="col-lg-3 col-md-5 col-12">
-                                <select class="selectpicker" data-width="100%">
-                                    <option value="">Date Created</option>
-                                    <option value="Newest">Newest</option>
-                                    <option value="High Rated">High Rated</option>
-                                    <option value="Law Rated">Law Rated</option>
-                                    <option value="High Earned">High Earned</option>
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- Table -->
-                    <div class="table-responsive border-0 overflow-y-hidden">
-                        <table class="table mb-0 text-nowrap">
-                            <thead class="table-light">
-                            <tr>
-                                <th scope="col" class="border-0">Mis Cursos</th>
-                                <th scope="col" class="border-0">Fecha inicio / fin</th>
-                                <th scope="col" class="border-0">Calificación mínima</th>
-                                <th scope="col" class="border-0 text-center">Estado</th>
-{#                                <th scope="col" class="border-0"></th>#}
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for micurso in miscursos %}
-                                <tr>
-                                <td class="border-top-0">
-                                    <div class="d-lg-flex">
-                                        <div>
-                                            <a href="#">
-                                                <img src="/media/{{ micurso.fondocursos }}" alt=""
-                                                     class="rounded img-4by3-lg"/></a>
-                                        </div>
-                                        <div class="ms-lg-3 mt-2 mt-lg-0">
-                                            <h4 class="mb-1 h5">
-                                                <a href="?peticion=admcourse&id={{ micurso.id }}" class="text-inherit">
-                                                    {{ micurso }}
-                                                </a>
-                                            </h4>
-                                            <ul class="list-inline fs-6 mb-0">
-                                                <li class="list-inline-item">
-                                                    <i class="mdi mdi-clock-time-four-outline text-muted me-1"></i>{{ micurso.horasvirtual }}
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <svg class="me-1 mt-n1" width="16" height="16" viewBox="0 0 16 16"
-                                                         fill="none"
-                                                         xmlns="http://www.w3.org/2000/svg">
-                                                        <rect x="3" y="8" width="2" height="6" rx="1"
-                                                              fill="#754FFE"></rect>
-{#                                                        <rect x="7" y="5" width="2" height="9" rx="1"#}
-{#                                                              fill="#DBD8E9"></rect>#}
-                                                        <rect x="7" y="5" width="2" height="9" rx="1"
-                                                              fill="#754FFE"></rect>
-                                                        <rect x="11" y="2" width="2" height="12" rx="1"
-                                                              fill="#754FFE"></rect>
-                                                    </svg>
-                                                    Virtual
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="border-top-0">{{ micurso.fechainicio|date:"d-m-Y" }} / {{ micurso.fechafin|date:"d-m-Y" }}</td>
-                                <td class="border-top-0 text-center">
-                                    {{ micurso.minnota }}
-                                </td>
-                                <td class="border-top-0 text-center">
-                                    <span class="badge bg-success">{{ micurso.get_estado_display }}</span>
-                                </td>
-{#                                <td class="text-muted border-top-0">#}
-{#											<span class="dropdown dropstart">#}
-{#												<a class="btn-icon btn btn-ghost btn-sm rounded-circle " href="#"#}
-{#                                                   role="button" id="courseDropdown"#}
-{#                                                   data-bs-toggle="dropdown" data-bs-offset="-20,20"#}
-{#                                                   aria-expanded="false">#}
-{#													<i class="fe fe-more-vertical"></i>#}
-{#												</a>#}
-{#												<span class="dropdown-menu" aria-labelledby="courseDropdown">#}
-{#													<span class="dropdown-header">Setting </span>#}
-{#													<a class="dropdown-item" href="#"><i#}
-{#                                                            class="fe fe-edit dropdown-item-icon"></i>Edit</a>#}
-{#													<a class="dropdown-item" href="#"><i#}
-{#                                                            class="fe fe-trash dropdown-item-icon"></i>Remove</a>#}
-{#												</span>#}
-{#											</span>#}
-{#                                </td>#}
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Card -->
+        <div class="card mb-4">
+            <!-- Card header -->
+            <div class="card-header">
+                <h3 class="mb-0">Cursos</h3>
+                <span>Administre sus cursos y su actualización.</span>
             </div>
+            <!-- Card body -->
+            <div class="card-body">
+                <!-- Form -->
+                <form class="row">
+                    <div class="col-lg-9 col-md-7 col-12 mb-lg-0 mb-2">
+                        <input type="search" id="buscar_curso" class="form-control" placeholder="Buscar cursos"/>
+                    </div>
+                    <div class="col-lg-3 col-md-5 col-12">
+                        <select class="selectpicker" data-width="100%">
+                            <option value="">Date Created</option>
+                            <option value="Newest">Newest</option>
+                            <option value="High Rated">High Rated</option>
+                            <option value="Law Rated">Law Rated</option>
+                            <option value="High Earned">High Earned</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <!-- Table -->
+            <div class="table-responsive border-0 overflow-y-hidden">
+                <table class="table mb-0 text-nowrap" id="filtro_cursos">
+                    <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="border-0">Mis Cursos</th>
+                        <th scope="col" class="border-0">Fecha inicio / fin</th>
+                        <th scope="col" class="border-0">Calificación mínima</th>
+                        <th scope="col" class="border-0 text-center">Estado</th>
+                        {#                                <th scope="col" class="border-0"></th>#}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for micurso in miscursos %}
+                        <tr>
+                            <td class="border-top-0">
+                                <div class="d-lg-flex">
+                                    <div>
+                                        <a href="#">
+                                            <img src="/media/{{ micurso.fondocursos }}" alt=""
+                                                 class="rounded img-4by3-lg"/></a>
+                                    </div>
+                                    <div class="ms-lg-3 mt-2 mt-lg-0">
+                                        <h4 class="mb-1 h5">
+                                            <a href="?peticion=admcourse&id={{ micurso.id }}" class="text-inherit">
+                                                {{ micurso }}
+                                            </a>
+                                        </h4>
+                                        <ul class="list-inline fs-6 mb-0">
+                                            <li class="list-inline-item">
+                                                <i class="mdi mdi-clock-time-four-outline text-muted me-1"></i>{{ micurso.horasvirtual }}
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <svg class="me-1 mt-n1" width="16" height="16" viewBox="0 0 16 16"
+                                                     fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <rect x="3" y="8" width="2" height="6" rx="1"
+                                                          fill="#754FFE"></rect>
+                                                    {#                                                        <rect x="7" y="5" width="2" height="9" rx="1"#}
+                                                    {#                                                              fill="#DBD8E9"></rect>#}
+                                                    <rect x="7" y="5" width="2" height="9" rx="1"
+                                                          fill="#754FFE"></rect>
+                                                    <rect x="11" y="2" width="2" height="12" rx="1"
+                                                          fill="#754FFE"></rect>
+                                                </svg>
+                                                Virtual
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="border-top-0">{{ micurso.fechainicio|date:"d-m-Y" }}
+                                / {{ micurso.fechafin|date:"d-m-Y" }}</td>
+                            <td class="border-top-0 text-center">
+                                {{ micurso.minnota }}
+                            </td>
+                            <td class="border-top-0 text-center">
+                                <span class="badge bg-success">{{ micurso.get_estado_display }}</span>
+                            </td>
+                            {#                                <td class="text-muted border-top-0">#}
+                            {#											<span class="dropdown dropstart">#}
+                            {#												<a class="btn-icon btn btn-ghost btn-sm rounded-circle " href="#"#}
+                            {#                                                   role="button" id="courseDropdown"#}
+                            {#                                                   data-bs-toggle="dropdown" data-bs-offset="-20,20"#}
+                            {#                                                   aria-expanded="false">#}
+                            {#													<i class="fe fe-more-vertical"></i>#}
+                            {#												</a>#}
+                            {#												<span class="dropdown-menu" aria-labelledby="courseDropdown">#}
+                            {#													<span class="dropdown-header">Setting </span>#}
+                            {#													<a class="dropdown-item" href="#"><i#}
+                            {#                                                            class="fe fe-edit dropdown-item-icon"></i>Edit</a>#}
+                            {#													<a class="dropdown-item" href="#"><i#}
+                            {#                                                            class="fe fe-trash dropdown-item-icon"></i>Remove</a>#}
+                            {#												</span>#}
+                            {#											</span>#}
+                            {#                                </td>#}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% block script %}
+        <script>
+            $('#buscar_curso').keyup(function (e) {
+                // Obtener el valor del campo de entrada y convertirlo a minúsculas
+                var input = document.getElementById("buscar_curso");
+                var filter = input.value.toLowerCase();
+
+                // Obtener la tabla y las filas de la tabla
+                var table = document.getElementById("filtro_cursos");
+                var rows = table.getElementsByTagName("tr");
+
+                // Recorrer las filas de la tabla y mostrar/ocultar según el filtro de búsqueda
+                for (var i = 1; i < rows.length; i++) { // Comenzar desde 1 para omitir la fila de encabezado
+                    var courseName = rows[i].getElementsByTagName("td")[0];
+                    if (courseName) {
+                        var textValue = courseName.textContent || courseName.innerText;
+                        if (textValue.toLowerCase().indexOf(filter) > -1) {
+                            rows[i].style.display = "";
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                }
+            });
+
+            function filterTable() {
+
+            }
+        </script>
+    {% endblock %}
 {% endblock %}

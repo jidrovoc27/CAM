@@ -414,7 +414,7 @@ def dashboard(request):
                     idpersona = int(request.GET['id'])
                     data['persona'] = persona = Persona.objects.get(id=idpersona)
                     data['alumno'] = persona
-                    data['rubros'] = Rubro.objects.filter(status=True, persona=persona)
+                    data['rubros'] = Rubro.objects.filter(status=True, persona=persona).order_by('-id')
                     data['is_finanza'] = True
                     return render(request, "academia/misfinanzas/view.html", data)
                 except Exception as ex:
@@ -618,6 +618,8 @@ def dashboard(request):
                 try:
                     data['titulo'] = 'Mis cursos'
                     data['is_cursos'] = 'is_cursos'
+                    if mis_perfiles.first().is_profesor == False:
+                        return redirect('/moodle/?peticion=viewcurso&id=%s' % request.GET['id'])
                     data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
                     data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
                     if 'option' in request.GET:
@@ -658,6 +660,19 @@ def dashboard(request):
                         data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True,
                                                                                         modelo=curso.modeloevaluativo)
                         return render(request, "academia/docente/resumen.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'viewcurso':
+                try:
+                    data['titulo'] = 'Mis cursos'
+                    data['is_cursos'] = 'is_cursos'
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['inscrito'] = InscritoCursoA.objects.get(status=True, curso=curso, inscrito=alumno)
+                    data['option'] = 'summary'
+                    data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                    return render(request, "academia/docente/viewcurso.html", data)
                 except Exception as ex:
                     pass
 

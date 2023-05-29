@@ -1,0 +1,112 @@
+{% extends 'academia/docente/admcourse.html' %}
+{% load static %}
+{% block contentadicional %}
+    {% block script %}
+        <script>
+            $(function () {
+                $("#li_participantes, #li_actividades, #li_clases, #li_recursos").css({'display': 'none'})
+                $("#link_resumen").removeAttr('href')
+            })
+        </script>
+    {% endblock %}
+    <style>
+        .activityiconcontainer {
+            width: 50px;
+            height: 50px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: .7rem;
+        }
+    </style>
+    <div class="no-overflow">
+        <br>
+        <p dir="ltr"
+           style="text-align: left;margin-left: 20px;width: 97%;height: auto">{{ curso.objetivo|capfirst }}<br>
+        </p>
+        <br>
+        <p dir="ltr" style="text-align: left;">
+            <img style="margin-left: 20px;border-radius: 4px;" src="/media/{{ curso.fondoweb }}"
+                 alt="" role="presentation" class="img-fluid atto_image_button_text-bottom" width="570"
+                 height="120"><br>
+        </p>
+        <br>
+        <h4 style="margin-left: 20px">Docente:</h4>
+        <p dir="ltr" style="text-align: left;margin-left: 40px">{{ curso.docente|capfirst }}<br>
+        <p dir="ltr"
+           style="text-align: left;margin-left: 40px;margin-top: -15px">{{ curso.docente.persona.miscargos }}<br>
+        </p>
+    </div>
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header">
+                <a class="btn" data-bs-toggle="collapse" href="#recursos">
+                    Recursos
+                </a>
+            </div>
+            {% for recurso in curso.misrecursos %}
+                <div id="collapseOne{{ recurso.id }}" class="show" data-bs-parent=""
+                     style="margin-left: 35px;">
+
+                    <div class="card-body" style="display: flex;">
+                        <div class="activityiconcontainer content courseicon align-self-start mr-3"
+                             style="background-color: #afbdd8;">
+                            <img {% if recurso.tipo == 1 %}src="{% static 'img/archivo.png' %}"
+                                 {% else %}src="{% static 'img/enlace.png' %}"{% endif %}
+                                 class="activityicon " alt="book icon">
+                        </div>
+                        {% if recurso.tipo == 1 %}
+                            <a title="{{ recurso }}" target="_blank" href="/media/{{ recurso.archivo }}"
+                               style="margin-top: 12px;margin-left: 5px">{{ recurso }}</a>
+                        {% else %}
+                            <a title="{{ recurso }}" target="_blank" href="//{{ recurso.enlace }}"
+                               style="margin-top: 12px;margin-left: 5px">{{ recurso }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div id="collapseOne{{ detalle.id }}" class="collapse" data-bs-parent="#accordion"
+                     style="margin-left: 35px;">
+                    <div class="card-body">
+                        <a style="margin-top: 12px;margin-left: 5px">Sin recursos</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% for detalle in detallemodelo %}
+        <div id="accordion">
+            <div class="card">
+                <div class="card-header">
+                    <a class="btn" data-bs-toggle="collapse" href="#detalle{{ detalle.id }}">
+                        {{ detalle }}
+                    </a>
+                </div>
+                {% for actividad in detalle.detalleactividades %}
+                    <div id="detalle{{ detalle.id }}" class="collapse" data-bs-parent="#accordion"
+                         style="margin-left: 35px;">
+
+                        <div class="card-body" style="display: flex;">
+                            <div class="activityiconcontainer content courseicon align-self-start mr-3"
+                                 style="background-color: #399be2;">
+                                <img src="{% static 'img/tarea.png' %}"
+                                     class="activityicon " alt="book icon">
+                            </div>
+                            <a href="?peticion=actividad&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ curso.id }}"
+                               style="margin-top: 12px;margin-left: 5px">{{ actividad }}</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div id="detalle{{ detalle.id }}" class="collapse" data-bs-parent="#accordion"
+                         style="margin-left: 35px;">
+                        <div class="card-body">
+                            <a style="margin-top: 12px;margin-left: 5px">Sin actividades</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

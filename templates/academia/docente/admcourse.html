@@ -17,19 +17,19 @@
                 <div class="container-fluid">
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav" style="margin-left: -20px">
-                            <li class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
-                                <a class="nav-link {% if option == 'summary' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=summary">Resumen</a>
+                            <li id="li_resumen" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
+                                <a id="link_resumen" class="nav-link {% if option == 'summary' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=summary">Resumen</a>
                             </li>
-                            <li class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
+                            <li id="li_participantes" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
                                 <a class="nav-link {% if option == 'participants' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=participants">Participantes</a>
                             </li>
-                            <li class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
+                            <li id="li_actividades" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
                                 <a class="nav-link {% if option == 'addactv' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=addactv">Actividades</a>
                             </li>
-                            <li class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
-                                <a class="nav-link {% if option == 'addclass' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=addclass" tabindex="-1" aria-disabled="true">Clases</a>
-                            </li>
-                            <li class="nav-item">
+{#                            <li id="li_clases" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">#}
+{#                                <a class="nav-link {% if option == 'addclass' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=addclass" tabindex="-1" aria-disabled="true">Clases</a>#}
+{#                            </li>#}
+                            <li id="li_recursos" class="nav-item">
                                 <a class="nav-link {% if option == 'addresource' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=addresource" tabindex="-1" aria-disabled="true">Recursos</a>
                             </li>
                         </ul>
