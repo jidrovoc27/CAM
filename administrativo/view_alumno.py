@@ -19,6 +19,7 @@ from CAM.settings import BASE_DIR
 from administrativo.forms import PersonaForm, AbonarCuotaForm, DocumentoForm
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
+from chat.models import *
 from django.db.models import Q
 
 @login_required(redirect_field_name='next', login_url='/login')
@@ -89,6 +90,13 @@ def view_alumno(request):
                             referencia=referencia
                         )
                         persona.save(request)
+                        if 'foto' in request.FILES:
+                            foto = request.FILES['foto']
+                            persona.foto = foto
+                            persona.save(request)
+                            existe = Profile.objects.filter(user_id=persona.usuario.id)
+                            if existe:
+                                existe.update(pic=persona.foto)
 
                         persona_perfil = PersonaPerfil(
                             persona=persona,
@@ -127,6 +135,13 @@ def view_alumno(request):
                         persona.telefono_movil=request.POST['telefono_movil']
                         persona.telefono_convencional=request.POST['telefono_convencional']
                         persona.save(request)
+                        if 'foto' in request.FILES:
+                            foto = request.FILES['foto']
+                            persona.foto = foto
+                            persona.save(request)
+                            existe = Profile.objects.filter(user_id=persona.usuario.id)
+                            if existe:
+                                existe.update(pic=persona.foto)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro Modificado correctamente."})
 
 
@@ -230,7 +245,8 @@ def view_alumno(request):
                         'direccion':alumno.persona.direccion,
                         'referencia':alumno.persona.referencia,
                         'telefono_movil': alumno.persona.telefono_movil,
-                        'telefono_convencional': alumno.persona.telefono_convencional
+                        'telefono_convencional': alumno.persona.telefono_convencional,
+                        'foto': alumno.persona.foto
                     })
                     form.editar()
                     data['form'] = form

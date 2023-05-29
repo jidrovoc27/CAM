@@ -20,6 +20,7 @@ from CAM.settings import BASE_DIR
 from administrativo.forms import *
 from administrativo.funciones import add_data_aplication
 from administrativo.models import *
+from chat.models import *
 from django.db.models import Q
 
 
@@ -93,6 +94,9 @@ def view_docente(request):
                             foto = request.FILES['foto']
                             persona.foto = foto
                             persona.save(request)
+                            existe = Profile.objects.filter(user_id=persona.usuario.id)
+                            if existe:
+                                existe.update(pic=persona.foto)
 
                         persona_perfil = PersonaPerfil(
                             persona=persona,
@@ -138,6 +142,9 @@ def view_docente(request):
                             foto = request.FILES['foto']
                             persona.foto = foto
                         persona.save(request)
+                        existe = Profile.objects.filter(user_id=persona.usuario.id)
+                        if existe:
+                            existe.update(pic=persona.foto)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro Modificado correctamente."})
 
 

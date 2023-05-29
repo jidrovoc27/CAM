@@ -169,6 +169,7 @@ class PersonaForm(forms.Form):
     referencia = forms.CharField(label=u"Referencia", max_length=50, required=False,
                                      widget=forms.TextInput(
                                          attrs={'class': 'form-control', 'placeholder': 'A 2 cuadras..'}))
+    foto = ExtFileField(label=u'Seleccione foto', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato png, jpg, jpeg', ext_whitelist=(".png", ".jpg", ".jpeg"), max_upload_size=2621440)
 
 
     def editar(self):
