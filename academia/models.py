@@ -145,6 +145,12 @@ class CursoA(ModeloBase):
     def misrecursos(self):
         return RecursosCurso.objects.filter(status=True, curso=self)
 
+    def traer_inscrito(self, alumno):
+        inscrito = InscritoCursoA.objects.filter(status=True, curso=self, inscrito_id=alumno)
+        if inscrito:
+            return inscrito.first()
+        return None
+
 ESTADO_ACTIVIDAD = (
     (1, u'ACTIVO'),
     (2, u'INACTIVO'),

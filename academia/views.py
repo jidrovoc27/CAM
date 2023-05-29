@@ -565,6 +565,15 @@ def dashboard(request):
                                     data['listadodetalles'] = DetalleActividadesModeloEvaluativoA.objects.filter(
                                         status=True, detalle_id=detalle)
                             return render(request, "academia/docente/actividades.html", data)
+
+                        elif option == 'addresource':
+                            data['addresource'] = True
+                            data['recursos'] = RecursosCurso.objects.filter(status=True, curso=curso)
+
+                            if 'namerecurso' in request.GET:
+                                data['namerecurso'] = namerecurso = request.GET['namerecurso']
+                                data['recursos'] = RecursosCurso.objects.filter(status=True, curso=curso, nombre__icontains=namerecurso)
+                            return render(request, "academia/docente/recursos.html", data)
                         elif option == 'addclass':
                             data['infoclass'] = True
                             return render(request, "academia/docente/resumen.html", data)

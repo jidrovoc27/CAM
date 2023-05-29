@@ -55,8 +55,10 @@
                                 </div>
                             </td>
                             <td class="border-top-0 text-center">
-                                {% with modelo=inscrito.first|args:micurso.id|call:'calcularpromedio' %}
-                                    {{ modelo|floatformat:2 }}
+                                {% with inscritocurso=micurso|args:alumno.id|call:'traer_inscrito' %}
+                                    {% with modelo=inscritocurso|args:micurso.id|call:'calcularpromedio' %}
+                                        {{ modelo|floatformat:2 }}
+                                    {% endwith %}
                                 {% endwith %}
                             </td>
                         </tr>
