@@ -163,6 +163,18 @@ def view_alumno(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'resetear_clave':
+                try:
+                    with transaction.atomic():
+                        persona = Persona.objects.get(pk=request.POST['id'])
+                        persona.usuario.set_password(str(persona.cedula))
+                        persona.usuario.save()
+                        return JsonResponse({"respuesta": True, "mensaje": "Clave reseteada correctamente"})
+
+                except Exception as ex:
+                    transaction.set_rollback(True)
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
+
             if peticion == 'add_documento':
                 try:
                     form = DocumentoForm(request.POST, request.FILES)

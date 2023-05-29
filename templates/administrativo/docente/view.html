@@ -98,8 +98,18 @@
                                                            href="javascript:;"
                                                            onclick="eliminar_registro('eliminar_docente','{{ fila }}','{{ fila.pk }}')">Eliminar</a>
                                                     </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
 
                                                 {% endif %}
+                                                <li>
+                                                    <a class="dropdown-item border-radius-md text-danger"
+                                                       href="javascript:;"
+                                                       onclick="resetear_clave('resetear_clave','{{ fila }}','{{ fila.persona.id }}')">Resetear
+                                                        clave</a>
+
+                                                </li>
                                             </ul>
                                         </div>
                                     </td>
@@ -138,7 +148,8 @@
     <script type="text/javascript">
         $("#buscar").click(function () {
             var term = $("#buscarinfo").val().trim().toUpperCase();
-            var url = {{ request.path }}
+            var url =
+            {{ request.path }}
             if (term.length > 0) {
                 url += "?var=" + term;
             }
