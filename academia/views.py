@@ -242,6 +242,55 @@ def dashboard(request):
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
+            if peticion == 'add_recurso':
+                try:
+                    form = AgregarRecursoForm(request.POST)
+                    if form.is_valid():
+                        curso = CursoA.objects.get(id=int(request.POST['id']))
+                        nombre = form.cleaned_data['nombre']
+                        tipo = form.cleaned_data['tipo']
+                        recurso = RecursosCurso(curso=curso, nombre=nombre, tipo=int(tipo))
+                        recurso.save(request)
+                        if recurso.tipo == 1:
+                            if 'archivo' in request.FILES:
+                                archivo = request.FILES['archivo']
+                                recurso.archivo = archivo
+                                recurso.save(request)
+                            else:
+                                return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba un archivo"})
+                        else:
+                            recurso.enlace = form.cleaned_data['enlace']
+                            recurso.save(request)
+                        return JsonResponse({"respuesta": True, "mensaje": "Recurso cargado correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'edit_recurso':
+                try:
+                    form = AgregarRecursoForm(request.POST)
+                    # if form.is_valid():
+                    recurso = RecursosCurso.objects.get(id=int(request.POST['id']))
+                    nombre = request.POST['nombre']
+                    tipo = request.POST['tipo']
+                    recurso.nombre = nombre
+                    recurso.tipo = int(tipo)
+                    recurso.save(request)
+                    if recurso.tipo == 1:
+                        if 'archivo' in request.FILES:
+                            archivo = request.FILES['archivo']
+                            recurso.archivo = archivo
+                            recurso.save(request)
+                        else:
+                            return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba un archivo"})
+                    else:
+                        recurso.enlace = request.POST['enlace']
+                        recurso.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
             if peticion == 'edit_tarea':
                 try:
                     form = AgregarEntregaForm(request.POST, request.FILES)
@@ -295,6 +344,15 @@ def dashboard(request):
                     return JsonResponse({"respuesta": True, "mensaje": "Actividad actualizada correctamente."})
                     # else:
                     #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'eliminar_recurso':
+                try:
+                    recurso = RecursosCurso.objects.get(id=int(request.POST['id']))
+                    recurso.status = False
+                    recurso.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Recurso eliminado correctamente."})
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
@@ -510,6 +568,24 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'edit_recurso':
+                try:
+                    data['titulo'] = 'Editar recurso'
+                    data['titulo_formulario'] = 'Editar recurso'
+                    data['peticion'] = 'edit_recurso'
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['curso']))
+                    data['recurso'] = recurso = RecursosCurso.objects.get(id=int(request.GET['id']))
+                    form = AgregarRecursoForm(initial={
+                        'nombre': recurso.nombre,
+                        'tipo': recurso.tipo,
+                        'archivo': recurso.archivo,
+                        'enlace': recurso.enlace,
+                    })
+                    data['form'] = form
+                    return render(request, "academia/docente/edit_recurso.html", data)
+                except Exception as ex:
+                    pass
+
             if peticion == 'edit_actividad':
                 try:
                     data['titulo'] = 'Editar actividad'
@@ -610,6 +686,18 @@ def dashboard(request):
                                                                                               modelo=cursoA.modeloevaluativo)
                     data['form'] = form
                     return render(request, "academia/docente/add_actividad.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'add_recurso':
+                try:
+                    data['titulo'] = 'Agregar recurso'
+                    data['titulo_formulario'] = 'Adicionar recurso'
+                    data['peticion'] = 'add_recurso'
+                    data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
+                    form = AgregarRecursoForm()
+                    data['form'] = form
+                    return render(request, "academia/docente/add_recurso.html", data)
                 except Exception as ex:
                     pass
 

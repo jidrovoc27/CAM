@@ -22,7 +22,7 @@
 
                         {% for field in form %}
 
-                            <div class="input-group input-group-static my-3  ">
+                            <div class="input-group input-group-static my-3  " id="form_{{ field.name }}">
                                 {{ field.errors }} {{ field.label_tag }} {{ field }} {% if field.help_text %}
                                 <small id="help"
                                        class="form-text text-muted">{{ field.help_text|safe }}</small> {% endif %}

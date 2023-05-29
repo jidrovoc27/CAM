@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.forms import DateTimeInput, ModelChoiceField
 
 from administrativo.models import *
+from academia.models import TIPO_RECURSOS
 
 
 class ExtFileField(forms.FileField):
@@ -82,6 +83,19 @@ class AgregarActividadForm(forms.Form):
     horalimite = forms.TimeField(label=u"Hora máxima", required=True, input_formats=['%H:%M'], widget=DateTimeInput(format='%H:%M', attrs={'class': 'form-control'}))
     imagen = ExtFileField(label=u'Seleccione imagen', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato jpg, png, jpeg', ext_whitelist=(".jpg", ".png", ".jpeg"), max_upload_size=2621440)
     archivo = ExtFileField(label=u'Seleccione archivo', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato pdf, word', ext_whitelist=(".docx", ".pdf"), max_upload_size=2621440)
+
+
+    def sin_archivo(self):
+        campo_no_requerido(self, 'archivo')
+
+    def sin_imagen(self):
+        campo_no_requerido(self, 'imagen')
+
+class AgregarRecursoForm(forms.Form):
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
+    tipo = forms.ChoiceField(choices=TIPO_RECURSOS, label=u'Tipo de recurso', required=True, widget=forms.Select(attrs={'class': 'form-control', }))
+    archivo = ExtFileField(label=u'Seleccione archivo', required=False, help_text=u'Tamaño maximo permitido 2.5Mb, en formato pdf, word', ext_whitelist=(".docx", ".pdf"), max_upload_size=2621440)
+    enlace = forms.CharField(label='Enlace', required=False, widget=forms.TextInput(attrs={'class': 'form-control', }))
 
 
     def sin_archivo(self):

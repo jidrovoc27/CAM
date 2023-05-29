@@ -1,0 +1,47 @@
+{% extends 'formBaseAcademia.html' %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+{% block titulo %}{{ titulo_formulario }}{% endblock %}
+{% block class_extra_card_formulario %}col-lg-9 col-md-8 col-12{% endblock %}
+{% block inputs_extras %}
+    <input type="hidden" name="peticion" value="{{ peticion }}">
+    <input type="hidden" name="curso" value="{{ curso.id }}">
+    <input type="hidden" name="id" value="{{ recurso.id }}">
+{% endblock %}
+{% block news_inputs_form %}
+
+{% endblock %}
+{% block nombre_boton_submit %}Actualizar{% endblock %}
+{% block location_href_destino %}/moodle/?peticion=admcourse&id={{ curso.id }}&option=addresource{% endblock %}
+{% block botones_extras %}{% endblock %}
+
+
+
+{% block js %}
+    <script src="{% static 'js/select2.min.js' %}"></script>
+    <link href="{% static 'css/select2.min.css' %}" rel="stylesheet"/>
+    <script>
+        $(function () {
+            {% if recurso.tipo == 1 %}
+                $("#form_enlace").css({'display': 'none'})
+            {% else %}
+                $("#form_archivo").css({'display': 'none'})
+            {% endif %}
+        })
+
+        $("#id_tipo").change(function () {
+            var tipo = $(this).val();
+            if (tipo == 1) {
+                $("#form_enlace").css({'display': 'none'})
+                $("#form_archivo").removeAttr('style')
+            } else {
+                $("#form_enlace").removeAttr('style')
+                $("#form_archivo").css({'display': 'none'})
+            }
+        });
+    </script>
+
+{% endblock %}
+

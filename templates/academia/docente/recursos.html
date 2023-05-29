@@ -37,7 +37,7 @@
             </div>
             <div class="col-6 text-end">
                 <a class="btn btn-outline-dark btn-sm mb-0"
-                   href="{{ request.path }}?peticion=add_actividad&id={{ curso.id }}"><i
+                   href="{{ request.path }}?peticion=add_recurso&id={{ curso.id }}"><i
                         class="material-icons text-sm"></i>&nbsp;&nbsp;Agregar recurso</a>
 
             </div>
@@ -81,10 +81,10 @@
                                       aria-labelledby="courseDropdown">
                                     <span class="dropdown-header">Acciones</span>
                                     <a class="dropdown-item"
-                                       href="?peticion=edit_actividad&id={{ detalleactividad.id }}&curso={{ curso.id }}"><i
+                                       href="?peticion=edit_recurso&id={{ recurso.id }}&curso={{ curso.id }}"><i
                                             class="fe fe-edit dropdown-item-icon"></i>Editar</a>
                                     <a class="dropdown-item" style="cursor: pointer"
-                                       onclick="eliminar_registro('eliminar_actividad','{{ detalleactividad }}','{{ detalleactividad.pk }}')"><i
+                                       onclick="eliminar_registro('eliminar_recurso','{{ recurso }}','{{ recurso.pk }}')"><i
                                             class="fe fe-trash dropdown-item-icon"></i>Eliminar</a>
                                 </span>
                             </span>
