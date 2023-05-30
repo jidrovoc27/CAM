@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>{{ examen.nombre }}</h1>
+  <p>Tiempo restante: <span id="tiempo_restante">{{ examen.tiempo_restante }}</span></p>
+
+  <form id="tiempo-form" method="POST" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="tiempo_restante" id="tiempo_restante_input">
+  </form>
+
+  <script>
+    function actualizarTiempoRestante() {
+      var tiempoRestante = {{ examen.tiempo_restante_en_segundos }};
+
+      if (tiempoRestante > 0) {
+        tiempoRestante -= 1;
+      } else {
+        // Aquí puedes tomar alguna acción cuando se acabe el tiempo del examen
+      }
+
+      // Actualizar el elemento HTML que muestra el tiempo restante
+      var tiempoRestanteSpan = document.getElementById('tiempo_restante');
+      tiempoRestanteSpan.textContent = tiempoRestante;
+
+      // Actualizar el campo oculto del formulario
+      var tiempoRestanteInput = document.getElementById('tiempo_restante_input');
+      tiempoRestanteInput.value = tiempoRestante;
+
+      // Enviar la actualización al servidor mediante AJAX
+      $.ajax({
+        url: "{% url 'actualizar_tiempo' examen.id %}",
+        type: "POST",
+        data: $('#tiempo-form').serialize(),
+        success: function(response) {
+          // Aquí puedes realizar acciones adicionales después de enviar la actualización
+        }
+      });
+    }
+
+    setInterval(actualizarTiempoRestante, 1000);  // Actualizar cada segundo
+  </script>
+</body>
+</html>

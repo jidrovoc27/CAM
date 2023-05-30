@@ -1,7 +1,59 @@
 {% extends 'baseapp.html' %}
 {% load static %}
 {% block head %}
+    <script>
+        function generar_factura(peticion, registro, id) {
 
+            Swal.fire({
+                title: '¿Estás seguro de generar factura?',
+                text: "Está acción es irrevesible!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, genera!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ reques.path }}',
+                        async: false,
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            peticion: peticion,
+                            id: id,
+                        },
+                        dataType: "json",
+                        beforeSend: function () {
+
+                        }
+                    }).done(function (data) {
+                        if (data.respuesta === true) {
+                            Swal.fire(
+                                'Factura generada!',
+                                data.mensaje,
+                                'success'
+                            ).then(function () {
+                                location.reload();
+                            });
+                        } else {
+
+                            Swal.fire(data.mensaje);
+                        }
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                        mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
+                    }).always(function () {
+                    });
+
+
+                }
+
+            })
+
+
+        }
+    </script>
 {% endblock %}
 {% block contenido %}
 
@@ -76,9 +128,9 @@
                                     Cancelado
                                 </th>
 
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">
-                                    Evidencia
-                                </th>
+{#                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">#}
+{#                                    Evidencia#}
+{#                                </th>#}
 
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder text-center">
                                     Acciones
@@ -136,9 +188,11 @@
                                             <strong>Si</strong></p>
                                     </td>
 
-                                    <td class="text-xs" data-title="¿Activo?" style="text-align:center">
-                                        <a class="btn btn-info">Descargar</a>
-                                    </td>
+{#                                    <td class="text-xs" data-title="¿Activo?" style="text-align:center">#}
+{#                                        {% if fila.archivo %}#}
+{#                                            <a class="btn btn-info" href="/media/{{ fila.archivo }}" target="_blank">Descargar</a>#}
+{#                                        {% endif %}#}
+{#                                    </td>#}
                                     <td class="text-secondary text-sm font-weight-bolder text-center">
                                         <div class="dropstart">
                                             <a href="javascript:;" class="text-secondary" id="dropdownMarketingCard"
@@ -147,6 +201,9 @@
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3"
                                                 aria-labelledby="dropdownMarketingCard" style="">
+                                                <li><a class="dropdown-item border-radius-md generar_factura" idfactura="{{ fila.id }}">Generar
+                                                    factura</a>
+                                                </li>
                                             </ul>
                                         </div>
                                     </td>
@@ -190,6 +247,15 @@
                 url += "?var=" + term;
             }
             location.href = url
+        });
+        $(".generar_factura").click(function () {
+            var id = $(this).attr('idfactura')
+            var fechaf = $("#fechafin_anuladas").val();
+            $("#ficherofacturamodal_anuladas").modal("hide");
+            openwindow('POST', '{{ request.path }}', {
+                'peticion': 'generar_factura',
+                'id': id,
+            }, '_blank')
         });
     </script>
 

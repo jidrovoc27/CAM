@@ -5,6 +5,7 @@ from administrativo.models import *
 from administrativo.funciones import *
 from django.db.models import Q, F, Count
 from django.apps import apps
+from django.utils import timezone
 
 class PeriodoA(ModeloBase):
     nombre = models.CharField(default='', max_length=200, verbose_name=u'Nombre', blank=True, null=True)
@@ -280,4 +281,40 @@ class NotaInscritoActividadA(ModeloBase):
         verbose_name = u"Tarea que el inscrito sube"
         verbose_name_plural = u"Tareas que el inscrito sube"
         ordering = ['-id']
+
+
+from django.db import models
+
+class Examen(ModeloBase):
+    nombre = models.CharField(max_length=255, blank=True, null=True)
+    hora_inicio = models.DateTimeField(default=timezone.now)
+    tiempo_restante = models.DurationField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        tiempo_transcurrido = timezone.now() - self.hora_inicio
+        self.tiempo_restante = self.tiempo_restante - tiempo_transcurrido
+        super().save(*args, **kwargs)
+
+    def tiempo_restante_en_segundos(self):
+        tiempo_transcurrido = timezone.now() - self.hora_inicio
+        tiempo_restante = self.tiempo_restante - tiempo_transcurrido
+        return max(tiempo_restante.total_seconds(), 0)
+
+class Pregunta(ModeloBase):
+    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
+    enunciado = models.TextField(blank=True, null=True)
+
+class Literal(ModeloBase):
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
+    texto = models.CharField(max_length=255, blank=True, null=True)
+
+class Respuesta(ModeloBase):
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
+    texto = models.CharField(max_length=255, blank=True, null=True)
+    es_correcta = models.BooleanField(default=False, blank=True, null=True)
+
+class RespuestaAlumno(ModeloBase):
+    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
+    respuesta_escogida = models.ForeignKey(Respuesta, on_delete=models.CASCADE, blank=True, null=True)
 

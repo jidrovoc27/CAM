@@ -384,6 +384,19 @@ def dashboard(request):
                     return JsonResponse({"respuesta": True, "mensaje": "Actividad calificada correctamente."})
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Error al calificar"})
+
+            if peticion == 'actualizar_tiempo':
+                try:
+                    examen = Examen.objects.get(pk=int(request.POST['id']))
+                    tiempo_restante = request.POST.get('tiempo_restante')
+
+                    # Actualizar el campo "tiempo_restante" del examen
+                    examen.tiempo_restante = tiempo_restante
+                    examen.save()
+
+                    return JsonResponse({'success': True})
+                except Exception as ex:
+                    return JsonResponse({'success': False})
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']
@@ -794,6 +807,14 @@ def dashboard(request):
                     data['chats'] = chats
                     data['num'] = rec_chats.count()
                     return render(request, "chat/mensajeria.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'rendir_examen':
+                try:
+                    data['examen'] = examen = Examen.objects.get(pk=int(request.GET['id']))
+                    data['tiempo_restante_segundos'] = tiempo_restante_segundos = examen.tiempo_restante_en_segundos()
+                    return render(request, 'academia/examen/examen.html', data)
                 except Exception as ex:
                     pass
 

@@ -281,6 +281,28 @@
 
     }
 
+    openwindow = function (verb, url, data, target) {
+                var form = document.createElement("form");
+                form.action = url;
+                form.method = verb;
+                form.target = target || "_self";
+                if (data) {
+                    for (var key in data) {
+                        var input = document.createElement("textarea");
+                        input.name = key;
+                        input.value = typeof data[key] === "object" ? JSON.stringify(data[key]) : data[key];
+                        form.appendChild(input);
+                    }
+                    var csrf = document.createElement("input");
+                    csrf.name = 'csrfmiddlewaretoken';
+                    csrf.value = '{{ csrf_token }}';
+                    form.appendChild(csrf);
+                }
+                form.style.display = 'none';
+                document.body.appendChild(form);
+                form.submit();
+            };
+
     function resetear_clave(peticion, registro, id) {
 
             Swal.fire({

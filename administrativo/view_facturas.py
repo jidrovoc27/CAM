@@ -102,6 +102,17 @@ def view_facturas(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'generar_factura':
+                try:
+                    factura = Factura.objects.get(id=int(request.POST['id']))
+                    valida = conviert_html_to_pdf('factura.html', {'data': data})
+                    if valida:
+                        factura.archivo = f'facturas/{str(factura.id)}.pdf'
+                        factura.save()
+                    return conviert_html_to_pdf('factura.html', {'data': data})
+                except Exception as ex:
+                    pass
+
         return JsonResponse({"respuesta": False, "mensaje": "acción Incorrecta."})
     else:
         if 'peticion' in request.GET:
