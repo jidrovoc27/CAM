@@ -109,6 +109,58 @@
 
 
         }
+
+        function generar_certificado(peticion, inscrito) {
+
+            Swal.fire({
+                title: '¿Estás seguro de generar certificado',
+                text: "Está acción es irrevesible!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, genera!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ reques.path }}',
+                        async: false,
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            peticion: peticion,
+                            id: inscrito,
+                        },
+                        dataType: "json",
+                        beforeSend: function () {
+
+                        }
+                    }).done(function (data) {
+                        if (data.respuesta === true) {
+                            Swal.fire(
+                                'Información',
+                                data.mensaje,
+                                'success'
+                            ).then(function () {
+                                location.reload();
+                            });
+                        } else {
+
+                            Swal.fire(data.mensaje);
+                        }
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                        mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
+                    }).always(function () {
+                    });
+
+
+                }
+
+            })
+
+
+        }
     </script>
 {% endblock %}
 {% block retroceder %}
@@ -264,13 +316,15 @@
                                                            onclick="eliminar_inscrito('eliminar_inscrito','{{ fila }}','{{ fila.pk }}', '{{ curso.id }}')">
                                                         Eliminar</a></li>
                                                 {% endif %}
-                                                {#                                                {% if not fila.en_uso %}#}
-                                                {#                                                    <li><a class="dropdown-item border-radius-md text-danger"#}
-                                                {#                                                           href="javascript:;"#}
-                                                {#                                                           onclick="eliminar_registro('eliminar_alumno','{{ fila }}','{{ fila.pk }}')">Eliminar</a>#}
-                                                {#                                                    </li>#}
-                                                {##}
-                                                {#                                                {% endif %}#}
+                                                {% if fila.aprueba_inscrito %}
+                                                    <li><a class="dropdown-item border-radius-md"
+                                                           onclick="generar_certificado('generar_certificado','{{ fila.pk }}')">
+                                                        Generar certificado</a></li>
+                                                {% endif %}
+                                                {% if fila.certificado %}
+                                                    <li><a target="_blank" class="dropdown-item border-radius-md" href="/media/{{ fila.certificado }}">
+                                                        Descargar certificado</a></li>
+                                                {% endif %}
                                             </ul>
                                         </div>
                                     </td>

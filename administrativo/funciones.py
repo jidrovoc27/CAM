@@ -3,7 +3,7 @@ import os
 from CAM import settings
 from django.contrib.staticfiles import finders
 from django.http import JsonResponse, HttpResponse
-from CAM.settings import BASE_DIR
+from CAM.settings import BASE_DIR, ALMACENAMIENTO
 import datetime
 from datetime import datetime
 from decimal import Decimal
@@ -15,6 +15,19 @@ import io as StringIO
 from xhtml2pdf import pisa
 import uuid
 
+def convertir_html_a_pdf_certificado(template_src, context_dict, filename):
+    template = get_template(template_src)
+    html = template.render(context_dict).encode(encoding="UTF-8")
+    result = StringIO.BytesIO()
+    output_folder = os.path.join(ALMACENAMIENTO, 'media', 'certificados')
+    filepdf = open(output_folder + os.sep + filename, "w+b")
+    links = lambda uri, rel: os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ''))
+    pdf1 = pisa.pisaDocument(StringIO.BytesIO(html), dest=filepdf, link_callback=links)
+    pisaStatus = pisa.CreatePDF(StringIO.BytesIO(html), result, link_callback=links)
+    if not pdf1.err:
+        # return HttpResponse(result.getvalue(), content_type='application/pdf')
+        return True
+    return JsonResponse({"result": "bad", "mensaje": u"Incidencias al generar el certificado"})
 
 def link_callback(uri, rel):
     """

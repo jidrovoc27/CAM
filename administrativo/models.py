@@ -471,6 +471,7 @@ class InscritoCurso(ModeloBase):
     notafinal = models.DecimalField(max_digits=30, decimal_places=2, default=0, verbose_name=u'Nota final')
     matriculado = models.BooleanField(default=False, blank=True, null=True)
     iduseracad = models.ForeignKey('academia.InscritoCursoA', on_delete=models.PROTECT, verbose_name=u"Inscrito academia", blank=True, null=True)
+    certificado = models.FileField(upload_to='certificados', blank=True, null=True, verbose_name=u'Certificado en formato pdf')
 
     class Meta:
         verbose_name = "Inscrito Curso"
@@ -479,6 +480,12 @@ class InscritoCurso(ModeloBase):
 
     def __str__(self):
         return u'%s' % (self.alumno)
+
+    def aprueba_inscrito(self):
+        if self.estado == 1:
+            return True
+        else:
+            return False
 
     def adeuda(self):
         curso = self.curso

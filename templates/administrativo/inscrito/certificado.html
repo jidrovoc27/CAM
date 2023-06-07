@@ -1,0 +1,163 @@
+<meta charset="utf-8"/>
+{% load adiciones %}
+{% load static %}
+{% block heading %}
+    <title>Curso {{ data.inscrito.curso|lower|capfirst }}</title>
+{% endblock %}
+{% block canvas %}
+    <style type="text/css">
+        @page {
+            background-image: url('{{ request.path }}/media/fondo_certificado/fondo_certificado.jpeg');
+            size: A4 landscape;
+            top: 0cm;
+            left: 2cm;
+            right: 2cm;
+            bottom: 0cm;
+            @frame {
+                -pdf-frame-content: company_logo;
+                left: 0cm;
+                right: 0cm;
+                bottom: -2cm;
+                top: 2cm;
+            }
+            @frame {
+                -pdf-frame-content: evolucion_logo;
+                left: 2cm;
+                right: 2cm ;
+                bottom: 1cm;
+                top: 2cm;
+            }
+        }
+
+        @page maintmpl {
+            background-image: url('https://sga.unemi.edu.ec/media/reportes/encabezados_pies/formato_certificado_posgrado_reverso.png?v={{ data.version }}');
+            size: A4 landscape;
+            top: 1cm;
+            left: 2cm;
+            right: 2cm;
+            bottom: 2cm;
+            @frame {
+            {#background-image: url('https://sga.unemi.edu.ec/media/reportes/encabezados_pies/formato_certificado_posgrado_reverso.png?v={{ data.version }}');#}
+                -pdf-frame-content: footerContent;
+                bottom: 0cm;
+                bottom: 0cm;
+                margin-left: 0cm;
+                margin-right: 0cm;
+                text-align: right;
+                height: 1cm;
+            }
+        }
+
+        #texto {
+            letter-spacing: 2pt; /* para separar entgre letras */
+            word-spacing: 5pt; /* para separacion entre palabras */
+            line-height: 20pt; /* para la separacion entre lineas */
+            text-indent: 30pt; /* para sangrias */
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(function () {
+
+        });
+
+        function linkinsignia() {
+        }
+    </script>
+    <div>
+    </div>
+    <div>
+        <div id="company_logo">
+            {#                        <img src='{{ request.path }}/media/fondo_certificado/fondo_certificado.jpg' class="top_image"/>#}
+        </div>
+        <table align="left" style="height: 135px; font-family: Times New Roman;">
+            <td style="text-align:center;width:800px;font-size: 30px;padding-left: 23px;padding-top: 21px">
+                <b>INSTITUTO DE FORMACIÓN Y CAPACITACIÓN CONTINUA GENIUSPRO</b>
+            </td>
+        </table>
+        <table align="left"
+               style="text-align: center;padding:1.5px;font-family:Roboto; color: #1c3247">
+            <tr>
+                <td style="width:30px;"></td>
+                <td style="text-align:center; font-size:31px;"><font color="green"><strong>
+                </strong></font></td>
+            </tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr>
+                <td style="text-align:center; width: 1000%; font-size:85px; color: black;padding-left: -60px">
+                    <strong>
+                        CERTIFICADO
+                    </strong>
+                </td>
+            </tr>
+            <tr style="padding-top: -30px">
+                <td style="text-align:center; width: 1000%; font-size:30px; color: black;padding-left: -60px">
+                    <strong>
+                        DE RECONOCIMIENTO
+                    </strong>
+                </td>
+            </tr>
+            <tr style="padding-top: -10px">
+                <td style="text-align:center; width: 1000%; font-size:16px; color: black;padding-left: -60px">
+                    <strong>
+                        OTORGADO A:
+                    </strong>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr>
+                <td style="text-align:center; width: 1000%; color: black;padding-left: -60px;">
+                    <p style="font-family: Times New Roman;font-size:30px;margin-bottom: -20px">
+                        {{ data.inscrito|upper }}
+                    </p>
+                    <strong>
+                        _______________________________________________________________________________________________________________
+                    </strong>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td style="text-align:center; width: 1000%; color: black;padding-left: -60px;font-size: 19px">
+                    Por haber completado satisfactoriamente {{ data.inscrito.curso.horasvirtual }} horas del {{ data.inscrito.curso|lower|capfirst }}
+                </td>
+            </tr>
+        </table>
+
+        </br>
+    </div>
+    <div class="contenedor-tabla" style="text-align: left;margin-left: -290px">
+        <table style="color: #1c3247; ;text-align: left;font-family: Roboto;">
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr>
+                <td style="text-align: center;">
+                    <strong>___________________________________</strong>
+                    <br>
+                    <br>
+                    <b style="font-size: 14px">LIC. DAVID BASTIDAS G.</b></br>
+                    <b style="font-size: 12px">Gerente General de GENIUSpro</b>
+                </td>
+                <td style="text-align: center;padding-left: -145px">
+                    <strong>{{ data.firma }}</strong>
+                    <br>
+                    <br>
+                    <b style="font-size: 14px">LIC. {{ data.inscrito.curso.docente|upper }}</b></br>
+                    <b style="font-size: 12px">Docente Instructor</b>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br/>
+{% endblock %}

@@ -287,13 +287,13 @@ from django.db import models
 
 class Examen(ModeloBase):
     nombre = models.CharField(max_length=255, blank=True, null=True)
-    hora_inicio = models.DateTimeField(default=timezone.now)
+    hora_inicio = models.DateTimeField(default=timezone.now, blank=True, null=True)
     tiempo_restante = models.DurationField(blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        tiempo_transcurrido = timezone.now() - self.hora_inicio
-        self.tiempo_restante = self.tiempo_restante - tiempo_transcurrido
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     tiempo_transcurrido = timezone.now() - self.hora_inicio
+    #     self.tiempo_restante = self.tiempo_restante - tiempo_transcurrido
+    #     super().save(*args, **kwargs)
 
     def tiempo_restante_en_segundos(self):
         tiempo_transcurrido = timezone.now() - self.hora_inicio
@@ -310,11 +310,12 @@ class Literal(ModeloBase):
 
 class Respuesta(ModeloBase):
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
+    literal = models.ForeignKey(Literal, on_delete=models.CASCADE, blank=True, null=True)
     texto = models.CharField(max_length=255, blank=True, null=True)
     es_correcta = models.BooleanField(default=False, blank=True, null=True)
 
 class RespuestaAlumno(ModeloBase):
     examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
-    respuesta_escogida = models.ForeignKey(Respuesta, on_delete=models.CASCADE, blank=True, null=True)
+    respuesta_escogida = models.ForeignKey(Literal, on_delete=models.CASCADE, blank=True, null=True)
 

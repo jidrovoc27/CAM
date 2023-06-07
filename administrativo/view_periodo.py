@@ -15,6 +15,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 
 from CAM import settings
+from CAM.settings import ALMACENAMIENTO
 from CAM.settings import BASE_DIR, MEDIA_ROOT
 from administrativo.forms import *
 from administrativo.funciones import *
@@ -570,6 +571,30 @@ def view_periodo(request):
 
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Error al intentar matricular a los alumnos"})
+
+            elif peticion == 'generar_certificado':
+                try:
+                    data['inscrito'] = inscrito = InscritoCurso.objects.get(id=int(request.POST['id']))
+                    firma = '_'
+                    longitud_nombre = len(inscrito.curso.docente.__str__())
+                    data['firma'] = firma = firma * (longitud_nombre + longitud_nombre + 4)
+                    name = "certificado_" + str(inscrito.id)
+                    crear_carpeta = os.path.join(os.path.join(ALMACENAMIENTO, 'media', 'certificados'))
+                    try:
+                        os.makedirs(crear_carpeta)
+                    except Exception as ex:
+                        pass
+                    valida = convertir_html_a_pdf_certificado(
+                        'administrativo/inscrito/certificado.html',
+                        {'pagesize': 'A4', 'data': data}, name + '.pdf'
+                    )
+                    if valida:
+                        inscrito.certificado = 'certificados/' + name + '.pdf'
+                        inscrito.save(request)
+                        return JsonResponse({"respuesta": True, "mensaje": "Certificado generado correctamente."})
+                    return JsonResponse({"respuesta": False, "mensaje": "Error al generar el certificado."})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Error al generar el certificado."})
 
         return JsonResponse({"respuesta": False, "mensaje": "Acción incorrecta."})
     else:

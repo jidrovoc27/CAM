@@ -1,47 +1,88 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .reloj-digital {
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+
+
 </head>
 <body>
-  <h1>{{ examen.nombre }}</h1>
-  <p>Tiempo restante: <span id="tiempo_restante">{{ examen.tiempo_restante }}</span></p>
+<h1>{{ examen.nombre }}</h1>
+<p>Tiempo restante: <span id="tiempo_restante">{{ examen.tiempo_restante }}</span></p>
+{#<div id="reloj-digital" class="reloj-digital">00:00:00</div>#}
+<button id="reloj-digital" type="button" class="btn btn-success reloj-digital" style="font-size: 15px;width: 100px;height: 100px;border-radius: 50%;background: white;color:green;border-color: white;border-style: none">00:00:00</button>
 
-  <form id="tiempo-form" method="POST" style="display: none;">
+
+<form id="tiempo-form" method="POST" style="display: none;">
     {% csrf_token %}
     <input type="hidden" name="tiempo_restante" id="tiempo_restante_input">
-  </form>
+</form>
+<input type="hidden" id="idexamen" value="{{ examen.id }}">
+<script>
+    // Obtiene el elemento <span> por su ID
+    var tiempo_restante = document.getElementById("tiempo_restante");
 
-  <script>
-    function actualizarTiempoRestante() {
-      var tiempoRestante = {{ examen.tiempo_restante_en_segundos }};
+    // Obtiene el tiempo restante del servidor en segundos (puedes pasar este valor desde Django)
+    var tiempo_restante_segundos = {{ tiempo_restante_segundos }};
 
-      if (tiempoRestante > 0) {
-        tiempoRestante -= 1;
-      } else {
-        // Aquí puedes tomar alguna acción cuando se acabe el tiempo del examen
-      }
+    // Actualiza el elemento <span> con el tiempo restante inicial
+    tiempo_restante.innerText = formatTime(tiempo_restante_segundos);
 
-      // Actualizar el elemento HTML que muestra el tiempo restante
-      var tiempoRestanteSpan = document.getElementById('tiempo_restante');
-      tiempoRestanteSpan.textContent = tiempoRestante;
-
-      // Actualizar el campo oculto del formulario
-      var tiempoRestanteInput = document.getElementById('tiempo_restante_input');
-      tiempoRestanteInput.value = tiempoRestante;
-
-      // Enviar la actualización al servidor mediante AJAX
-      $.ajax({
-        url: "{% url 'actualizar_tiempo' examen.id %}",
-        type: "POST",
-        data: $('#tiempo-form').serialize(),
-        success: function(response) {
-          // Aquí puedes realizar acciones adicionales después de enviar la actualización
-        }
-      });
+    // Función para formatear el tiempo en formato HH:MM:SS
+    function formatTime(tiempo_segundos) {
+        var horas = Math.floor(tiempo_segundos / 3600);
+        var minutos = Math.floor((tiempo_segundos % 3600) / 60);
+        var segundos = tiempo_segundos % 60;
+        return horas.toString().padStart(2, '0') + ":" +
+            minutos.toString().padStart(2, '0') + ":" +
+            segundos.toString().padStart(2, '0');
     }
 
-    setInterval(actualizarTiempoRestante, 1000);  // Actualizar cada segundo
-  </script>
+    // Función para actualizar el tiempo restante cada segundo
+    function actualizarTiempoRestante() {
+        tiempo_restante_segundos--;
+        tiempo_restante.innerText = formatTime(tiempo_restante_segundos);
+        {#var relojSegundosElemento = document.querySelector('.reloj-segundos');#}
+        var tiempoRestante = String(formatTime(tiempo_restante_segundos));
+        document.getElementById("reloj-digital").textContent = tiempoRestante;
+        var partes = tiempoRestante.split(':');
+        var horas = parseInt(partes[0]);
+        var minutos = parseInt(partes[1]);
+        var segundos = parseInt(partes[2]);
+
+
+        var idexamen = $("#idexamen").val();
+        $.ajax({
+            url: "{{ request.path }}",
+            type: "GET",
+            data: {
+                peticion: 'actualizar_tiempo',
+                id: idexamen,
+                tiempo_restante: String(formatTime(tiempo_restante_segundos)),
+            },
+            success: function (data) {
+
+            }
+
+        })
+
+        if (tiempo_restante_segundos <= 10) {
+            // Aquí puedes agregar acciones adicionales cuando tenga menos de 10 segundos para rendir la prueba
+            $("#reloj-digital").css({"color":"red"})
+        }
+        if (tiempo_restante_segundos <= 0) {
+            // Aquí puedes agregar acciones adicionales cuando se agote el tiempo
+            clearInterval(intervalId);
+        }
+    }
+
+    // Actualiza el tiempo restante cada segundo
+    var intervalId = setInterval(actualizarTiempoRestante, 1000);
+</script>
+
 </body>
 </html>

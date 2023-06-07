@@ -19,9 +19,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import FormMixin
 from django.views.generic import View
+from django.http import QueryDict
+from datetime import timedelta
 
 # Create your views here.
 from django.urls import reverse_lazy
+from django.utils.dateparse import parse_duration
 
 
 # Create your views here.
@@ -385,21 +388,29 @@ def dashboard(request):
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Error al calificar"})
 
-            if peticion == 'actualizar_tiempo':
-                try:
-                    examen = Examen.objects.get(pk=int(request.POST['id']))
-                    tiempo_restante = request.POST.get('tiempo_restante')
 
-                    # Actualizar el campo "tiempo_restante" del examen
-                    examen.tiempo_restante = tiempo_restante
-                    examen.save()
-
-                    return JsonResponse({'success': True})
-                except Exception as ex:
-                    return JsonResponse({'success': False})
     else:
         if 'peticion' in request.GET:
             peticion = request.GET['peticion']
+
+            if peticion == 'actualizar_tiempo':
+                try:
+                    examen = Examen.objects.get(pk=int(request.GET['id']))
+                    tiempo_restante = query_dict = QueryDict(request.GET['tiempo_restante'])
+                    diccionario = query_dict.dict()
+                    valor_numerico = request.GET['tiempo_restante']
+                    # delta_tiempo = timedelta(seconds=valor_numerico)
+
+                    # Actualizar el campo "tiempo_restante" del examen
+                    duracion_str = valor_numerico
+                    horas, minutos, segundos = duracion_str.split(':')
+                    duracion = timedelta(hours=int(horas), minutes=int(minutos), seconds=int(segundos))
+                    examen.tiempo_restante = duracion
+                    examen.save()
+                    data['examen'] = examen
+                    return JsonResponse({'success': True})
+                except Exception as ex:
+                    return JsonResponse({'success': False})
 
             if peticion == 'cambioperfil':
                 try:
@@ -813,7 +824,8 @@ def dashboard(request):
             if peticion == 'rendir_examen':
                 try:
                     data['examen'] = examen = Examen.objects.get(pk=int(request.GET['id']))
-                    data['tiempo_restante_segundos'] = tiempo_restante_segundos = examen.tiempo_restante_en_segundos()
+                    tiempo_restante = (examen.hora_inicio - timezone.now()).total_seconds()
+                    data['tiempo_restante_segundos'] = examen.tiempo_restante.total_seconds()
                     return render(request, 'academia/examen/examen.html', data)
                 except Exception as ex:
                     pass
