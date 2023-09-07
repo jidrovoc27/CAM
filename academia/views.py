@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 from administrativo.models import *
 from administrativo.funciones import *
 from administrativo.forms import *
-from academia.forms import *
+from academia.forms import AgregarTestForm, AgregarProfile, AgregarEntregaForm, AgregarActividadForm, AgregarRecursoForm
 from CAM import settings
 from chat.models import *
 from chat.forms import *
@@ -98,7 +98,7 @@ def dashboard(request):
 
     if request.method == 'POST':
         if 'peticion' in request.POST:
-            peticion = request.POST['peticion']
+            data['peticion'] = peticion = request.POST['peticion']
 
             if peticion == 'editperfil':
                 try:
@@ -245,6 +245,31 @@ def dashboard(request):
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
+            if peticion == 'add_test':
+                try:
+                    form = AgregarTestForm(request.POST)
+                    if form.is_valid():
+                        detalle = request.POST['detalle']
+                        nombre = request.POST['nombre']
+                        fecha_inicio = datetime.strptime(request.POST['fecha_inicio'], '%Y-%m-%dT%H:%M')
+                        fecha_nota = datetime.strptime(request.POST['fecha_nota'], '%Y-%m-%dT%H:%M')
+                        duracion = request.POST['duracion']
+                        activo = False
+                        if 'activo' in request.POST:
+                            activo = True
+
+                        examen = Examen(detalle_id=detalle, nombre=nombre,
+                                        fecha_inicio=fecha_inicio, fecha_nota=fecha_nota,
+                                        tiempo_restante=duracion, activo=activo,
+                                        duracion=duracion)
+                        examen.save(request)
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Test cargada correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
             if peticion == 'add_recurso':
                 try:
                     form = AgregarRecursoForm(request.POST)
@@ -350,6 +375,33 @@ def dashboard(request):
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
+            if peticion == 'edit_test':
+                try:
+                    form = AgregarTestForm(request.POST)
+                    # if form.is_valid():
+                    examen = Examen.objects.get(id=int(request.POST['id']))
+                    detalle = request.POST['detalle']
+                    nombre = request.POST['nombre']
+                    fecha_inicio = datetime.strptime(request.POST['fecha_inicio'], '%Y-%m-%dT%H:%M')
+                    fecha_nota = datetime.strptime(request.POST['fecha_nota'], '%Y-%m-%dT%H:%M')
+                    duracion = request.POST['duracion']
+                    activo = False
+                    if 'activo' in request.POST:
+                        activo = True
+                    examen.detalle_id = int(detalle)
+                    examen.nombre = nombre
+                    examen.fecha_inicio = fecha_inicio
+                    examen.fecha_nota = fecha_nota
+                    examen.duracion = duracion
+                    examen.tiempo_restante = duracion
+                    examen.activo = activo
+                    examen.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Test actualizado correctamente."})
+                    # else:
+                    #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
             if peticion == 'eliminar_recurso':
                 try:
                     recurso = RecursosCurso.objects.get(id=int(request.POST['id']))
@@ -365,6 +417,15 @@ def dashboard(request):
                     actividad.status = False
                     actividad.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Actividad eliminada correctamente."})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'eliminar_test':
+                try:
+                    examen = Examen.objects.get(id=int(request.POST['id']))
+                    examen.status = False
+                    examen.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Test eliminado correctamente."})
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
@@ -393,7 +454,7 @@ def dashboard(request):
 
     else:
         if 'peticion' in request.GET:
-            peticion = request.GET['peticion']
+            data['peticion'] = peticion = request.GET['peticion']
 
             if peticion == 'actualizar_tiempo':
                 try:
@@ -640,6 +701,27 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'edit_test':
+                try:
+                    data['titulo'] = 'Editar test'
+                    data['titulo_formulario'] = 'Editar test'
+                    data['peticion'] = 'edit_test'
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['curso']))
+                    data['examen'] = examen = Examen.objects.get(id=int(request.GET['id']))
+                    form = AgregarTestForm(initial={
+                        'detalle': examen.detalle,
+                        'nombre': examen.nombre,
+                        'fecha_inicio': examen.fecha_inicio,
+                        'fecha_nota': examen.fecha_nota,
+                        'duracion': examen.duracion,
+                        'activo': examen.activo,
+                    })
+                    form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+                    data['form'] = form
+                    return render(request, "academia/docente/edit_test.html", data)
+                except Exception as ex:
+                    pass
+
             if peticion == 'admcourse':
                 try:
                     data['titulo'] = 'Mis cursos'
@@ -669,6 +751,15 @@ def dashboard(request):
                                     data['listadodetalles'] = DetalleActividadesModeloEvaluativoA.objects.filter(
                                         status=True, detalle_id=detalle)
                             return render(request, "academia/docente/actividades.html", data)
+                        elif option == 'addtest':
+                            data['addtest'] = True
+                            data['actividades'] = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
+
+                            if 'detalle' in request.GET:
+                                data['detalle'] = detalle = int(request.GET['detalle'])
+                                if detalle > 0:
+                                    data['examenes'] = Examen.objects.filter(status=True, detalle_id=detalle)
+                            return render(request, "academia/docente/tests.html", data)
 
                         elif option == 'addresource':
                             data['addresource'] = True
@@ -686,6 +777,25 @@ def dashboard(request):
                         data['detallemodelo'] = DetalleModeloEvaluativoA.objects.filter(status=True,
                                                                                         modelo=curso.modeloevaluativo)
                         return render(request, "academia/docente/resumen.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'questions':
+                try:
+                    data['titulo'] = 'Preguntas'
+                    data['is_cursos'] = 'is_cursos'
+                    data['option'] = 'addtest'
+                    filtro = Q(status=True)
+                    if mis_perfiles.first().is_profesor == False:
+                        return redirect('/moodle/?peticion=viewcurso&id=%s' % request.GET['id'])
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
+                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
+                    data['examen'] = examen = Examen.objects.get(id=int(request.GET['idex']))
+                    if 'busqueda' in request.GET:
+                        data['busqueda'] = busqueda = request.GET['busqueda']
+                        filtro = filtro & Q(enunciado__icontains=busqueda)
+                    data['preguntas'] = preguntas = Pregunta.objects.filter(filtro)
+                    return render(request, "academia/docente/preguntas.html", data)
                 except Exception as ex:
                     pass
 
@@ -727,6 +837,20 @@ def dashboard(request):
                                                                                               modelo=cursoA.modeloevaluativo)
                     data['form'] = form
                     return render(request, "academia/docente/add_actividad.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'add_test':
+                try:
+                    data['titulo'] = 'Agregar test'
+                    data['titulo_formulario'] = 'Adicionar test'
+                    data['peticion'] = 'add_test'
+                    data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
+                    form = AgregarTestForm()
+                    form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True,
+                                                                                              modelo=cursoA.modeloevaluativo)
+                    data['form'] = form
+                    return render(request, "academia/docente/add_test.html", data)
                 except Exception as ex:
                     pass
 

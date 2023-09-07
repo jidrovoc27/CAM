@@ -91,6 +91,29 @@ class AgregarActividadForm(forms.Form):
     def sin_imagen(self):
         campo_no_requerido(self, 'imagen')
 
+class AgregarTestForm(forms.Form):
+    detalle = forms.ModelChoiceField(label=u"Actividad",required=True, queryset=DetalleModeloEvaluativoA.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
+    fecha_inicio = forms.DateTimeField(label='Fecha inicio', required=True, input_formats=['%Y-%m-%d %H:%M:%S'], widget=forms.DateInput(format='%Y-%m-%d %H:%M:%S', attrs={'class': 'form-control', 'type': 'datetime-local'}))
+    fecha_nota = forms.DateTimeField(label='Fecha mostrar nota', required=True, input_formats=['%Y-%m-%d %H:%M:%S'], widget=forms.DateInput(format='%Y-%m-%d %H:%M:%S', attrs={'class': 'form-control', 'type': 'datetime-local'}))
+    duracion = forms.CharField(label='Duración (hh:mm)', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
+    activo = forms.BooleanField(label='Activo', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        duracion = cleaned_data.get('duracion')
+
+        if duracion:
+            try:
+                horas, minutos = map(int, duracion.split(':'))
+                if 0 <= horas <= 23 and 0 <= minutos <= 59:
+                    return f'{horas:02d}:{minutos:02d}'
+            except ValueError:
+                pass
+
+        raise forms.ValidationError('Por favor, ingresa un tiempo válido en el formato "hh:mm".')
+
+
 class AgregarRecursoForm(forms.Form):
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
     tipo = forms.ChoiceField(choices=TIPO_RECURSOS, label=u'Tipo de recurso', required=True, widget=forms.Select(attrs={'class': 'form-control', }))

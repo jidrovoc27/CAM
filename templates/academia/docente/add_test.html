@@ -1,0 +1,60 @@
+{% extends 'formBaseAcademia.html' %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+{% block contenido_extra %}
+
+{% endblock %}
+{% block lista_de_items_many_to_many %}
+{% endblock %}
+{% block titulo %}{{ titulo_formulario }}{% endblock %}
+{% block class_extra_card_formulario %}col-lg-9 col-md-8 col-12{% endblock %}
+{% block inputs_extras %}
+    <input type="hidden" name="peticion" value="{{ peticion }}">
+    <input type="hidden" name="id" value="{{ curso.id }}">
+{% endblock %}
+
+{% block news_inputs_form %}
+
+{% endblock %}
+{% block nombre_boton_submit %}Guardar{% endblock %}
+{% block location_href_destino %}/moodle/?peticion=admcourse&id={{ curso.id }}&option=addtest{% endblock %}
+{% block botones_extras %}{% endblock %}
+
+{% block modals %}
+    <!-- Modal -->
+
+{% endblock %}
+
+
+
+
+{% block js %}
+    <script src="{% static 'js/select2.min.js' %}"></script>
+    <link href="{% static 'css/select2.min.css' %}" rel="stylesheet"/>
+    <script>
+        $(function () {
+            {#$("#id_horalimite").timepicker({minuteStep: 1,appendWidgetTo: 'body', showSeconds: false, showMeridian: false, defaultTime: false});#}
+            $("#id_nombre, #id_descripcion, #id_minnota, #id_maxnota, #id_fechamaximasubida, #id_horalimite, #id_imagen, #id_archivo").css({"margin-left": "15px"});
+            $("#id_nombre, #id_minnota, #id_maxnota, #id_fechamaximasubida, #id_horalimite").css({"height": "29px"});
+            $("#id_fechamaximasubida").css({"height": "42px"});
+            $("#id_descripcion").css({"rowspan": "7"});
+        })
+
+        function mensajeSuccess(mensaje) {
+            Swal.fire('', mensaje, 'success')
+        }
+
+        function mensajeWarning(mensaje) {
+            Swal.fire('', mensaje, 'warning')
+        }
+
+        function mensajeDanger(mensaje) {
+            Swal.fire('', mensaje, 'error')
+        }
+    </script>
+
+
+{% endblock %}
+

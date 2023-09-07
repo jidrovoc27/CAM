@@ -1,0 +1,107 @@
+{% extends 'academia/docente/admcourse.html' %}
+{% load static %}
+{% load adiciones %}
+{% block script %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("select").select2({"width": "100%"});
+        });
+    </script>
+    <script type="text/javascript">
+        $("#buscar").click(function () {
+            var peticion = $("#peticion").val();
+            var curso = $("#curso").val();
+            var option = $("#option").val();
+            var detalle = $("#detalle").val();
+            var url = '{{ request.path }}';
+            url += "?peticion=" + peticion + "&id=" + curso + "&option=" + option + "&detalle=" + detalle;
+            location.href = url
+        });
+    </script>
+
+{% endblock %}
+{% block contentadicional %}
+    <input type="hidden" value="admcourse" name="peticion" id="peticion">
+    <input type="hidden" value="{{ curso.id }}" name="id" id="curso">
+    <input type="hidden" value="{{ option }}" name="option" id="option">
+    <div class="card-header pb-0 p-3" style="margin-bottom: 20px;">
+        <div class="row ">
+            <div class="col-6 d-flex align-items-start" style="margin-bottom: 20px;display: flex">
+                <select class="form-select" data-width="100%" id="detalle">
+                    <option value="0" selected>Seleccione actividad</option>
+                    {% for actividad in actividades %}
+                        <option value="{{ actividad.id }}"
+                                {% if actividad.id == detalle %}selected{% endif %}>{{ actividad.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <button id="buscar" class="btn btn-success m-0 ms-2"
+                        style="height: 30px;vertical-align: center;padding-top: 3px;" type="button">Buscar
+                </button>
+            </div>
+            <div class="col-6 text-end">
+                <a class="btn btn-outline-dark btn-sm mb-0"
+                   href="{{ request.path }}?peticion=add_test&id={{ curso.id }}"><i
+                        class="material-icons text-sm"></i>&nbsp;&nbsp;Agregar test</a>
+
+            </div>
+        </div>
+        <div class="table-responsive border-0">
+            <table class="table mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th scope="col" class="border-0" style="width: 20%">Nombre</th>
+                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Fecha y hora de inicio</th>
+                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Fecha nota</th>
+                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Duración</th>
+                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Activo</th>
+                    <th scope="col" class="border-0" style="text-align: center"># Preguntas</th>
+                    <th scope="col" class="border-0 text-center" style="text-align: center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for examen in examenes %}
+                    <tr>
+                        <td class="border-top-0">
+                            {{ examen.nombre }}
+                        </td>
+                        <td class="border-top-0 text-center">{{ examen.fecha_inicio|date:"d-m-Y H:i" }}</td>
+                        <td class="border-top-0 text-center">{{ examen.fecha_nota|date:"d-m-Y H:i" }}</td>
+                        <td class="border-top-0 text-center">{{ examen.duracion }}</td>
+                        <td class="border-top-0 text-center">{% if examen.activo %}Si{% else %}No{% endif %}</td>
+                        <td class="border-top-0 text-center">{{ examen.cantidad_preguntas }}</td>
+                        <td class="text-muted border-top-0" style="text-align: center">
+                            <span class="dropdown dropstart" >
+                                <a class="btn-icon btn btn-ghost btn-sm rounded-circle "
+                                   href="#"
+                                   role="button" id="courseDropdown"
+                                   data-bs-toggle="dropdown"
+                                   data-bs-offset="-20,20"
+                                   aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                </a>
+                                <span class="dropdown-menu"
+                                      aria-labelledby="courseDropdown">
+                                    <span class="dropdown-header">Acciones</span>
+                                    <a class="dropdown-item"
+                                       href="?peticion=questions&id={{ curso.id }}&idex={{ examen.id }}"><i
+                                            class="fe fe-edit dropdown-item-icon"></i>Preguntas</a>
+                                    <a class="dropdown-item"
+                                       href="?peticion=edit_test&id={{ examen.id }}&curso={{ curso.id }}"><i
+                                            class="fe fe-edit dropdown-item-icon"></i>Editar</a>
+                                    <a class="dropdown-item" style="cursor: pointer" onclick="eliminar_registro('eliminar_test','{{ examen }}','{{ examen.pk }}')"><i
+                                            class="fe fe-trash dropdown-item-icon"></i>Eliminar</a>
+                                </span>
+                            </span>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center">Sin actividades</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+{% endblock %}

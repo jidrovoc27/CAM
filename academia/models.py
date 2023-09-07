@@ -282,12 +282,13 @@ class NotaInscritoActividadA(ModeloBase):
         verbose_name_plural = u"Tareas que el inscrito sube"
         ordering = ['-id']
 
-
-from django.db import models
-
 class Examen(ModeloBase):
+    detalle = models.ForeignKey(DetalleModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'N1, N2, N3, etc.', blank=True, null=True)
     nombre = models.CharField(max_length=255, blank=True, null=True)
-    hora_inicio = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    fecha_inicio = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    fecha_nota = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    activo = models.BooleanField(default=True, verbose_name=u'Activo')
+    duracion = models.DurationField(blank=True, null=True)
     tiempo_restante = models.DurationField(blank=True, null=True)
 
     # def save(self, *args, **kwargs):
@@ -295,27 +296,35 @@ class Examen(ModeloBase):
     #     self.tiempo_restante = self.tiempo_restante - tiempo_transcurrido
     #     super().save(*args, **kwargs)
 
+    def __str__(self):
+        return u'%s - Inicio: %s - Duración: %s' % (self.nombre, self.fecha_inicio, self.duracion)
+
     def tiempo_restante_en_segundos(self):
         tiempo_transcurrido = timezone.now() - self.hora_inicio
         tiempo_restante = self.tiempo_restante - tiempo_transcurrido
         return max(tiempo_restante.total_seconds(), 0)
 
+    def cantidad_preguntas(self):
+        return Pregunta.objects.filter(status=True, examen=self).count()
+
 class Pregunta(ModeloBase):
     examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
     enunciado = models.TextField(blank=True, null=True)
+    calificacion = models.FloatField(default=0, verbose_name=u'Especifica cuántos puntos vale la pregunta', blank=True, null=True)
+
+    def cantidad_literales(self):
+        return Literal.objects.filter(status=True, pregunta=self).count()
 
 class Literal(ModeloBase):
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
     texto = models.CharField(max_length=255, blank=True, null=True)
 
 class Respuesta(ModeloBase):
-    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
     literal = models.ForeignKey(Literal, on_delete=models.CASCADE, blank=True, null=True)
     texto = models.CharField(max_length=255, blank=True, null=True)
     es_correcta = models.BooleanField(default=False, blank=True, null=True)
 
 class RespuestaAlumno(ModeloBase):
-    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
-    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
     respuesta_escogida = models.ForeignKey(Literal, on_delete=models.CASCADE, blank=True, null=True)
+    es_correcta = models.BooleanField(default=False, blank=True, null=True, verbose_name='El literal que escogió el participante es correcta o no?')
 
