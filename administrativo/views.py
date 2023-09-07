@@ -39,7 +39,7 @@ def login_usuario(request):
                                     mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado)
                                     if mis_perfiles:
                                         mis_perfiles = mis_perfiles.first()
-                                        if not mis_perfiles.is_administrador or not mis_perfiles.is_profesor:
+                                        if not mis_perfiles.is_administrador and not mis_perfiles.is_profesor:
                                             return JsonResponse({"respuesta": False, 'mensaje': u'No tiene perfil administrativo o docente'})
                             login(request, usuario)
                             return JsonResponse({"respuesta": True, "url": settings.LOGIN_REDIRECT_URL})

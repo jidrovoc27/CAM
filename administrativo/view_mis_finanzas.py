@@ -73,26 +73,26 @@ def view_mis_finanzas(request):
             if peticion == 'ver_pagos':
                 try:
                     data['titulo'] = 'Pagos'
-                    data['paciente_rubro'] = Docente.objects.get(id=request.GET['id'])
-                    data['rubro_paciente'] = Rubro.objects.get(status=True, id=request.GET['idrubro'])
+                    data['persona'] = persona_logeado
+                    data['rubro'] = Rubro.objects.get(status=True, id=request.GET['idrubro'])
                     lista = Pago.objects.filter(status=True, rubro_id=request.GET['idrubro'])
                     paginator = Paginator(lista, 25)
                     page_number = request.GET.get('page')
                     page_obj = paginator.get_page(page_number)
                     data['page_obj'] = page_obj
-                    return render(request, "mis_finanzas/pagos.html", data)
+                    return render(request, "administrativo/mis_finanzas/pagos.html", data)
                 except Exception as ex:
                     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
         else:
             try:
                 data['titulo'] = 'Mis finanzas'
-                data['paciente_rubro'] = Docente.objects.get(persona=persona_logeado)
-                lista = Rubro.objects.filter(status=True, paciente__persona=persona_logeado)
+                data['persona'] = persona_logeado
+                lista = Rubro.objects.filter(status=True, persona=persona_logeado)
                 paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
                 data['page_obj'] = page_obj
-                return render(request, "mis_finanzas/view.html", data)
+                return render(request, "administrativo/mis_finanzas/view.html", data)
             except Exception as ex:
                 print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))

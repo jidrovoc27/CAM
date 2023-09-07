@@ -56,16 +56,16 @@ class Genero(ModeloBase):
 
 class Persona(ModeloBase):
     usuario = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    nombres = models.CharField(max_length=100, verbose_name=u'1er Nombre')
-    apellidos = models.CharField(max_length=100, verbose_name=u"1er Apellido")
-    email = models.CharField(default='', max_length=200, verbose_name=u"Correo electronico personal")
-    cedula = models.CharField(max_length=10, verbose_name=u'Cédula', null=True, blank=True)
-    telefono_movil = models.CharField(max_length=10, verbose_name=u"Teléfono móvil", null=True, blank=True)
-    telefono_convencional = models.CharField(max_length=10, verbose_name=u"Teléfono convencional", null=True, blank=True)
+    nombres = models.CharField(max_length=500, verbose_name=u'1er Nombre')
+    apellidos = models.CharField(max_length=500, verbose_name=u"1er Apellido")
+    email = models.CharField(default='', max_length=300, verbose_name=u"Correo electronico personal")
+    cedula = models.CharField(max_length=13, verbose_name=u'Cédula', null=True, blank=True)
+    telefono_movil = models.CharField(max_length=13, verbose_name=u"Teléfono móvil", null=True, blank=True)
+    telefono_convencional = models.CharField(max_length=13, verbose_name=u"Teléfono convencional", null=True, blank=True)
     genero = models.ForeignKey(Genero, null=True, on_delete=models.CASCADE)
-    direccion = models.CharField(max_length=300, verbose_name=u'Direccion', null=True, blank=True)
-    referencia = models.CharField(max_length=400, verbose_name=u'Referencia', null=True, blank=True)
-    ciudad = models.CharField(max_length=400, verbose_name=u'Referencia', null=True, blank=True)
+    direccion = models.CharField(max_length=1000, verbose_name=u'Direccion', null=True, blank=True)
+    referencia = models.CharField(max_length=1000, verbose_name=u'Referencia', null=True, blank=True)
+    ciudad = models.CharField(max_length=500, verbose_name=u'Referencia', null=True, blank=True)
     foto = models.FileField(upload_to='fotopersona', blank=True, null=True, verbose_name=u'Foto persona')
 
     class Meta:
@@ -101,7 +101,7 @@ class Persona(ModeloBase):
         lista_rubros = Rubro.objects.filter(persona_id=self.id, status=True).values_list('id')
         total = Pago.objects.filter(rubro_id__in=lista_rubros, status=True).aggregate(total=Sum('valorfinal'))
         totalpagado = total['total'] if total['total'] else 0
-        valorporcentaje = solo_2_decimales(totalpagado / resultado, 2)
+        valorporcentaje = solo_2_decimales(totalpagado / resultado, 2) if resultado > 0 else 0
         return valorporcentaje
 
     def verificar_estadocuenta(self):

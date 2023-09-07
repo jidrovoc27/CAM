@@ -370,13 +370,15 @@ def dashboard(request):
 
             if peticion == 'calificar_deber':
                 try:
-                    nota = request.POST['nota']
+                    nota = Decimal(request.POST['nota'])
                     actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.POST['actividad']))
                     inscrito = InscritoCursoA.objects.get(id=int(request.POST['inscrito']))
                     deber = NotaInscritoActividadA.objects.filter(status=True, inscrito=inscrito, actividad=actividad)
-                    if deber:
+                    if nota < actividad.minnota:
+                        return JsonResponse({"respuesta": False, "mensaje": "La nota debe de ser mayor o igual a la nota mínima de la actividad: " + str(actividad.minnota)})
+                    if deber.exists():
                         deber = deber.first()
-                        deber.nota = Decimal(nota)
+                        deber.nota = nota
                         deber.estado = 2
                         deber.calificado = True
                         deber.save(request)
@@ -848,10 +850,14 @@ def dashboard(request):
                     return render(request, "academia/alumno/view.html", data)
                 elif identificadorperfil == 'is_profesor':
                     data['alumno'] = persona = Persona.objects.get(id=persona_logeado.id)
-                    data['docente'] = docente = DocenteA.objects.get(persona=persona)
-                    data['miscursos'] = CursoA.objects.filter(status=True, docente=docente).order_by('-id')
-                    data['is_cursos'] = True
-                    return render(request, "academia/docente/view.html", data)
+                    docente = DocenteA.objects.filter(persona=persona)
+                    if docente.exists():
+                        docente = docente.first()
+                        data['docente'] = docente
+                        data['miscursos'] = CursoA.objects.filter(status=True, docente=docente).order_by('-id')
+                        data['is_cursos'] = True
+                        return render(request, "academia/docente/view.html", data)
+                return render(request, "academia/alumno/view.html", data)
 
 
 

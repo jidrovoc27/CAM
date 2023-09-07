@@ -95,7 +95,7 @@ def view_alumno(request):
                             persona.foto = foto
                             persona.save(request)
                             existe = Profile.objects.filter(user_id=persona.usuario.id)
-                            if existe:
+                            if existe.exists():
                                 existe.update(pic=persona.foto)
 
                         persona_perfil = PersonaPerfil(
