@@ -10,7 +10,8 @@ from django.shortcuts import render, redirect
 from administrativo.models import *
 from administrativo.funciones import *
 from administrativo.forms import *
-from academia.forms import AgregarTestForm, AgregarProfile, AgregarEntregaForm, AgregarActividadForm, AgregarRecursoForm
+from academia.forms import AgregarTestForm, AgregarProfile, AgregarEntregaForm, AgregarActividadForm, AgregarRecursoForm, \
+    AgregarPreguntaForm
 from CAM import settings
 from chat.models import *
 from chat.forms import *
@@ -265,6 +266,24 @@ def dashboard(request):
                         examen.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Test cargada correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'add_question':
+                try:
+                    form = AgregarPreguntaForm(request.POST)
+                    if form.is_valid():
+                        idex = int(request.POST['idex'])
+                        enunciado = request.POST['enunciado']
+                        calificacion = request.POST['calificacion']
+
+                        pregunta = Pregunta(examen_id=idex, enunciado=enunciado,
+                                        calificacion=calificacion)
+                        pregunta.save(request)
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Pregunta registrada correctamente."})
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
@@ -851,6 +870,19 @@ def dashboard(request):
                                                                                               modelo=cursoA.modeloevaluativo)
                     data['form'] = form
                     return render(request, "academia/docente/add_test.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'add_question':
+                try:
+                    data['titulo'] = 'Agregar pregunta'
+                    data['titulo_formulario'] = 'Adicionar pregunta'
+                    data['peticion'] = 'add_question'
+                    data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
+                    data['idex'] = examen = Examen.objects.get(id=int(request.GET['idex']))
+                    form = AgregarPreguntaForm()
+                    data['form'] = form
+                    return render(request, "academia/docente/add_question.html", data)
                 except Exception as ex:
                     pass
 
