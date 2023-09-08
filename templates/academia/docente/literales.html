@@ -21,6 +21,31 @@
             location.href = url
         });
     </script>
+    <script>
+        function actualizar_estado(id){
+            $.ajax({
+                type: "POST",
+                url: '/moodle/',
+                dataType: "json",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'peticion': 'actualizar_literal',
+                    'id': id,
+                },
+                success: function (data) {
+                    if (data.respuesta === true) {
+                        location.reload();
+                    } else {
+                        alert(data.mensaje);
+                    }
+                },
+                error: function () {
+                    alert("Error de conexión.");
+                },
+
+            });
+        }
+    </script>
 
 {% endblock %}
 {% block contentadicional %}
@@ -66,7 +91,7 @@
                         <td class="border-top-0">
                             {{ literal.texto }}
                         </td>
-                        <td class="border-top-0 text-center" style="text-align: center">{% if literal.es_correcta %}<span class="btn btn-success" style="text-align: center">Correcta</span>{% else %}<span class="btn btn-danger" style="text-align: center">Incorrecta</span>{% endif %} </td>
+                        <td class="border-top-0 text-center" style="text-align: center">{% if literal.es_correcta %}<a onclick="actualizar_estado('{{ literal.id }}')"><span class="btn btn-success" style="text-align: center">Correcta</span></a>{% else %}<a onclick="actualizar_estado('{{ literal.id }}')"><span class="btn btn-danger" style="text-align: center">Incorrecta</span></a>{% endif %} </td>
                         <td class="text-muted border-top-0" style="text-align: center">
                             <span class="dropdown dropstart" >
                                 <a class="btn-icon btn btn-ghost btn-sm rounded-circle "

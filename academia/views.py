@@ -544,6 +544,16 @@ def dashboard(request):
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Error al calificar"})
 
+            if peticion == 'actualizar_literal':
+                try:
+                    es_correcta = False
+                    literal = Literal.objects.get(id=int(request.POST['id']))
+                    literal.es_correcta = es_correcta if literal.es_correcta else True
+                    literal.save(request)
+                    return JsonResponse({"respuesta": True})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": u'Error al actualizar el literal'})
+
 
     else:
         if 'peticion' in request.GET:
@@ -906,14 +916,12 @@ def dashboard(request):
             if peticion == 'questions':
                 try:
                     data['titulo'] = 'Preguntas'
-                    data['is_cursos'] = 'is_cursos'
-                    data['option'] = 'addtest'
-                    filtro = Q(status=True)
                     if mis_perfiles.first().is_profesor == False:
                         return redirect('/moodle/?peticion=viewcurso&id=%s' % request.GET['id'])
+                    data['is_cursos'], data['option'], filtro = 'is_cursos', 'addtest', Q(status=True)
                     data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
-                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
                     data['examen'] = examen = Examen.objects.get(id=int(request.GET['idex']))
+                    filtro = filtro & Q(examen=examen)
                     if 'busqueda' in request.GET:
                         data['busqueda'] = busqueda = request.GET['busqueda']
                         filtro = filtro & Q(enunciado__icontains=busqueda)
@@ -925,17 +933,16 @@ def dashboard(request):
             if peticion == 'literals':
                 try:
                     data['titulo'] = 'Literales'
-                    data['is_cursos'] = 'is_cursos'
-                    data['option'] = 'addtest'
-                    filtro = Q(status=True)
                     if mis_perfiles.first().is_profesor == False:
                         return redirect('/moodle/?peticion=viewcurso&id=%s' % request.GET['id'])
+                    data['is_cursos'], data['option'], filtro = 'is_cursos', 'addtest', Q(status=True)
                     data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
                     data['pregunta'] = pregunta = Pregunta.objects.get(id=int(request.GET['idq']))
+                    filtro = filtro & Q(pregunta=pregunta)
                     if 'busqueda' in request.GET:
                         data['busqueda'] = busqueda = request.GET['busqueda']
                         filtro = filtro & Q(texto__icontains=busqueda)
-                    data['literales'] = literales = Literal.objects.filter(filtro)
+                    data['literales'] = literales = Literal.objects.filter(filtro).order_by('-id')
                     return render(request, "academia/docente/literales.html", data)
                 except Exception as ex:
                     pass

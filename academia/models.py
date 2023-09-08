@@ -68,6 +68,9 @@ class DetalleModeloEvaluativoA(ModeloBase):
     def detalleactividades(self):
         return DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
 
+    def detalleexamenes(self):
+        return Examen.objects.filter(status=True, detalle=self, activo=True)
+
     def total_actividad(self, inscrito_id):
         try:
             detalleactividad = lista_actividades = conteo = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
@@ -332,4 +335,5 @@ class Respuesta(ModeloBase):
 class RespuestaAlumno(ModeloBase):
     respuesta_escogida = models.ForeignKey(Literal, on_delete=models.CASCADE, blank=True, null=True)
     es_correcta = models.BooleanField(default=False, blank=True, null=True, verbose_name='El literal que escogió el participante es correcta o no?')
+    calificacion = models.FloatField(default=0, verbose_name=u'Si el estudiante contestó correctamente la calificación será la misma de la pregunta', blank=True, null=True)
 

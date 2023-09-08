@@ -54,13 +54,13 @@
             <table class="table mb-0">
                 <thead class="table-light">
                 <tr>
-                    <th scope="col" class="border-0" style="width: 20%">Nombre</th>
-                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Fecha y hora de inicio</th>
-                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Fecha nota</th>
-                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Duración</th>
-                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Activo</th>
-                    <th scope="col" class="border-0" style="text-align: center"># Preguntas</th>
-                    <th scope="col" class="border-0 text-center" style="text-align: center">Acciones</th>
+                    <th scope="col" class="border-0" style="width: 40%">Nombre</th>
+{#                    <th scope="col" class="border-0" style="width: 40%;text-align: center">Fecha y hora de inicio</th>#}
+{#                    <th scope="col" class="border-0" style="width: 20%;text-align: center">Fecha nota</th>#}
+                    <th scope="col" class="border-0" style="width: 10%;text-align: center">Duración</th>
+                    <th scope="col" class="border-0" style="width: 10%;text-align: center">Activo</th>
+                    <th scope="col" class="border-0" style="width: 10%;text-align: center"># Preguntas</th>
+                    <th scope="col" class="border-0 text-center" style="width: 5%;text-align: center">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -68,9 +68,13 @@
                     <tr>
                         <td class="border-top-0">
                             {{ examen.nombre }}
+                            <br>
+                            <b>F. inicio: {{ examen.fecha_inicio|date:"d-m-Y H:i" }}</b>
+                            <br>
+                            <b>F. nota: {{ examen.fecha_nota|date:"d-m-Y H:i" }}</b>
                         </td>
-                        <td class="border-top-0 text-center">{{ examen.fecha_inicio|date:"d-m-Y H:i" }}</td>
-                        <td class="border-top-0 text-center">{{ examen.fecha_nota|date:"d-m-Y H:i" }}</td>
+{#                        <td class="border-top-0 text-center">{{ examen.fecha_inicio|date:"d-m-Y H:i" }}</td>#}
+{#                        <td class="border-top-0 text-center">{{ examen.fecha_nota|date:"d-m-Y H:i" }}</td>#}
                         <td class="border-top-0 text-center">{{ examen.duracion }}</td>
                         <td class="border-top-0 text-center">{% if examen.activo %}Si{% else %}No{% endif %}</td>
                         <td class="border-top-0 text-center">{{ examen.cantidad_preguntas }}</td>
@@ -93,7 +97,7 @@
                                     <a class="dropdown-item"
                                        href="?peticion=edit_test&id={{ examen.id }}&curso={{ curso.id }}"><i
                                             class="fe fe-edit dropdown-item-icon"></i>Editar</a>
-                                    {% if pregunta.cantidad_preguntas == 0 %}
+                                    {% if examen.cantidad_preguntas == 0 %}
                                         <a class="dropdown-item" style="cursor: pointer"
                                            onclick="eliminar_registro('eliminar_test','{{ examen }}','{{ examen.pk }}')"><i
                                                 class="fe fe-trash dropdown-item-icon"></i>Eliminar</a>

@@ -98,14 +98,30 @@
                                style="margin-top: 12px;margin-left: 5px">{{ actividad }}</a>
                         </div>
                     </div>
-                {% empty %}
+                {% endfor %}
+                {% for examen in detalle.detalleexamenes %}
+                    <div id="detalle{{ detalle.id }}" class="collapse" data-bs-parent="#accordion"
+                         style="margin-left: 35px;">
+
+                        <div class="card-body" style="display: flex;">
+                            <div class="activityiconcontainer content courseicon align-self-start mr-3"
+                                 style="background-color: #399be2;">
+                                <img src="{% static 'img/examen.png' %}"
+                                     class="activityicon " alt="book icon">
+                            </div>
+                            <a href="?peticion=verexamen&id={{ examen.id }}&inscrito={{ inscrito.id }}&curso={{ curso.id }}"
+                               style="margin-top: 12px;margin-left: 5px">{{ examen }}</a>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if not detalle.detalleactividades and not detalle.detalleexamenes %}
                     <div id="detalle{{ detalle.id }}" class="collapse" data-bs-parent="#accordion"
                          style="margin-left: 35px;">
                         <div class="card-body">
                             <a style="margin-top: 12px;margin-left: 5px">Sin actividades</a>
                         </div>
                     </div>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
     {% endfor %}
