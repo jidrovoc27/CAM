@@ -81,7 +81,7 @@
             <div class="card">
                 <div class="card-header">
                     <a class="btn" data-bs-toggle="collapse" href="#detalle{{ detalle.id }}">
-                        {{ detalle }}
+                        {{ detalle.nombre }}
                     </a>
                 </div>
                 {% for actividad in detalle.detalleactividades %}
@@ -110,7 +110,7 @@
                                      class="activityicon " alt="book icon">
                             </div>
                             <a href="?peticion=verexamen&id={{ examen.id }}&inscrito={{ inscrito.id }}&curso={{ curso.id }}"
-                               style="margin-top: 12px;margin-left: 5px">{{ examen }}</a>
+                               style="margin-top: 12px;margin-left: 5px">{{ examen.nombre }}</a>
                         </div>
                     </div>
                 {% endfor %}

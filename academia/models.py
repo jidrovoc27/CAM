@@ -73,14 +73,26 @@ class DetalleModeloEvaluativoA(ModeloBase):
 
     def total_actividad(self, inscrito_id):
         try:
-            detalleactividad = lista_actividades = conteo = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
+            #TOTAL DE ACTIVIDADES CON RESPECTO A LAS TAREAS
+            detalleactividad = lista_actividades = count_actividades = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
             lista_actividades = lista_actividades.values_list('id')
-            conteo = conteo.count()
-            totalnotas = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=detalleactividad, inscrito_id=inscrito_id).aggregate(total=Sum('nota'))
+            count_actividades = count_actividades.count()
 
-            totalnotas = totalnotas['total'] if totalnotas['total'] else 0
-            if conteo > 0 and totalnotas:
-                resultado = totalnotas / conteo
+            #TOTAL DE EXÁMENES
+            examenes = lista_examenes = count_exam = Examen.objects.filter(status=True, detalle=self, activo=True)
+            lista_examenes = lista_examenes.values_list('id')
+            count_examenes = count_exam.count()
+
+            totalnotas_actividades = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=detalleactividad, inscrito_id=inscrito_id).aggregate(total=Sum('nota'))
+            totalnotas_examenes = NotaInscritoActividadA.objects.filter(status=True, examen_id__in=lista_examenes, inscrito_id=inscrito_id).aggregate(total=Sum('nota'))
+
+            total_conteo = count_actividades + count_examenes
+
+            totalnotas_actividades = totalnotas_actividades['total'] if totalnotas_actividades['total'] else 0
+            totalnotas_examenes = totalnotas_examenes['total'] if totalnotas_examenes['total'] else 0
+            totalnotas = totalnotas_actividades + totalnotas_examenes
+            if total_conteo > 0 and totalnotas:
+                resultado = totalnotas / total_conteo
             else:
                 resultado = 0
             return resultado
@@ -247,13 +259,24 @@ class InscritoCursoA(ModeloBase):
         conteo = detalles.count()
         sumnotas = 0
         for detalle in detalles:
-            actividad = conteosum = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=detalle)
+            #CALCULAR LAS TAREAS
+            actividad = conteoactv = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=detalle)
             actividad = actividad.values_list('id', flat=True)
-            conteosum = conteosum.count()
-            totalnota = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=actividad, inscrito=self).aggregate(total=Sum('nota'))
+            conteoactv = conteoactv.count()
+
+            #CALCULAR EXÁMENES
+            examenes = conteoexam = Examen.objects.filter(status=True, detalle=detalle, activo=True)
+            examenes = examenes.values_list('id', flat=True)
+            conteoexam = conteoexam.count()
+            conteosum = conteoactv + conteoexam
+
+            #CONSULTA LAS NOTAS DE TODAS LAS TAREAS Y ÉXAMENES YA SEAN ENTREGADAS O NO
+            totalnota = NotaInscritoActividadA.objects.filter(Q(status=True), (Q(actividad_id__in=actividad) | Q(examen_id__in=examenes)), inscrito=self).aggregate(total=Sum('nota'))
+
             if totalnota['total']:
                 conteosum = solo_2_decimales(totalnota['total'] / conteosum, 2)
                 sumnotas += conteosum
+
 
         if conteo > 0 and sumnotas:
             resultado = sumnotas / conteo
@@ -265,25 +288,6 @@ ESTADO_TAREA = (
     (1, 'NO CALIFICADO'),
     (2, 'CALIFICADO'),
 )
-
-class NotaInscritoActividadA(ModeloBase):
-    inscrito = models.ForeignKey(InscritoCursoA, on_delete=models.PROTECT, verbose_name=u'Inscrito que sube la tarea', blank=True, null=True)
-    actividad = models.ForeignKey(DetalleActividadesModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'La actividad que sube la tarea', blank=True, null=True)
-    tarea = models.FileField(upload_to='tareainscrito', blank=True, null=True, verbose_name=u'Tarea que sube el inscrito')
-    nota = models.FloatField(default=0, verbose_name=u'Nota de la tarea', blank=True, null=True)
-    fechasubida = models.DateField(verbose_name=u"Fecha que sube el inscrito", blank=True, null=True)
-    estado = models.IntegerField(choices=ESTADO_TAREA, default=1, verbose_name=u'Estado de la actividad')
-    entregado = models.BooleanField(default=False, verbose_name=u'El deber fue entregado o no')
-    calificado = models.BooleanField(default=False, verbose_name=u'El deber fue calificado o no')
-    comentario = models.CharField(verbose_name="Comentario de la tarea", default='', max_length=200)
-
-    def __str__(self):
-        return u'%s' % (self.nota)
-
-    class Meta:
-        verbose_name = u"Tarea que el inscrito sube"
-        verbose_name_plural = u"Tareas que el inscrito sube"
-        ordering = ['-id']
 
 class Examen(ModeloBase):
     detalle = models.ForeignKey(DetalleModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'N1, N2, N3, etc.', blank=True, null=True)
@@ -306,6 +310,12 @@ class Examen(ModeloBase):
         tiempo_transcurrido = timezone.now() - self.hora_inicio
         tiempo_restante = self.tiempo_restante - tiempo_transcurrido
         return max(tiempo_restante.total_seconds(), 0)
+
+    def nota_calificada(self, inscrito):
+        verifica = NotaInscritoActividadA.objects.filter(status=True, examen=self, inscrito_id=inscrito)
+        if verifica:
+            return verifica.first().nota
+        return '--'
 
     def cantidad_preguntas(self):
         return Pregunta.objects.filter(status=True, examen=self).count()
@@ -337,3 +347,22 @@ class RespuestaAlumno(ModeloBase):
     es_correcta = models.BooleanField(default=False, blank=True, null=True, verbose_name='El literal que escogió el participante es correcta o no?')
     calificacion = models.FloatField(default=0, verbose_name=u'Si el estudiante contestó correctamente la calificación será la misma de la pregunta', blank=True, null=True)
 
+class NotaInscritoActividadA(ModeloBase):
+    inscrito = models.ForeignKey(InscritoCursoA, on_delete=models.PROTECT, verbose_name=u'Inscrito que sube la tarea', blank=True, null=True)
+    actividad = models.ForeignKey(DetalleActividadesModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'La actividad que sube la tarea', blank=True, null=True)
+    examen = models.ForeignKey(Examen, on_delete=models.PROTECT, verbose_name=u'Examen', blank=True, null=True)
+    tarea = models.FileField(upload_to='tareainscrito', blank=True, null=True, verbose_name=u'Tarea que sube el inscrito')
+    nota = models.FloatField(default=0, verbose_name=u'Nota de la tarea', blank=True, null=True)
+    fechasubida = models.DateField(verbose_name=u"Fecha que sube el inscrito", blank=True, null=True)
+    estado = models.IntegerField(choices=ESTADO_TAREA, default=1, verbose_name=u'Estado de la actividad')
+    entregado = models.BooleanField(default=False, verbose_name=u'El deber fue entregado o no')
+    calificado = models.BooleanField(default=False, verbose_name=u'El deber fue calificado o no')
+    comentario = models.CharField(verbose_name="Comentario de la tarea", default='', max_length=200)
+
+    def __str__(self):
+        return u'%s' % (self.nota)
+
+    class Meta:
+        verbose_name = u"Tarea que el inscrito sube"
+        verbose_name_plural = u"Tareas que el inscrito sube"
+        ordering = ['-id']

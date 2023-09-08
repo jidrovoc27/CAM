@@ -41,7 +41,7 @@
                             <td class="border-top-0">
                                 <div class="ms-lg-3 mt-2 mt-lg-0">
                                     <h4 class="mb-1 h5">
-                                        <a href="?peticion=detallecalificacion&id={{ micurso.id }}"
+                                        <a style="cursor: default"
                                            class="text-inherit">
                                             {{ detalle.nombre }}
                                         </a>
@@ -76,7 +76,30 @@
                                     {{ detalleactividades.minnota }} - {{ detalleactividades.maxnota }}
                                 </td>
                             </tr>
-                        {% empty %}
+                        {% endfor %}
+                        {% for detalleexamen in detalle.detalleexamenes %}
+                            <tr>
+                                <td class="border-top-0" style="padding-left: 55px">
+                                    <div class="ms-lg-3 mt-2 mt-lg-0">
+                                        <h4 class="mb-1 h5">
+                                            <a href="?peticion=actividad&id={{ detalleexamen.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"
+                                               class="text-inherit">
+                                                {{ detalleexamen.nombre }}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                </td>
+                                <td class="border-top-0 text-center">
+                                    {% with tienenota=detalleexamen|args:inscrito.id|call:'nota_calificada' %}
+                                        {{ tienenota }}
+                                    {% endwith %}
+                                </td>
+                                <td class="border-top-0 text-center">
+                                    {{ detalleexamen.minnota }} - {{ detalleexamen.maxnota }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        {% if not detalle.detalleactividades and not detalle.detalleexamenes %}
                             <tr>
                                 <td class="border-top-0" style="padding-left: 55px">
                                     <div class="ms-lg-3 mt-2 mt-lg-0">
@@ -95,7 +118,7 @@
                                     --
                                 </td>
                             </tr>
-                        {% endfor %}
+                        {% endif %}
                         <tr>
                             <td class="border-top-0" style="padding-left: 55px">
                                 <div class="ms-lg-3 mt-2 mt-lg-0">
