@@ -26,6 +26,11 @@
     <input type="hidden" value="{{ option }}" name="option" id="option">
     <div class="card-header pb-0 p-3" style="margin-bottom: 20px;">
         <div class="row ">
+            <div class="row ">
+                <div class="col-12-flex align-items-center" style="margin-bottom: 10px;display: inline-flex">
+                    <h3 style="width:100%">Tests</h3>
+                </div>
+            </div>
             <div class="col-6 d-flex align-items-start" style="margin-bottom: 20px;display: flex">
                 <select class="form-select" data-width="100%" id="detalle">
                     <option value="0" selected>Seleccione actividad</option>
@@ -70,7 +75,7 @@
                         <td class="border-top-0 text-center">{% if examen.activo %}Si{% else %}No{% endif %}</td>
                         <td class="border-top-0 text-center">{{ examen.cantidad_preguntas }}</td>
                         <td class="text-muted border-top-0" style="text-align: center">
-                            <span class="dropdown dropstart" >
+                            <span class="dropdown dropstart">
                                 <a class="btn-icon btn btn-ghost btn-sm rounded-circle "
                                    href="#"
                                    role="button" id="courseDropdown"
@@ -88,8 +93,11 @@
                                     <a class="dropdown-item"
                                        href="?peticion=edit_test&id={{ examen.id }}&curso={{ curso.id }}"><i
                                             class="fe fe-edit dropdown-item-icon"></i>Editar</a>
-                                    <a class="dropdown-item" style="cursor: pointer" onclick="eliminar_registro('eliminar_test','{{ examen }}','{{ examen.pk }}')"><i
-                                            class="fe fe-trash dropdown-item-icon"></i>Eliminar</a>
+                                    {% if pregunta.cantidad_preguntas == 0 %}
+                                        <a class="dropdown-item" style="cursor: pointer"
+                                           onclick="eliminar_registro('eliminar_test','{{ examen }}','{{ examen.pk }}')"><i
+                                                class="fe fe-trash dropdown-item-icon"></i>Eliminar</a>
+                                    {% endif %}
                                 </span>
                             </span>
                         </td>

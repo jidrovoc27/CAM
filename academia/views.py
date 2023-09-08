@@ -11,7 +11,7 @@ from administrativo.models import *
 from administrativo.funciones import *
 from administrativo.forms import *
 from academia.forms import AgregarTestForm, AgregarProfile, AgregarEntregaForm, AgregarActividadForm, AgregarRecursoForm, \
-    AgregarPreguntaForm
+    AgregarPreguntaForm, AgregarLiteralForm
 from CAM import settings
 from chat.models import *
 from chat.forms import *
@@ -96,6 +96,7 @@ def dashboard(request):
     if not 'CAM' == persona_logeado:
         mis_perfiles = PersonaPerfil.objects.filter(status=True, persona=persona_logeado)
         data['mis_perfiles'] = mis_perfiles
+    data['alumno'] = alumno = persona_logeado
 
     if request.method == 'POST':
         if 'peticion' in request.POST:
@@ -277,13 +278,34 @@ def dashboard(request):
                     if form.is_valid():
                         idex = int(request.POST['idex'])
                         enunciado = request.POST['enunciado']
-                        calificacion = request.POST['calificacion']
+                        calificacion = Decimal(request.POST['calificacion'])
 
                         pregunta = Pregunta(examen_id=idex, enunciado=enunciado,
                                         calificacion=calificacion)
                         pregunta.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Pregunta registrada correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'add_literal':
+                try:
+                    form = AgregarLiteralForm(request.POST)
+                    if form.is_valid():
+                        idq = int(request.POST['idq'])
+                        enunciado = request.POST['enunciado']
+                        es_correcta = False
+
+                        if 'es_correcta' in request.POST:
+                            es_correcta = True
+
+                        literal = Literal(pregunta_id=idq, texto=enunciado,
+                                        es_correcta=es_correcta)
+                        literal.save(request)
+
+                        return JsonResponse({"respuesta": True, "mensaje": "Literal registrado correctamente."})
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
@@ -421,6 +443,40 @@ def dashboard(request):
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
+            if peticion == 'edit_question':
+                try:
+                    form = AgregarPreguntaForm(request.POST)
+                    if form.is_valid():
+                        pregunta = Pregunta.objects.get(id=int(request.POST['id']))
+                        enunciado = request.POST['enunciado']
+                        calificacion = Decimal(request.POST['calificacion'])
+                        pregunta.enunciado = enunciado
+                        pregunta.calificacion = calificacion
+                        pregunta.save(request)
+                        return JsonResponse({"respuesta": True, "mensaje": "Pregunta actualizada correctamente."})
+                    # else:
+                    #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'edit_literal':
+                try:
+                    form = AgregarLiteralForm(request.POST)
+                    if form.is_valid():
+                        literal = Literal.objects.get(id=int(request.POST['id']))
+                        enunciado = request.POST['enunciado']
+                        es_correcta = False
+                        if 'es_correcta' in request.POST:
+                            es_correcta = True
+                        literal.texto = enunciado
+                        literal.es_correcta = es_correcta
+                        literal.save(request)
+                        return JsonResponse({"respuesta": True, "mensaje": "Literal actualizado correctamente."})
+                    # else:
+                    #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
             if peticion == 'eliminar_recurso':
                 try:
                     recurso = RecursosCurso.objects.get(id=int(request.POST['id']))
@@ -445,6 +501,24 @@ def dashboard(request):
                     examen.status = False
                     examen.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Test eliminado correctamente."})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'eliminar_question':
+                try:
+                    pregunta = Pregunta.objects.get(id=int(request.POST['id']))
+                    pregunta.status = False
+                    pregunta.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Pregunta eliminada correctamente."})
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+
+            if peticion == 'eliminar_literal':
+                try:
+                    literal = Literal.objects.get(id=int(request.POST['id']))
+                    literal.status = False
+                    literal.save(request)
+                    return JsonResponse({"respuesta": True, "mensaje": "Literal eliminado correctamente."})
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
@@ -741,6 +815,36 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'edit_question':
+                try:
+                    data['titulo'] = 'Editar pregunta'
+                    data['titulo_formulario'] = 'Editar pregunta'
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
+                    data['pregunta'] = pregunta = Pregunta.objects.get(id=int(request.GET['idq']))
+                    form = AgregarPreguntaForm(initial={
+                        'enunciado': pregunta.enunciado,
+                        'calificacion': pregunta.calificacion
+                    })
+                    data['form'] = form
+                    return render(request, "academia/docente/edit_question.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'edit_literal':
+                try:
+                    data['titulo'] = 'Editar literal'
+                    data['titulo_formulario'] = 'Editar literal'
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
+                    data['literal'] = literal = Literal.objects.get(id=int(request.GET['idli']))
+                    form = AgregarLiteralForm(initial={
+                        'enunciado': literal.texto,
+                        'es_correcta': literal.es_correcta
+                    })
+                    data['form'] = form
+                    return render(request, "academia/docente/edit_literal.html", data)
+                except Exception as ex:
+                    pass
+
             if peticion == 'admcourse':
                 try:
                     data['titulo'] = 'Mis cursos'
@@ -818,6 +922,24 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'literals':
+                try:
+                    data['titulo'] = 'Literales'
+                    data['is_cursos'] = 'is_cursos'
+                    data['option'] = 'addtest'
+                    filtro = Q(status=True)
+                    if mis_perfiles.first().is_profesor == False:
+                        return redirect('/moodle/?peticion=viewcurso&id=%s' % request.GET['id'])
+                    data['curso'] = curso = CursoA.objects.get(id=int(request.GET['id']))
+                    data['pregunta'] = pregunta = Pregunta.objects.get(id=int(request.GET['idq']))
+                    if 'busqueda' in request.GET:
+                        data['busqueda'] = busqueda = request.GET['busqueda']
+                        filtro = filtro & Q(texto__icontains=busqueda)
+                    data['literales'] = literales = Literal.objects.filter(filtro)
+                    return render(request, "academia/docente/literales.html", data)
+                except Exception as ex:
+                    pass
+
             if peticion == 'viewcurso':
                 try:
                     data['titulo'] = 'Mis cursos'
@@ -879,10 +1001,23 @@ def dashboard(request):
                     data['titulo_formulario'] = 'Adicionar pregunta'
                     data['peticion'] = 'add_question'
                     data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
-                    data['idex'] = examen = Examen.objects.get(id=int(request.GET['idex']))
+                    data['examen'] = examen = Examen.objects.get(id=int(request.GET['idex']))
                     form = AgregarPreguntaForm()
                     data['form'] = form
                     return render(request, "academia/docente/add_question.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'add_literal':
+                try:
+                    data['titulo'] = 'Agregar literal'
+                    data['titulo_formulario'] = 'Adicionar literal'
+                    data['peticion'] = 'add_literal'
+                    data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
+                    data['pregunta'] = pregunta = Pregunta.objects.get(id=int(request.GET['idq']))
+                    form = AgregarLiteralForm()
+                    data['form'] = form
+                    return render(request, "academia/docente/add_literal.html", data)
                 except Exception as ex:
                     pass
 

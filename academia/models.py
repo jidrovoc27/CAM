@@ -312,13 +312,18 @@ class Pregunta(ModeloBase):
     enunciado = models.TextField(blank=True, null=True)
     calificacion = models.FloatField(default=0, verbose_name=u'Especifica cuántos puntos vale la pregunta', blank=True, null=True)
 
+    def __str__(self):
+        return u'%s - Enunciado: %s - Calificación: %s' % (self.examen, self.enunciado, self.calificacion)
+
     def cantidad_literales(self):
         return Literal.objects.filter(status=True, pregunta=self).count()
 
 class Literal(ModeloBase):
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
     texto = models.CharField(max_length=255, blank=True, null=True)
+    es_correcta = models.BooleanField(default=False, blank=True, null=True)
 
+#ESTE MODELO ES UTILIZADO PARA INDICAR AL ESTUDIANTE LA RESPUESTA CORRECTA COMO NOTA EN COLOR VERDE
 class Respuesta(ModeloBase):
     literal = models.ForeignKey(Literal, on_delete=models.CASCADE, blank=True, null=True)
     texto = models.CharField(max_length=255, blank=True, null=True)

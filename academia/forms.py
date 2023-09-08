@@ -117,6 +117,10 @@ class AgregarPreguntaForm(forms.Form):
     enunciado = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
     calificacion = forms.FloatField(label='Calificación', required=True, min_value=0,widget=forms.NumberInput(attrs={'class': ' form-control','step': "0.01"}))
 
+class AgregarLiteralForm(forms.Form):
+    enunciado = forms.CharField(label='Enunciado', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
+    es_correcta = forms.BooleanField(label='Correcta o incorrecta', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
+
 
 class AgregarRecursoForm(forms.Form):
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
