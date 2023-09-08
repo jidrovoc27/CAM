@@ -200,7 +200,7 @@ def view_sesioncaja(request):
                                        Q(caja__persona__cedula__icontains=var) |
                                        Q(caja__nombre__icontains=var))
                     ruta_paginado += "?var=" + var + "&"
-                lista = SesionCaja.objects.filter(filtro).order_by('id')
+                lista = SesionCaja.objects.filter(filtro).order_by('-id')
                 paginator = Paginator(lista, 25)
                 page_number = request.GET.get('page')
                 page_obj = paginator.get_page(page_number)
