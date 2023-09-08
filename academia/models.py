@@ -306,6 +306,24 @@ class Examen(ModeloBase):
     def __str__(self):
         return u'%s - Inicio: %s - Duración: %s' % (self.nombre, self.fecha_inicio, self.duracion)
 
+
+    def examen_entregada(self, inscrito):
+        verifica = NotaInscritoActividadA.objects.filter(status=True, examen=self, inscrito_id=inscrito)
+        if verifica.exists():
+            return True
+        return False
+    def rindio_examen(self, inscrito):
+        nota = NotaInscritoActividadA.objects.filter(status=True, examen=self, inscrito_id=inscrito)
+        if nota.exists():
+            return True
+        return False
+
+    def registra_examen(self, inscrito):
+        verifica = NotaInscritoActividadA.objects.filter(status=True, examen=self, inscrito_id=inscrito)
+        if verifica:
+            return True
+        return False
+
     def tiempo_restante_en_segundos(self):
         tiempo_transcurrido = timezone.now() - self.hora_inicio
         tiempo_restante = self.tiempo_restante - tiempo_transcurrido

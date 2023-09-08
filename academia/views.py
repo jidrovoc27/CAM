@@ -962,15 +962,16 @@ def dashboard(request):
 
             if peticion == 'calificar':
                 try:
-                    data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(
-                        id=int(request.GET['id']))
                     data['curso'] = curso = CursoA.objects.get(id=int(request.GET['course']))
-                    data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by(
-                        'inscrito__apellidos')
-                    data['alumno'] = persona_logeado
+                    data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by('inscrito__apellidos')
                     data['option'] = option = request.GET['option']
                     data['is_cursos'] = 'is_cursos'
-                    return render(request, "academia/docente/calificar.html", data)
+                    if 'id' in request.GET:
+                        data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=int(request.GET['id']))
+                        return render(request, "academia/docente/calificar.html", data)
+                    elif 'idex' in request.GET:
+                        data['examen'] = examen = Examen.objects.get(id=int(request.GET['idex']))
+                        return render(request, "academia/docente/calificarexamen.html", data)
                 except Exception as ex:
                     pass
 
