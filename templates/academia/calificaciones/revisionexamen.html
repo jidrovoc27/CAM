@@ -1,0 +1,91 @@
+{% extends 'baseexamen.html' %}
+{% load static %}
+{% load adiciones %}
+{#{% load humanize %}#}
+{% block script %}
+    <script>
+        var checkboxes = document.querySelectorAll('.checkbox-input');
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                checkboxes.forEach(function (otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+
+        function obtenerrespuesta() {
+            var checkboxes = document.querySelectorAll('.checkbox-input');
+
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    return checkboxes[i].getAttribute('data-value');
+                }
+            }
+        }
+
+        function elegirrespuesta() {
+            var idl = obtenerrespuesta()
+            if (idl) {
+                enviarpeticion('POST', '/moodle/', {
+                    peticion: 'marcarrespuesta',
+                    'id':{{ cursoA.id }},
+                    'literal': idl,
+                    'inscrito':{{ inscrito.id }},
+                    'idex':{{ examen.id }},
+                    'inscrito':{{ inscrito.id }},
+                    'q':{{ preguntaactual.id }},
+                });
+            } else {
+                Swal.fire("Por favor, escoja una de las opciones presentadas");
+            }
+        }
+    </script>
+{% endblock %}
+{% block contenido %}
+    <div class="col-lg-9 col-md-8 col-12">
+        <!-- Card -->
+        <div class="card mb-4">
+            <!-- Card header -->
+            <div class="card-header">
+                <h5>
+                    {{ preguntaactual.enunciado }}
+                </h5>
+            </div>
+            <!-- Card body -->
+            <div class="card-body">
+                <!-- Form -->
+                <div class="table-responsive border-0 overflow-y-hidden">
+                    <table class="table mb-0 text-nowrap">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="border-0 text-left" colspan="6" style="background: white">Seleccione
+                                una:
+                            </th>
+                        </tr>
+                        {% for literal in preguntaactual.mis_literales %}
+                            <tr>
+                                <th scope="col" class="border-0 text-left"
+                                    style="background: white;width:10%;text-align: center"><input
+                                        {% if literal.es_seleccionado %}checked{% endif %} data-value="{{ literal.id }}"
+                                        type="checkbox" class="checkbox-input" disabled style="cursor: pointer;">
+                                </th>
+                                <th scope="col" class="border-0 text-left" style="background: white">
+                                    <div style="width: 100%; word-wrap: break-word; white-space: normal;">
+                                        {{ literal.texto }}
+                                    </div>
+                                </th>
+                            </tr>
+                        {% endfor %}
+                        </thead>
+                    </table>
+                    <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

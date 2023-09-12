@@ -84,7 +84,8 @@
                                             <td scope="col" class="border-0 text-center" colspan="4"
                                                 style="background: gray;color:white;opacity: 80%;text-align:center">{% if fechaactual > examen.fecha_nota %}{{ examenrendido.nota }}{% else %}---{% endif %}</td>
                                             <td scope="col" class="border-0 text-right" colspan="4"
-                                                style="background: gray;color:white;opacity: 80%;text-align:right"><a href="#" style="cursor: pointer;color: white">Revisión</a></td>
+                                                style="background: gray;color:white;opacity: 80%;text-align:right">
+                                                <a href="?peticion=reviewanswers&id={{ cursoA.id|encrypt }}&idex={{ examenrendido.examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" style="cursor: pointer;color: white">Revisión</a></td>
                                         </tr>
                                     {% empty %}
                                         <tr>
