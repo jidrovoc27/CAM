@@ -15,6 +15,7 @@ from academia.forms import AgregarTestForm, AgregarProfile, AgregarEntregaForm, 
 from CAM import settings
 from chat.models import *
 from chat.forms import *
+from administrativo.templatetags.adiciones import encrypt
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -681,12 +682,11 @@ def dashboard(request):
                 try:
                     idactividad = int(request.GET['id'])
                     fechaactual = datetime.now().date()
-                    data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
                     data['actividad'] = actividad = DetalleActividadesModeloEvaluativoA.objects.get(id=idactividad)
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
                     data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['curso']))
                     nota = NotaInscritoActividadA.objects.filter(status=True, inscrito=inscrito, actividad=actividad)
-                    if nota:
+                    if nota.exists():
                         data['nota'] = nota.first()
                     else:
                         data['nota'] = False
@@ -716,6 +716,48 @@ def dashboard(request):
                             data['tiemporestante'] = str(numerodias) + " días " + str(numerohoras) + " horas"
                     data['is_calificaciones'] = True
                     return render(request, "academia/calificaciones/actividad.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'verexamen':
+                try:
+                    idex = int(request.GET['idex'])
+                    data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
+                    data['examen'] = examen = Examen.objects.get(id=idex)
+                    data['fecha_final'] = examen.fecha_inicio + timedelta(seconds=examen.duracion.seconds)
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
+                    data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
+                    data['examenesrendidos'] = examenesrendidos = NotaInscritoActividadA.objects.filter(status=True, inscrito=inscrito, examen=examen)
+                    data['is_calificaciones'] = True
+                    return render(request, "academia/calificaciones/verexamen.html", data)
+                except Exception as ex:
+                    pass
+
+            if peticion == 'rendirexamen':
+                try:
+                    idex = int(encrypt(request.GET['idex']))
+                    idinscrito = int(encrypt(request.GET['inscrito']))
+                    idcurso = int(encrypt(request.GET['id']))
+                    data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
+                    data['examen'] = examen = Examen.objects.get(id=idex)
+                    data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
+                    if examen.rindio_examen(idinscrito) or not preguntas.exists() or fechaactual > examen.fecha_limite_examen():
+                        return redirect('/moodle/?peticion=verexamen&id=%s' % idcurso + '&inscrito=%s' %idinscrito + '&idex=%s' % idex)
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
+                    data['cursoA'] = cursoA = CursoA.objects.get(id=idcurso)
+                    if 'q' in request.GET:
+                        data['q'] = q = int(encrypt(request.GET['q']))
+                        preguntarecibida = Pregunta.objects.filter(id=q)
+                        if preguntarecibida.exists():
+                            preguntaactual = preguntarecibida.first()
+                        else:
+                            preguntaactual = preguntas.first()
+                    else:
+                        preguntaactual = preguntas.first()
+                        data['q'] = preguntaactual.id
+                    data['preguntaactual'] = preguntaactual
+                    return render(request, "academia/calificaciones/rendirexamen.html", data)
+
                 except Exception as ex:
                     pass
 

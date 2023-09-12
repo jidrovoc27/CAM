@@ -1,0 +1,76 @@
+{% extends 'baseexamen.html' %}
+{% load static %}
+{% load adiciones %}
+{#{% load humanize %}#}
+{% block script %}
+    <script>
+        var checkboxes = document.querySelectorAll('.checkbox-input');
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                checkboxes.forEach(function (otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+{% block contenido %}
+    <div class="col-lg-9 col-md-8 col-12">
+        <!-- Card -->
+        <div class="card mb-4">
+            <!-- Card header -->
+            <div class="card-header">
+                <h5>
+                    {{ preguntaactual.enunciado }}
+                </h5>
+            </div>
+            <!-- Card body -->
+            <div class="card-body">
+                <!-- Form -->
+                <div class="table-responsive border-0 overflow-y-hidden">
+                    <table class="table mb-0 text-nowrap">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="border-0 text-left" colspan="6" style="background: white">Seleccione
+                                una:
+                            </th>
+                        </tr>
+                        {% for literal in preguntaactual.mis_literales %}
+                            <tr>
+                                <th scope="col" class="border-0 text-left"
+                                    style="background: white;width:10%;text-align: center"><input type="checkbox" class="checkbox-input" style="cursor: pointer;">
+                                </th>
+                                <th scope="col" class="border-0 text-left" style="background: white">
+                                    <div style="width: 100%; word-wrap: break-word; white-space: normal;">
+                                        {{ literal.texto }}
+                                    </div>
+                                </th>
+                            </tr>
+                        {% endfor %}
+                        </thead>
+                    </table>
+                    <br>
+                    {% if puedesubirtarea %}
+                        {% if nota %}
+                            {% if nota.estado == 1 %}
+                                <div class="col-6 text-end" style="float: right">
+                                <a class="btn btn-outline-dark btn-sm mb-0"
+                                   href="?peticion=edit_tarea&nota={{ nota.id }}&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
+                                        class="material-icons text-sm"></i>Editar entrega</a>
+                            {% endif %}
+                        {% else %}
+                            <div class="col-6 text-end" style="float: right">
+                                <a class="btn btn-outline-dark btn-sm mb-0"
+                                   href="?peticion=add_tarea&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
+                                        class="material-icons text-sm"></i>Agregar entrega</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

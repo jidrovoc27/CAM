@@ -6,6 +6,7 @@ from administrativo.funciones import *
 from django.db.models import Q, F, Count
 from django.apps import apps
 from django.utils import timezone
+from datetime import timedelta
 
 class PeriodoA(ModeloBase):
     nombre = models.CharField(default='', max_length=200, verbose_name=u'Nombre', blank=True, null=True)
@@ -306,6 +307,8 @@ class Examen(ModeloBase):
     def __str__(self):
         return u'%s - Inicio: %s - Duración: %s' % (self.nombre, self.fecha_inicio, self.duracion)
 
+    def fecha_limite_examen(self):
+        return self.fecha_inicio + timedelta(seconds=self.duracion.seconds)
 
     def examen_entregada(self, inscrito):
         verifica = NotaInscritoActividadA.objects.filter(status=True, examen=self, inscrito_id=inscrito)
@@ -348,6 +351,9 @@ class Pregunta(ModeloBase):
 
     def cantidad_literales(self):
         return Literal.objects.filter(status=True, pregunta=self).count()
+
+    def mis_literales(self):
+        return Literal.objects.filter(status=True, pregunta=self)
 
 class Literal(ModeloBase):
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)

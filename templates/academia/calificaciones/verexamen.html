@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load adiciones %}
+{#{% load humanize %}#}
+{% block contenido %}
+    <div class="col-lg-9 col-md-8 col-12">
+        <!-- Card -->
+        <div class="card mb-4">
+            <!-- Card header -->
+            <div class="card-header">
+                <h3 class="mb-0">{{ examen.nombre }}</h3>
+                <br>
+                <h5>
+                    Hola a todos. Este es el examen. Tienen {{ examen.duracion }} para realizar el examen.
+                    <br>
+                    Recuerden leer atentamente cada consigna y sus opciones de respuesta. No dejen ninguna pregunta sin
+                    marcar.
+                    <br>
+                    ¡Éxitos!
+                </h5>
+            </div>
+            <!-- Card body -->
+            <div class="card-body">
+                <!-- Form -->
+                <div class="table-responsive border-0 overflow-y-hidden">
+                    <table class="table mb-0 text-nowrap">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Intentos
+                                permitidos: 1
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Este
+                                cuestionario está abierto el {{ examen.fecha_inicio|date:"d-m-Y H:i" }}</th>
+                        </tr>
+                        <tr>
+                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Este
+                                cuestionario se cierra el {{ fecha_final|date:"d-m-Y H:i" }}</th>
+                        </tr>
+                        <tr>
+                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Límite de
+                                tiempo: {{ examen.duracion }}</th>
+                        </tr>
+                        <tr>
+                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Método de
+                                calificación: Primer intento
+                            </th>
+                        </tr>
+                        {% with rindio_examen=examen|args:inscrito.id|call:'rindio_examen' %}
+                            {% if not rindio_examen and fechaactual >= examen.fecha_inicio %}
+                                <tr>
+                                    <th scope="col" class="border-0 text-center" colspan="6" style="background: white">
+                                        <a href="?peticion=rendirexamen&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-primary" style="background: blue; font-size: 12px">Intentar resolver el cuestionario ahora</a>
+                                    </th>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <th scope="col" class="border-0 text-left" colspan="6" style="background: white">
+                                        <h5>Resúmen de sus intentos previos</h5>
+                                    </th>
+                                </tr>
+                                <table class="table mb-0 text-nowrap">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="border-0 text-left" colspan="8" style="background: white">
+                                            Cuestionario
+                                        </th>
+                                        <th scope="col" class="border-0 text-right" colspan="4"
+                                            style="background: white;text-align:right">
+                                            Calificación
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for examenrendido in examenesrendidos %}
+                                        <tr>
+                                            <td scope="col" class="border-0 text-left" colspan="8"
+                                                style="background: gray;color: white;opacity: 80%">{{ examenrendido.examen.nombre }}</td>
+                                            <td scope="col" class="border-0 text-right" colspan="4"
+                                                style="background: gray;color:white;opacity: 80%;text-align:right">{% if fechaactual > examen.fecha_nota %}{{ examenrendido.nota }}{% else %}---{% endif %}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <th scope="col" class="border-0 text-center" colspan="12"
+                                                style="background: white">
+                                                No registra intentos
+                                            </th>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                        {% endwith %}
+                        </thead>
+                    </table>
+                    <br>
+                    {% if puedesubirtarea %}
+                        {% if nota %}
+                            {% if nota.estado == 1 %}
+                                <div class="col-6 text-end" style="float: right">
+                                <a class="btn btn-outline-dark btn-sm mb-0"
+                                   href="?peticion=edit_tarea&nota={{ nota.id }}&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
+                                        class="material-icons text-sm"></i>Editar entrega</a>
+                            {% endif %}
+                        {% else %}
+                            <div class="col-6 text-end" style="float: right">
+                                <a class="btn btn-outline-dark btn-sm mb-0"
+                                   href="?peticion=add_tarea&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
+                                        class="material-icons text-sm"></i>Agregar entrega</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
