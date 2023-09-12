@@ -460,7 +460,7 @@
                                     {% endfor %}
                                     {% if peticion == 'revision' %}
                                         <a href="?peticion=rendirexamen&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-info" style="font-size: 12px;margin-bottom: 15px">Volver al intento</a>
-                                        <a onclick="enviaryterminar({{ examen.id }}, '{{ examen }}', 'enviaryterminar', '' , 'Está por terminar y enviar el examen')" class="btn btn-success" style="background: green; font-size: 12px">Terminar y enviar</a>
+                                        <a onclick="enviaryterminar({{ examen.id }}, '{{ examen }}', 'enviaryterminar', '' , 'Está por terminar y enviar el cuestionario')" class="btn btn-success" style="background: green; font-size: 12px">Terminar y enviar</a>
                                     {% elif peticion == 'rendirexamen' %}
                                         <a href="?peticion=revision&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-success" style="background: green; font-size: 12px">Finalizar</a>
                                     {% endif %}

@@ -595,6 +595,7 @@ def dashboard(request):
 
             if peticion == 'enviaryterminar':
                 try:
+                    id = int(request.POST['id'])
                     idex = int(request.POST['idex'])
                     inscrito = int(request.POST['inscrito'])
                     data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
@@ -611,19 +612,22 @@ def dashboard(request):
                                 pregunta_fue_contestada = RespuestaAlumno.objects.filter(status=True, examenalumno=examenalumno, pregunta=pregunta)
                                 if pregunta_fue_contestada.exists():
                                     respuesta_alumno = pregunta_fue_contestada.first()
+                                    calificacion = calificacion if respuesta_alumno.respuesta_escogida == literalcorrecto else 0
                                     respuesta_alumno.es_correcta = True if respuesta_alumno.respuesta_escogida == literalcorrecto else False
-                                    respuesta_alumno.calificacion = calificacion if respuesta_alumno.respuesta_escogida == literalcorrecto else 0
+                                    respuesta_alumno.calificacion = calificacion
                                     respuesta_alumno.save(request)
                                     notafinal += calificacion
                         examenalumno.estado = 2
                         examenalumno.fecha_termina = fechaactual
                         examenalumno.calificacionfinal = notafinal
+                        #CREA LA NOTA PARA PROMEDIAR
                         notaexamen = NotaInscritoActividadA.objects.filter(status=True, inscrito_id=inscrito, examen_id=idex)
                         if not notaexamen.exists():
                             notaexamen = NotaInscritoActividadA(inscrito_id=inscrito, examen_id=idex, nota=notafinal)
                             notaexamen.save(request)
-                        return redirect('/moodle/?peticion=verexamen&id=%s' % encrypt(id) + '&inscrito=%s' % encrypt(inscrito) + '&idex=%s' % encrypt(idex), 200)
+                        return redirect('/moodle/?peticion=verexamen&id=%s' % id + '&inscrito=%s' % inscrito + '&idex=%s' % idex, 200)
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Error al enviar el cuestionario"})
 
 
