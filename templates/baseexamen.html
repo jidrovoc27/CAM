@@ -451,12 +451,19 @@
                                         <div class="col-md-4 col-sm-6 mb-2">
                                             <div class="card" style="height: 2rem;{% if q == pregunta.id %}background-color: lightblue;color:white{% endif %}">
                                                 <div class="card-body" style="height: 2rem;">
-                                                    <a href="?peticion=rendirexamen&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}&q={{ pregunta.id|encrypt }}" style="cursor: pointer"><h5 class="card-title text-center" style="margin-left: -8px;margin-top:-17px">{{ forloop.counter }}</h5></a>
+                                                    <a href="?peticion={% if peticion == 'revision' %}revision{% elif peticion == 'rendirexamen' %}rendirexamen{% endif %}&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}&q={{ pregunta.id|encrypt }}" style="cursor: pointer"><h5 class="card-title text-center" style="margin-left: -8px;margin-top:-17px">{{ forloop.counter }}</h5></a>
                                                 </div>
                                             </div>
+                                        <hr style="width: 100%;background:{% if pregunta.es_respondida %}green{% else %}red{% endif %}">
                                         </div>
+
                                     {% endfor %}
-                                    <a href="?peticion=rendirexamen&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-success" style="background: green; font-size: 12px">Finalizar</a>
+                                    {% if peticion == 'revision' %}
+                                        <a href="?peticion=rendirexamen&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-info" style="font-size: 12px;margin-bottom: 15px">Volver al intento</a>
+                                        <a onclick="enviaryterminar({{ examen.id }}, '{{ examen }}', 'enviaryterminar', '' , 'Está por terminar y enviar el examen')" class="btn btn-success" style="background: green; font-size: 12px">Terminar y enviar</a>
+                                    {% elif peticion == 'rendirexamen' %}
+                                        <a href="?peticion=revision&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-success" style="background: green; font-size: 12px">Finalizar</a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -534,6 +541,27 @@
 <script src="{% static 'js/ruc_jquery_validator.min.js' %}"></script>
 <script>
 
+    enviarpeticion = function (verb, url, data, target) {
+                var form = document.createElement("form");
+                form.action = url;
+                form.method = verb;
+                form.target = target || "_self";
+                if (data) {
+                    for (var key in data) {
+                        var input = document.createElement("textarea");
+                        input.name = key;
+                        input.value = typeof data[key] === "object" ? JSON.stringify(data[key]) : data[key];
+                        form.appendChild(input);
+                    }
+                    var csrf = document.createElement("input");
+                    csrf.name = 'csrfmiddlewaretoken';
+                    csrf.value = '{{ csrf_token }}';
+                    form.appendChild(csrf);
+                }
+                form.style.display = 'none';
+                document.body.appendChild(form);
+                form.submit();
+            };
 
     function eliminar_registro(peticion, registro, id) {
 
@@ -633,6 +661,29 @@
             return false;
         }
     }
+
+    function enviaryterminar(pk, nombre, accion, url, titulo) {
+            Swal.fire({
+                title: `${titulo}\n ${nombre}`,
+                text: "Esta acción es irreversible",
+                type: 'info',
+                showCancelButton: true,
+                allowOutsideClick: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, enviar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.value) {
+                    enviarpeticion('POST', '/moodle/', {
+                        peticion: accion,
+                        'id':{{ cursoA.id }},
+                        'idex':{{ examen.id }},
+                        'inscrito':{{ inscrito.id }},
+                    });
+                }
+            })
+        }
 </script>
 {% block script %}
 {% endblock %}

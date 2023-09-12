@@ -16,6 +16,34 @@
             });
         });
     </script>
+    <script>
+
+    function obtenerrespuesta(){
+        var checkboxes = document.querySelectorAll('.checkbox-input');
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                return checkboxes[i].getAttribute('data-value');
+            }
+        }
+    }
+
+        function elegirrespuesta(){
+            var idl = obtenerrespuesta()
+            if (idl) {
+                enviarpeticion('POST' ,'/moodle/', {peticion: 'marcarrespuesta',
+                                                'id':{{ cursoA.id }},
+                                                'literal':idl,
+                                                'inscrito':{{ inscrito.id }},
+                                                'idex':{{ examen.id }},
+                                                'inscrito':{{ inscrito.id }},
+                                                'q':{{ preguntaactual.id }},
+                                                });
+            }else{
+                Swal.fire("Por favor, escoja una de las opciones presentadas");
+            }
+        }
+    </script>
 {% endblock %}
 {% block contenido %}
     <div class="col-lg-9 col-md-8 col-12">
@@ -41,7 +69,7 @@
                         {% for literal in preguntaactual.mis_literales %}
                             <tr>
                                 <th scope="col" class="border-0 text-left"
-                                    style="background: white;width:10%;text-align: center"><input type="checkbox" class="checkbox-input" style="cursor: pointer;">
+                                    style="background: white;width:10%;text-align: center"><input {% if literal.es_seleccionado %}checked{% endif %} data-value="{{ literal.id }}" type="checkbox" class="checkbox-input" style="cursor: pointer;">
                                 </th>
                                 <th scope="col" class="border-0 text-left" style="background: white">
                                     <div style="width: 100%; word-wrap: break-word; white-space: normal;">
@@ -50,6 +78,14 @@
                                 </th>
                             </tr>
                         {% endfor %}
+                        <tr>
+{#                            <th scope="col" class="border-0 text-left" colspan="6" style="background: white;text-align: left">#}
+{#                                <a onclick="elegirrespuesta()" class="btn btn-default" style="font-size: 12px;border-style: solid;border-color: black">Siguiente</a>#}
+{#                            </th>#}
+                            <th scope="col" class="border-0 text-right" colspan="6" style="background: white;text-align: right">
+                                <a onclick="elegirrespuesta()" class="btn btn-success" style="background: green; font-size: 12px;">Elegir respuesta</a>
+                            </th>
+                        </tr>
                         </thead>
                     </table>
                     <br>

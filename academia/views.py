@@ -555,6 +555,77 @@ def dashboard(request):
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": u'Error al actualizar el literal'})
 
+            if peticion == 'marcarrespuesta':
+                try:
+                    literal = int(request.POST['literal'])
+                    inscrito = int(request.POST['inscrito'])
+                    idex = int(request.POST['idex'])
+                    id = int(request.POST['id'])
+                    q = int(request.POST['q'])
+                    literal_selecc = Literal.objects.get(id=literal)
+                    respuesta = False
+                    calificacion = 0
+                    examenalumno = ExamenAlumno.objects.filter(status=True, examen_id=idex, inscrito_id=inscrito)
+                    if examenalumno.exists():
+                        examenalumno = examenalumno.first()
+                        if literal_selecc.es_correcta:
+                            respuesta = True
+                            calificacion = literal_selecc.pregunta.calificacion
+                        respuesta_alumno = RespuestaAlumno.objects.filter(status=True, examenalumno=examenalumno,
+                                                                          pregunta=literal_selecc.pregunta, inscrito_id=inscrito)
+                        if respuesta_alumno.exists():
+                            respuesta_alumno = respuesta_alumno.first()
+                            respuesta_alumno.respuesta_escogida_id = literal
+                            respuesta_alumno.calificacion = calificacion
+                            respuesta_alumno.save(request)
+                        else:
+                            respuesta_alumno = RespuestaAlumno(examenalumno=examenalumno, pregunta=literal_selecc.pregunta,
+                                                               inscrito_id=inscrito, respuesta_escogida_id=literal,
+                                                               calificacion=calificacion)
+                            respuesta_alumno.save(request)
+                        siguiente_pregunta = Pregunta.objects.filter(status=True, examen=literal_selecc.pregunta.examen, id__gt=q).order_by('id')
+                        if siguiente_pregunta.exists():
+                            siguiente_pregunta = siguiente_pregunta.first()
+                            return redirect('/moodle/?peticion=rendirexamen&id=%s' % encrypt(id) + '&inscrito=%s' % encrypt(inscrito) + '&idex=%s' % encrypt(idex) + '&q=%s' % encrypt(siguiente_pregunta.id), 200)
+                        else:
+                            return redirect(
+                                '/moodle/?peticion=revision&id=%s' % encrypt(id) + '&inscrito=%s' % encrypt(inscrito) + '&idex=%s' % encrypt(idex),200)
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Error al elegir la respuesta"})
+
+            if peticion == 'enviaryterminar':
+                try:
+                    idex = int(request.POST['idex'])
+                    inscrito = int(request.POST['inscrito'])
+                    data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
+                    notafinal = 0
+                    examenalumno = ExamenAlumno.objects.filter(status=True, examen_id=idex, inscrito_id=inscrito)
+                    if examenalumno.exists():
+                        examenalumno = examenalumno.first()
+                        preguntas = Pregunta.objects.filter(status=True, examen_id=idex)
+                        for pregunta in preguntas:
+                            calificacion = pregunta.calificacion
+                            literalcorrecto = Literal.objects.filter(status=True, pregunta=pregunta, es_correcta=True)
+                            if literalcorrecto.exists():
+                                literalcorrecto = literalcorrecto.first()
+                                pregunta_fue_contestada = RespuestaAlumno.objects.filter(status=True, examenalumno=examenalumno, pregunta=pregunta)
+                                if pregunta_fue_contestada.exists():
+                                    respuesta_alumno = pregunta_fue_contestada.first()
+                                    respuesta_alumno.es_correcta = True if respuesta_alumno.respuesta_escogida == literalcorrecto else False
+                                    respuesta_alumno.calificacion = calificacion if respuesta_alumno.respuesta_escogida == literalcorrecto else 0
+                                    respuesta_alumno.save(request)
+                                    notafinal += calificacion
+                        examenalumno.estado = 2
+                        examenalumno.fecha_termina = fechaactual
+                        examenalumno.calificacionfinal = notafinal
+                        notaexamen = NotaInscritoActividadA.objects.filter(status=True, inscrito_id=inscrito, examen_id=idex)
+                        if not notaexamen.exists():
+                            notaexamen = NotaInscritoActividadA(inscrito_id=inscrito, examen_id=idex, nota=notafinal)
+                            notaexamen.save(request)
+                        return redirect('/moodle/?peticion=verexamen&id=%s' % encrypt(id) + '&inscrito=%s' % encrypt(inscrito) + '&idex=%s' % encrypt(idex), 200)
+                except Exception as ex:
+                    return JsonResponse({"respuesta": False, "mensaje": "Error al enviar el cuestionario"})
+
 
     else:
         if 'peticion' in request.GET:
@@ -741,8 +812,12 @@ def dashboard(request):
                     data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
                     data['examen'] = examen = Examen.objects.get(id=idex)
                     data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
+                    comienzoexamen = ExamenAlumno.objects.filter(status=True, examen=examen, inscrito_id=idinscrito)
                     if examen.rindio_examen(idinscrito) or not preguntas.exists() or fechaactual > examen.fecha_limite_examen():
                         return redirect('/moodle/?peticion=verexamen&id=%s' % idcurso + '&inscrito=%s' %idinscrito + '&idex=%s' % idex)
+                    if not comienzoexamen.exists():
+                        comienzoexamen = ExamenAlumno(examen=examen, inscrito_id=idinscrito, fecha_inicio=fechaactual)
+                        comienzoexamen.save(request)
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
                     data['cursoA'] = cursoA = CursoA.objects.get(id=idcurso)
                     if 'q' in request.GET:
@@ -758,6 +833,33 @@ def dashboard(request):
                     data['preguntaactual'] = preguntaactual
                     return render(request, "academia/calificaciones/rendirexamen.html", data)
 
+                except Exception as ex:
+                    pass
+
+            if peticion == 'revision':
+                try:
+                    idex = int(encrypt(request.GET['idex']))
+                    idinscrito = int(encrypt(request.GET['inscrito']))
+                    idcurso = int(encrypt(request.GET['id']))
+                    data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
+                    data['examen'] = examen = Examen.objects.get(id=idex)
+                    data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
+                    if examen.rindio_examen(idinscrito) or not preguntas.exists() or fechaactual > examen.fecha_limite_examen():
+                        return redirect('/moodle/?peticion=verexamen&id=%s' % idcurso + '&inscrito=%s' % idinscrito + '&idex=%s' % idex)
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
+                    data['cursoA'] = cursoA = CursoA.objects.get(id=idcurso)
+                    if 'q' in request.GET:
+                        data['q'] = q = int(encrypt(request.GET['q']))
+                        preguntarecibida = Pregunta.objects.filter(id=q)
+                        if preguntarecibida.exists():
+                            preguntaactual = preguntarecibida.first()
+                        else:
+                            preguntaactual = preguntas.first()
+                    else:
+                        preguntaactual = preguntas.first()
+                        data['q'] = preguntaactual.id
+                    data['preguntaactual'] = preguntaactual
+                    return render(request, "academia/calificaciones/finalizar.html", data)
                 except Exception as ex:
                     pass
 

@@ -355,10 +355,16 @@ class Pregunta(ModeloBase):
     def mis_literales(self):
         return Literal.objects.filter(status=True, pregunta=self)
 
+    def es_respondida(self):
+        return RespuestaAlumno.objects.filter(status=True, pregunta=self).exists()
+
 class Literal(ModeloBase):
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
     texto = models.CharField(max_length=255, blank=True, null=True)
     es_correcta = models.BooleanField(default=False, blank=True, null=True)
+
+    def es_seleccionado(self):
+        return RespuestaAlumno.objects.filter(status=True, pregunta=self.pregunta, respuesta_escogida=self).exists()
 
 #ESTE MODELO ES UTILIZADO PARA INDICAR AL ESTUDIANTE LA RESPUESTA CORRECTA COMO NOTA EN COLOR VERDE
 class Respuesta(ModeloBase):
@@ -366,8 +372,26 @@ class Respuesta(ModeloBase):
     texto = models.CharField(max_length=255, blank=True, null=True)
     es_correcta = models.BooleanField(default=False, blank=True, null=True)
 
+
+estado_examen = (
+    (1, u'En proceso' ),
+    (2, u'Finalizado')
+)
+
+class ExamenAlumno(ModeloBase):
+    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
+    inscrito = models.ForeignKey(InscritoCursoA, on_delete=models.CASCADE, blank=True, null=True)
+    estado = models.IntegerField(default=1, choices=estado_examen, blank=True, null=True, verbose_name=u'Estado del examen')
+    fecha_inicio = models.DateTimeField(default=timezone.now, blank=True, null=True, verbose_name=u'Fecha que inicia el inscrito el examen')
+    fecha_termina = models.DateTimeField(blank=True, null=True, verbose_name=u'Fecha que finaliza el inscrito el examen')
+    calificacionfinal = models.FloatField(default=0, verbose_name=u'Calificación final del estudiante', blank=True, null=True)
+
+
 class RespuestaAlumno(ModeloBase):
+    examenalumno = models.ForeignKey(ExamenAlumno, on_delete=models.CASCADE, blank=True, null=True)
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
     respuesta_escogida = models.ForeignKey(Literal, on_delete=models.CASCADE, blank=True, null=True)
+    inscrito = models.ForeignKey(InscritoCursoA, on_delete=models.CASCADE, blank=True, null=True)
     es_correcta = models.BooleanField(default=False, blank=True, null=True, verbose_name='El literal que escogió el participante es correcta o no?')
     calificacion = models.FloatField(default=0, verbose_name=u'Si el estudiante contestó correctamente la calificación será la misma de la pregunta', blank=True, null=True)
 
