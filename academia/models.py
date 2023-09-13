@@ -349,6 +349,12 @@ class Pregunta(ModeloBase):
     def __str__(self):
         return u'%s - Enunciado: %s - Calificación: %s' % (self.examen, self.enunciado, self.calificacion)
 
+    def consultar_respuestacorrecta(self):
+        literal_correcto = Literal.objects.filter(status=True, pregunta=self, es_correcta=True)
+        if literal_correcto.exists():
+            return literal_correcto.first().texto
+        return ''
+
     def cantidad_literales(self):
         return Literal.objects.filter(status=True, pregunta=self).count()
 
@@ -365,6 +371,17 @@ class Literal(ModeloBase):
 
     def es_seleccionado(self):
         return RespuestaAlumno.objects.filter(status=True, pregunta=self.pregunta, respuesta_escogida=self).exists()
+
+    def es_respuesta_correcta(self):
+        respuesta = RespuestaAlumno.objects.filter(status=True, pregunta_id=self.pregunta, respuesta_escogida_id=self)
+        if respuesta.exists():
+            respuesta = respuesta.first()
+            if respuesta.respuesta_escogida.es_correcta:
+                return True
+            else:
+                return False
+        return None
+
 
 #ESTE MODELO ES UTILIZADO PARA INDICAR AL ESTUDIANTE LA RESPUESTA CORRECTA COMO NOTA EN COLOR VERDE
 class Respuesta(ModeloBase):
