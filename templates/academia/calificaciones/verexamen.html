@@ -63,14 +63,22 @@
                                 <table class="table mb-0 text-nowrap">
                                     <thead class="table-light">
                                     <tr>
-                                        <th scope="col" class="border-0 text-left" colspan="4" style="background: white">
+                                        <th scope="col" class="border-0 text-left" colspan="3" style="background: white">
                                             Cuestionario
                                         </th>
-                                        <th scope="col" class="border-0 text-center" colspan="4"
+                                        <th scope="col" class="border-0 text-center" colspan="2"
+                                            style="background: white;text-align:right">
+                                            Fecha inicio
+                                        </th>
+                                        <th scope="col" class="border-0 text-center" colspan="2"
+                                            style="background: white;text-align:right">
+                                            Fecha terminación
+                                        </th>
+                                        <th scope="col" class="border-0 text-center" colspan="2"
                                             style="background: white;text-align:right">
                                             Calificación
                                         </th>
-                                        <th scope="col" class="border-0 text-right" colspan="4"
+                                        <th scope="col" class="border-0 text-right" colspan="2"
                                             style="background: white;text-align:right">
                                             Acciones
                                         </th>
@@ -79,11 +87,15 @@
                                     <tbody>
                                     {% for examenrendido in examenesrendidos %}
                                         <tr>
-                                            <td scope="col" class="border-0 text-left" colspan="4"
+                                            <td scope="col" class="border-0 text-left" colspan="3"
                                                 style="background: gray;color: white;opacity: 80%">{{ examenrendido.examen.nombre }}</td>
-                                            <td scope="col" class="border-0 text-center" colspan="4"
-                                                style="background: gray;color:white;opacity: 80%;text-align:center">{% if fechaactual > examen.fecha_nota %}{{ examenrendido.nota }}{% else %}---{% endif %}</td>
-                                            <td scope="col" class="border-0 text-right" colspan="4"
+                                            <td scope="col" class="border-0 text-center" colspan="2"
+                                                style="background: gray;color: white;opacity: 80%">{{ examenrendido.fecha_inicio|date:"d-m-Y H:i" }}</td>
+                                            <td scope="col" class="border-0 text-center" colspan="2"
+                                                style="background: gray;color: white;opacity: 80%">{{ examenrendido.fecha_termina|date:"d-m-Y H:i" }}</td>
+                                            <td scope="col" class="border-0 text-center" colspan="2"
+                                                style="background: gray;color:white;opacity: 80%;text-align:center">{% if fechaactual > examen.fecha_nota %}{{ examenrendido.calificacionfinal }}{% else %}---{% endif %}</td>
+                                            <td scope="col" class="border-0 text-right" colspan="2"
                                                 style="background: gray;color:white;opacity: 80%;text-align:right">
                                                 <a href="?peticion=reviewanswers&id={{ cursoA.id|encrypt }}&idex={{ examenrendido.examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" style="cursor: pointer;color: white">Revisión</a></td>
                                         </tr>

@@ -620,6 +620,7 @@ def dashboard(request):
                         examenalumno.estado = 2
                         examenalumno.fecha_termina = fechaactual
                         examenalumno.calificacionfinal = notafinal
+                        examenalumno.save(request)
                         #CREA LA NOTA PARA PROMEDIAR
                         notaexamen = NotaInscritoActividadA.objects.filter(status=True, inscrito_id=inscrito, examen_id=idex)
                         if not notaexamen.exists():
@@ -802,7 +803,7 @@ def dashboard(request):
                     data['fecha_final'] = examen.fecha_inicio + timedelta(seconds=examen.duracion.seconds)
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=int(request.GET['inscrito']))
                     data['cursoA'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
-                    data['examenesrendidos'] = examenesrendidos = NotaInscritoActividadA.objects.filter(status=True, inscrito=inscrito, examen=examen)
+                    data['examenesrendidos'] = examenesrendidos = ExamenAlumno.objects.filter(status=True, inscrito=inscrito, examen=examen)
                     data['is_calificaciones'] = True
                     return render(request, "academia/calificaciones/verexamen.html", data)
                 except Exception as ex:
@@ -818,6 +819,7 @@ def dashboard(request):
                     data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
                     comienzoexamen = ExamenAlumno.objects.filter(status=True, examen=examen, inscrito_id=idinscrito)
                     if examen.rindio_examen(idinscrito) or not preguntas.exists() or fechaactual > examen.fecha_limite_examen():
+                        examen.calcular_notafinal(idinscrito, fechaactual, request)
                         return redirect('/moodle/?peticion=verexamen&id=%s' % idcurso + '&inscrito=%s' %idinscrito + '&idex=%s' % idex)
                     if not comienzoexamen.exists():
                         comienzoexamen = ExamenAlumno(examen=examen, inscrito_id=idinscrito, fecha_inicio=fechaactual)
@@ -838,6 +840,7 @@ def dashboard(request):
                     return render(request, "academia/calificaciones/rendirexamen.html", data)
 
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     pass
 
             if peticion == 'revision':

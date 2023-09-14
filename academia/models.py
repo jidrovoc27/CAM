@@ -321,11 +321,51 @@ class Examen(ModeloBase):
             return True
         return False
 
+    #FUNCIÓN QUE PERMITA CALCULAR LA NOTA FINAL DEL CUESTIONARIO EN CASO DE QUE SE CIERRE POR MOTIVO DE FECHA DE CIERRE DEL CUESTIONARIO
+    def calcular_notafinal(self, inscrito, fechaactual, request):
+        if fechaactual > self.fecha_limite_examen() and self.pregunta_set.filter(status=True):
+            if not self.rindio_examen(inscrito):
+                notafinal = 0
+                examenalumno = ExamenAlumno.objects.filter(status=True, examen=self, inscrito_id=inscrito)
+                if examenalumno.exists():
+                    examenalumno = examenalumno.first()
+                    preguntas = Pregunta.objects.filter(status=True, examen=self)
+                    for pregunta in preguntas:
+                        calificacion = pregunta.calificacion
+                        literalcorrecto = Literal.objects.filter(status=True, pregunta=pregunta, es_correcta=True)
+                        if literalcorrecto.exists():
+                            literalcorrecto = literalcorrecto.first()
+                            pregunta_fue_contestada = RespuestaAlumno.objects.filter(status=True,
+                                                                                     examenalumno=examenalumno,
+                                                                                     pregunta=pregunta)
+                            if pregunta_fue_contestada.exists():
+                                respuesta_alumno = pregunta_fue_contestada.first()
+                                calificacion = calificacion if respuesta_alumno.respuesta_escogida == literalcorrecto else 0
+                                respuesta_alumno.es_correcta = True if respuesta_alumno.respuesta_escogida == literalcorrecto else False
+                                respuesta_alumno.calificacion = calificacion
+                                respuesta_alumno.save(request)
+                                notafinal += calificacion
+                    examenalumno.estado = 2
+                    examenalumno.fecha_termina = fechaactual
+                    examenalumno.calificacionfinal = notafinal
+                    examenalumno.save(request)
+                    # CREA LA NOTA PARA PROMEDIAR
+                    notaexamen = NotaInscritoActividadA.objects.filter(status=True, inscrito_id=inscrito,
+                                                                       examen=self)
+                    if not notaexamen.exists():
+                        notaexamen = NotaInscritoActividadA(inscrito_id=inscrito, examen=self, nota=notafinal)
+                        notaexamen.save(request)
+
     def registra_examen(self, inscrito):
         verifica = NotaInscritoActividadA.objects.filter(status=True, examen=self, inscrito_id=inscrito)
         if verifica:
             return True
         return False
+
+    def examalum(self, inscrito):
+        examalumno = self.examenalumno_set.filter(status=True, inscrito_id=inscrito)
+        if examalumno.exists():
+            return examalumno.first()
 
     def tiempo_restante_en_segundos(self):
         tiempo_transcurrido = timezone.now() - self.hora_inicio
@@ -402,6 +442,9 @@ class ExamenAlumno(ModeloBase):
     fecha_inicio = models.DateTimeField(default=timezone.now, blank=True, null=True, verbose_name=u'Fecha que inicia el inscrito el examen')
     fecha_termina = models.DateTimeField(blank=True, null=True, verbose_name=u'Fecha que finaliza el inscrito el examen')
     calificacionfinal = models.FloatField(default=0, verbose_name=u'Calificación final del estudiante', blank=True, null=True)
+
+    def __str__(self):
+        return u'%s' % (self.examen)
 
 
 class RespuestaAlumno(ModeloBase):
