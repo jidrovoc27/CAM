@@ -48,12 +48,30 @@ def view_miscursos(request):
                     if detallemodeloacad:
                         for inscrito in inscritoacad:
                             for deta in detallemodeloacad:
+                                filtro = (Q(status=True) & Q(inscrito=inscrito))
                                 detalleadm = DetalleModeloEvaluativo.objects.filter(status=True, nombre=deta.nombre, modelo=curso.modeloevaluativo)
-                                detalleactividad = lista_actividades = conteo = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=deta)
+
+                                #CONSULTA TODAS LAS ACTIVIDADES ENTREGADAS
+                                detalleactividad = lista_actividades = conteoact = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=deta)
                                 lista_actividades = lista_actividades.values_list('id')
-                                conteo = conteo.count()
-                                totalnotas = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=detalleactividad, inscrito=inscrito).aggregate(total=Sum('nota'))
+
+                                #CONSULTA TODOS LOS CUESTIONARIOS REALIZADOS
+                                detalleexamenes = lista_examenes = conteoexam = Examen.objects.filter(status=True, activo=True, detalle=deta)
+                                lista_examenes = lista_examenes.values_list('id')
+
+                                #TOTAL DE CUESTIONARIOS Y ACTIVIDADES
+                                conteoexam = conteoexam.count()
+                                conteoact = conteoact.count()
+
+                                #SUMA DEL TOTAL DE CUESTIONARIOS Y ACTIVIDADES
+                                conteo = conteoact + conteoexam
+
+                                #CONSULTA TODAS AQUELLAS ACTIVIDADES O CUESTIONARIOS QUE CUENTEN CON NOTA
+                                filtro = filtro & (Q(actividad_id__in=lista_actividades) | Q(examen_id__in=lista_examenes))
+                                totalnotas = NotaInscritoActividadA.objects.filter(filtro).aggregate(total=Sum('nota'))
                                 totalnotas = totalnotas['total'] if totalnotas['total'] else 0
+
+
                                 if conteo > 0 and totalnotas:
                                     resultado = totalnotas / conteo
                                 else:
