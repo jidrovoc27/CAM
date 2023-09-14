@@ -895,6 +895,31 @@ def dashboard(request):
                 except Exception as ex:
                     pass
 
+            if peticion == 'revisionexamen':
+                try:
+                    idex = int(encrypt(request.GET['idex']))
+                    idinscrito = int(encrypt(request.GET['inscrito']))
+                    idcurso = int(encrypt(request.GET['id']))
+                    data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
+                    data['examen'] = examen = Examen.objects.get(id=idex)
+                    data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
+                    data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
+                    data['cursoA'] = cursoA = CursoA.objects.get(id=idcurso)
+                    if 'q' in request.GET:
+                        data['q'] = q = int(encrypt(request.GET['q']))
+                        preguntarecibida = Pregunta.objects.filter(id=q)
+                        if preguntarecibida.exists():
+                            preguntaactual = preguntarecibida.first()
+                        else:
+                            preguntaactual = preguntas.first()
+                    else:
+                        preguntaactual = preguntas.first()
+                        data['q'] = preguntaactual.id
+                    data['preguntaactual'] = preguntaactual
+                    return render(request, "academia/calificaciones/revisionexamendocente.html", data)
+                except Exception as ex:
+                    pass
+
             if peticion == 'add_tarea':
                 try:
                     data['titulo'] = 'Agregar entrega'

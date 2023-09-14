@@ -451,7 +451,7 @@
                                         <div class="col-md-4 col-sm-6 mb-2">
                                             <div class="card" style="height: 2rem;{% if q == pregunta.id %}background-color: lightblue;color:white{% endif %}">
                                                 <div class="card-body" style="height: 2rem;">
-                                                    <a href="?peticion={% if peticion == 'revision' %}revision{% elif peticion == 'rendirexamen' %}rendirexamen{% else %}{{ peticion }}{% endif %}&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}&q={{ pregunta.id|encrypt }}" style="cursor: pointer"><h5 class="card-title text-center" style="margin-left: -8px;margin-top:-17px">{{ forloop.counter }}</h5></a>
+                                                    <a href="?peticion={% if peticion == 'revision' %}revision{% elif peticion == 'rendirexamen' %}rendirexamen{% elif peticion == 'revisionexamen' %}revisionexamen{% else %}{{ peticion }}{% endif %}&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}&q={{ pregunta.id|encrypt }}" style="cursor: pointer"><h5 class="card-title text-center" style="margin-left: -8px;margin-top:-17px">{{ forloop.counter }}</h5></a>
                                                 </div>
                                             </div>
                                         <hr style="width: 100%;background:{% if pregunta.es_respondida %}green{% else %}red{% endif %}">
@@ -465,6 +465,8 @@
                                         <a href="?peticion=revision&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-success" style="background: green; font-size: 12px">Finalizar</a>
                                     {% elif peticion == 'reviewanswers' %}
                                         <a href="?peticion=verexamen&id={{ cursoA.id }}&idex={{ examen.id }}&inscrito={{ inscrito.id }}" class="btn btn-success" style="background: green; font-size: 12px">Regresar</a>
+                                    {% elif peticion == 'revisionexamen' %}
+                                        <a href="?peticion=calificar&course={{ cursoA.id }}&idex={{ examen.id }}&option=summary" class="btn btn-success" style="background: green; font-size: 12px">Regresar</a>
 
                                     {% endif %}
                                 </div>

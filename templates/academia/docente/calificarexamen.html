@@ -66,6 +66,7 @@
                     <th scope="col" class="border-0" style="width: 40%">Participante</th>
                     <th scope="col" class="border-0 text-left" style="width: 40%;text-align: left">Nota</th>
                     <th scope="col" class="border-0 text-center">Estado</th>
+                    <th scope="col" class="border-0 text-center" style="text-align: center">Acciones</th>
                     {#                    <th scope="col" class="border-0 text-center">Acciones</th>#}
                 </tr>
                 </thead>
@@ -94,8 +95,9 @@
                                     </td>
                                 {% endif %}
                             {% endwith %}
-                        <td class="border-top-0 text-center">
-                            {% with rindio_examen=examen|args:inscrito.id|call:'rindio_examen' %}
+                        {% with rindio_examen=examen|args:inscrito.id|call:'rindio_examen' %}
+                            <td class="border-top-0 text-center">
+
                                 {% if rindio_examen %}
                                     <a class="btn btn-outline-success btn-sm mb-0"><i
                                             class="material-icons text-sm"></i>Examen rendido</a>
@@ -103,8 +105,17 @@
                                     <a class="btn btn-outline-warning btn-sm mb-0"><i
                                             class="material-icons text-sm"></i>Examen no rendido</a>
                                 {% endif %}
-                            {% endwith %}
-                        </td>
+
+                            </td>
+                            <td class="border-top-0 text-center" style="text-align: center">
+
+                                {% if rindio_examen %}
+                                    <a class="btn btn-outline-success btn-sm mb-0" style="cursor: pointer;"
+                                       href="?peticion=revisionexamen&id={{ curso.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}">Revisión</a>
+                                {% endif %}
+
+                            </td>
+                        {% endwith %}
 
                         {#                        <td class="text-muted border-top-0">#}
                         {#                            <span class="dropdown dropstart" style="float: right">#}
