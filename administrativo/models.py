@@ -497,6 +497,17 @@ class InscritoCurso(ModeloBase):
                 return True
         return False
 
+    #EL ALUMNO PUEDE MATRICULARSE SI YA CANCELÓ TODO O SIGUE DEBIENDO PERO TIENE LA OPORTUNIDAD DE PAGAR POR CUOTAS, CASO CONTRARIO,
+    #SI NO CANCELA LO QUE DEBE Y EL CURSO NO GENERA CUOTAS NO SE LO MATRICULA
+    def puede_matricularse(self, curso):
+        puede_matricularse = False
+        if self.adeuda():
+            if curso.gcuotas:
+                puede_matricularse = True
+        else:
+            puede_matricularse = True
+        return puede_matricularse
+
     def puede_eliminar_inscrito(self):
         curso = self.curso
         rubros = Rubro.objects.filter(status=True, persona=self.alumno.persona, curso=curso).values_list('id', flat=True)

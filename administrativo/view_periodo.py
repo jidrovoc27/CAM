@@ -532,12 +532,13 @@ def view_periodo(request):
                                 inscritos = InscritoCurso.objects.filter(status=True, curso=curso, matriculado=False)
                                 nummatriculados = 0
                                 for inscrito in inscritos:
-                                    nuevoinscritoA = InscritoCursoA(curso=cursoacademia, inscrito=inscrito.alumno.persona)
-                                    nuevoinscritoA.save(request)
-                                    inscrito.matriculado = True
-                                    inscrito.iduseracad_id = nuevoinscritoA.id
-                                    inscrito.save(request)
-                                    nummatriculados += 1
+                                    if inscrito.puede_matricularse(curso):
+                                        nuevoinscritoA = InscritoCursoA(curso=cursoacademia, inscrito=inscrito.alumno.persona)
+                                        nuevoinscritoA.save(request)
+                                        inscrito.matriculado = True
+                                        inscrito.iduseracad_id = nuevoinscritoA.id
+                                        inscrito.save(request)
+                                        nummatriculados += 1
                                 return JsonResponse({"respuesta": True, "mensaje": "Inscritos matriculados correctamente. Total: " + str(nummatriculados) + " matriculados"})
 
                             else:
@@ -550,12 +551,13 @@ def view_periodo(request):
                             inscritos = InscritoCurso.objects.filter(status=True, curso=curso, matriculado=False)
                             nummatriculados = 0
                             for inscrito in inscritos:
-                                nuevoinscritoA = InscritoCursoA(curso=cursoacademia, inscrito=inscrito.alumno.persona)
-                                nuevoinscritoA.save(request)
-                                inscrito.matriculado = True
-                                inscrito.iduseracad_id = nuevoinscritoA.id
-                                inscrito.save(request)
-                                nummatriculados += 1
+                                if inscrito.puede_matricularse(curso):
+                                    nuevoinscritoA = InscritoCursoA(curso=cursoacademia, inscrito=inscrito.alumno.persona)
+                                    nuevoinscritoA.save(request)
+                                    inscrito.matriculado = True
+                                    inscrito.iduseracad_id = nuevoinscritoA.id
+                                    inscrito.save(request)
+                                    nummatriculados += 1
                             detallemodelo = DetalleModeloEvaluativo.objects.filter(status=True, modelo=curso.modeloevaluativo)
                             if not DetalleModeloEvaluativoA.objects.filter(status=True, modelo=cursoacademia.modeloevaluativo).exists():
                                 for detalle in detallemodelo:
