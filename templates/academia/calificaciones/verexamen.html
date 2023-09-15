@@ -48,7 +48,7 @@
                             </th>
                         </tr>
                         {% with rindio_examen=examen|args:inscrito.id|call:'rindio_examen' %}
-                            {% if not rindio_examen and fechaactual >= examen.fecha_inicio %}
+                            {% if not rindio_examen and fechaactual >= examen.fecha_inicio and fechaactual <= fecha_final %}
                                 <tr>
                                     <th scope="col" class="border-0 text-center" colspan="6" style="background: white">
                                         <a href="?peticion=rendirexamen&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-primary" style="background: blue; font-size: 12px">Intentar resolver el cuestionario ahora</a>

@@ -1,4 +1,5 @@
 import sys
+import random
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -257,6 +258,7 @@ def dashboard(request):
                         fecha_inicio = datetime.strptime(request.POST['fecha_inicio'], '%Y-%m-%dT%H:%M')
                         fecha_nota = datetime.strptime(request.POST['fecha_nota'], '%Y-%m-%dT%H:%M')
                         duracion = request.POST['duracion']
+                        numeropregunta = int(request.POST['numeropregunta'])
                         activo = False
                         if 'activo' in request.POST:
                             activo = True
@@ -264,7 +266,7 @@ def dashboard(request):
                         examen = Examen(detalle_id=detalle, nombre=nombre,
                                         fecha_inicio=fecha_inicio, fecha_nota=fecha_nota,
                                         tiempo_restante=duracion, activo=activo,
-                                        duracion=duracion)
+                                        duracion=duracion, numeropregunta=numeropregunta)
                         examen.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Test cargada correctamente."})
@@ -427,6 +429,7 @@ def dashboard(request):
                     fecha_inicio = datetime.strptime(request.POST['fecha_inicio'], '%Y-%m-%dT%H:%M')
                     fecha_nota = datetime.strptime(request.POST['fecha_nota'], '%Y-%m-%dT%H:%M')
                     duracion = request.POST['duracion']
+                    numeropregunta = int(request.POST['numeropregunta'])
                     activo = False
                     if 'activo' in request.POST:
                         activo = True
@@ -435,6 +438,7 @@ def dashboard(request):
                     examen.fecha_inicio = fecha_inicio
                     examen.fecha_nota = fecha_nota
                     examen.duracion = duracion
+                    examen.numeropregunta = numeropregunta
                     examen.tiempo_restante = duracion
                     examen.activo = activo
                     examen.save(request)
@@ -566,6 +570,7 @@ def dashboard(request):
                     respuesta = False
                     calificacion = 0
                     examenalumno = ExamenAlumno.objects.filter(status=True, examen_id=idex, inscrito_id=inscrito)
+                    examen_curso = Examen.objects.get(id=idex)
                     if examenalumno.exists():
                         examenalumno = examenalumno.first()
                         if literal_selecc.es_correcta:
@@ -583,7 +588,8 @@ def dashboard(request):
                                                                inscrito_id=inscrito, respuesta_escogida_id=literal,
                                                                calificacion=calificacion)
                             respuesta_alumno.save(request)
-                        siguiente_pregunta = Pregunta.objects.filter(status=True, examen=literal_selecc.pregunta.examen, id__gt=q).order_by('id')
+                        preguntas_seleccionadas = examen_curso.consultar_preguntas_asignadas(inscrito).values_list('id', flat=True)
+                        siguiente_pregunta = Pregunta.objects.filter(status=True, id__in=preguntas_seleccionadas, id__gt=q).order_by('id')
                         if siguiente_pregunta.exists():
                             siguiente_pregunta = siguiente_pregunta.first()
                             return redirect('/moodle/?peticion=rendirexamen&id=%s' % encrypt(id) + '&inscrito=%s' % encrypt(inscrito) + '&idex=%s' % encrypt(idex) + '&q=%s' % encrypt(siguiente_pregunta.id), 200)
@@ -601,9 +607,10 @@ def dashboard(request):
                     data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
                     notafinal = 0
                     examenalumno = ExamenAlumno.objects.filter(status=True, examen_id=idex, inscrito_id=inscrito)
+                    examen_curso = Examen.objects.get(id=idex)
                     if examenalumno.exists():
                         examenalumno = examenalumno.first()
-                        preguntas = Pregunta.objects.filter(status=True, examen_id=idex)
+                        preguntas = examen_curso.consultar_preguntas_asignadas(inscrito)
                         for pregunta in preguntas:
                             calificacion = pregunta.calificacion
                             literalcorrecto = Literal.objects.filter(status=True, pregunta=pregunta, es_correcta=True)
@@ -811,19 +818,34 @@ def dashboard(request):
 
             if peticion == 'rendirexamen':
                 try:
+                    #PARÁMETROS QUE RECIBO POR GET
                     idex = int(encrypt(request.GET['idex']))
                     idinscrito = int(encrypt(request.GET['inscrito']))
                     idcurso = int(encrypt(request.GET['id']))
+
+                    #CONSULTO LA FECHA ACTUAL
                     data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
+
+                    #CONSULTO EL EXAMEN CON SUS RESPECTIVAS PREGUNTAS
                     data['examen'] = examen = Examen.objects.get(id=idex)
-                    data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
+                    totalpreguntas = examen.pregunta_set.filter(status=True).order_by('id')
+
+                    #VERIFICO SI EL INSCRITO YA RINDIÓ EL EXAMEN O SI NO EXISTEN PREGUNTAS O SI LA FECHA PARA DAR LA PRUEBA YA PASÓ
                     comienzoexamen = ExamenAlumno.objects.filter(status=True, examen=examen, inscrito_id=idinscrito)
-                    if examen.rindio_examen(idinscrito) or not preguntas.exists() or fechaactual > examen.fecha_limite_examen():
+                    if examen.rindio_examen(idinscrito) or not totalpreguntas.exists() or fechaactual > examen.fecha_limite_examen():
                         examen.calcular_notafinal(idinscrito, fechaactual, request)
                         return redirect('/moodle/?peticion=verexamen&id=%s' % idcurso + '&inscrito=%s' %idinscrito + '&idex=%s' % idex)
+
+                    #CABECERA EXAMEN DEL ALUMNO
                     if not comienzoexamen.exists():
                         comienzoexamen = ExamenAlumno(examen=examen, inscrito_id=idinscrito, fecha_inicio=fechaactual)
                         comienzoexamen.save(request)
+
+                    #VERIFICO SI EXISTE EL NÚMERO DE PREGUNTAS PARA SELECCIONAR ALEATORIAMENTE
+                    if totalpreguntas.count() < examen.numeropregunta:
+                        return redirect('/moodle/?peticion=verexamen&id=%s' % idcurso + '&inscrito=%s' % idinscrito + '&idex=%s' % idex)
+                    preguntas_asignadas = examen.generar_preguntas_aleatorias(idinscrito, request)
+                    preguntas = preguntas_asignadas
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
                     data['cursoA'] = cursoA = CursoA.objects.get(id=idcurso)
                     if 'q' in request.GET:
@@ -837,6 +859,7 @@ def dashboard(request):
                         preguntaactual = preguntas.first()
                         data['q'] = preguntaactual.id
                     data['preguntaactual'] = preguntaactual
+                    data['preguntas'] = preguntas
                     return render(request, "academia/calificaciones/rendirexamen.html", data)
 
                 except Exception as ex:
@@ -850,7 +873,7 @@ def dashboard(request):
                     idcurso = int(encrypt(request.GET['id']))
                     data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
                     data['examen'] = examen = Examen.objects.get(id=idex)
-                    data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
+                    data['preguntas'] = preguntas = examen.consultar_preguntas_asignadas(idinscrito)
                     if examen.rindio_examen(idinscrito) or not preguntas.exists() or fechaactual > examen.fecha_limite_examen():
                         return redirect('/moodle/?peticion=verexamen&id=%s' % idcurso + '&inscrito=%s' % idinscrito + '&idex=%s' % idex)
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
@@ -877,7 +900,7 @@ def dashboard(request):
                     idcurso = int(encrypt(request.GET['id']))
                     data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
                     data['examen'] = examen = Examen.objects.get(id=idex)
-                    data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
+                    data['preguntas'] = preguntas = examen.consultar_preguntas_asignadas(idinscrito)
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
                     data['cursoA'] = cursoA = CursoA.objects.get(id=idcurso)
                     if 'q' in request.GET:
@@ -902,7 +925,7 @@ def dashboard(request):
                     idcurso = int(encrypt(request.GET['id']))
                     data['fechaactual'] = fechaactual = datetime.now().replace(microsecond=0)
                     data['examen'] = examen = Examen.objects.get(id=idex)
-                    data['preguntas'] = preguntas = Pregunta.objects.filter(status=True, examen=examen).order_by('id')
+                    data['preguntas'] = preguntas = examen.consultar_preguntas_asignadas(idinscrito)
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
                     data['cursoA'] = cursoA = CursoA.objects.get(id=idcurso)
                     if 'q' in request.GET:
@@ -1018,6 +1041,7 @@ def dashboard(request):
                         'fecha_inicio': examen.fecha_inicio,
                         'fecha_nota': examen.fecha_nota,
                         'duracion': examen.duracion,
+                        'numeropregunta': examen.numeropregunta,
                         'activo': examen.activo,
                     })
                     form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)

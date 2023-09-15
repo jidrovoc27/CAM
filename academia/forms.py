@@ -97,6 +97,7 @@ class AgregarTestForm(forms.Form):
     fecha_inicio = forms.DateTimeField(label='Fecha inicio', required=True, input_formats=['%Y-%m-%d %H:%M:%S'], widget=forms.DateInput(format='%Y-%m-%d %H:%M:%S', attrs={'class': 'form-control', 'type': 'datetime-local'}))
     fecha_nota = forms.DateTimeField(label='Fecha mostrar nota', required=True, input_formats=['%Y-%m-%d %H:%M:%S'], widget=forms.DateInput(format='%Y-%m-%d %H:%M:%S', attrs={'class': 'form-control', 'type': 'datetime-local'}))
     duracion = forms.CharField(label='Duración (hh:mm)', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
+    numeropregunta = forms.DecimalField(initial='0', label='Número de preguntas', required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'onKeyPress': 'return solo_digitos(event)', }))
     activo = forms.BooleanField(label='Activo', required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check form-switch ms-2 my-auto is-filled'}))
 
     def clean(self):

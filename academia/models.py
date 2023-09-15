@@ -1,4 +1,5 @@
 from django.db import models
+import random
 
 # Create your models here.
 from administrativo.models import *
@@ -297,6 +298,7 @@ class Examen(ModeloBase):
     fecha_nota = models.DateTimeField(default=timezone.now, blank=True, null=True)
     activo = models.BooleanField(default=True, verbose_name=u'Activo')
     duracion = models.DurationField(blank=True, null=True)
+    numeropregunta = models.IntegerField(default=0, verbose_name=u"Es la cantidad de preguntas que se tomarán en cuenta para que sean aleatorias", blank=True, null=True)
     tiempo_restante = models.DurationField(blank=True, null=True)
 
     # def save(self, *args, **kwargs):
@@ -321,7 +323,29 @@ class Examen(ModeloBase):
             return True
         return False
 
-    #FUNCIÓN QUE PERMITA CALCULAR LA NOTA FINAL DEL CUESTIONARIO EN CASO DE QUE SE CIERRE POR MOTIVO DE FECHA DE CIERRE DEL CUESTIONARIO
+    def generar_preguntas_aleatorias(self, idinscrito, request):
+        preguntas_asignadas_alumno = None
+        consultar_preguntas_asignadas = PreguntaAsignada.objects.filter(status=True, examen=self, inscrito_id=idinscrito)
+        if not consultar_preguntas_asignadas.exists():
+            preguntas_seleccionadas = random.sample(list(self.pregunta_set.filter(status=True)), self.numeropregunta)
+            ids_preguntas = [preguntaselecc.id for preguntaselecc in preguntas_seleccionadas]
+            for idpregunta in ids_preguntas:
+                preasig = PreguntaAsignada(examen=self, pregunta_id=idpregunta, inscrito_id=idinscrito)
+                preasig.save(request)
+            preguntasasignadas = PreguntaAsignada.objects.filter(status=True, examen=self, inscrito_id=idinscrito)
+            preguntas_asignadas_alumno = Pregunta.objects.filter(status=True, id__in=preguntasasignadas.values_list('pregunta_id', flat=True))
+        else:
+            preguntas_asignadas_alumno = Pregunta.objects.filter(status=True, id__in=consultar_preguntas_asignadas.values_list('pregunta_id', flat=True))
+        return preguntas_asignadas_alumno.order_by('id')
+
+    def consultar_preguntas_asignadas(self, idinscrito):
+        preguntas_asignadas_alumno = None
+        consultar_preguntas_asignadas = PreguntaAsignada.objects.filter(status=True, examen=self, inscrito_id=idinscrito)
+        if consultar_preguntas_asignadas.exists():
+            preguntas_asignadas_alumno = Pregunta.objects.filter(status=True, id__in=consultar_preguntas_asignadas.values_list('pregunta_id', flat=True))
+        return preguntas_asignadas_alumno.order_by('id')
+
+    #FUNCIÓN QUE PERMITA CALCULAR LA NOTA FINAL DEL CUESTIONARIO EN CASO DE QUE SE CIERRE POR MOTIVO DE FECHA DE CIERRE DEL CUESTIONARIO.
     def calcular_notafinal(self, inscrito, fechaactual, request):
         if fechaactual > self.fecha_limite_examen() and self.pregunta_set.filter(status=True):
             if not self.rindio_examen(inscrito):
@@ -428,6 +452,21 @@ class Respuesta(ModeloBase):
     literal = models.ForeignKey(Literal, on_delete=models.CASCADE, blank=True, null=True)
     texto = models.CharField(max_length=255, blank=True, null=True)
     es_correcta = models.BooleanField(default=False, blank=True, null=True)
+
+
+
+class PreguntaAsignada(ModeloBase):
+    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, blank=True, null=True)
+    inscrito = models.ForeignKey(InscritoCursoA, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return u'%s' % (self.pregunta)
+
+    class Meta:
+        verbose_name = "Pregunta que se asigna aleatoriamente al inscrito"
+        verbose_name_plural = "Preguntas que se asignan aleatoriamente al inscrito"
+        ordering = ['id']
 
 
 estado_examen = (
