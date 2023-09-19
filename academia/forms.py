@@ -91,8 +91,14 @@ class AgregarActividadForm(forms.Form):
     def sin_imagen(self):
         campo_no_requerido(self, 'imagen')
 
+tipo_test = (
+    (1, u'Normal'),
+    (2, u'Recuperación'),
+)
+
 class AgregarTestForm(forms.Form):
     detalle = forms.ModelChoiceField(label=u"Actividad",required=True, queryset=DetalleModeloEvaluativoA.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))
+    tipo = forms.ChoiceField(choices=tipo_test, label=u'Tipo', required=True, widget=forms.Select(attrs={'class': 'form-control', }))
     nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': 'form-control', }))
     fecha_inicio = forms.DateTimeField(label='Fecha inicio', required=True, input_formats=['%Y-%m-%d %H:%M:%S'], widget=forms.DateInput(format='%Y-%m-%d %H:%M:%S', attrs={'class': 'form-control', 'type': 'datetime-local'}))
     fecha_nota = forms.DateTimeField(label='Fecha mostrar nota', required=True, input_formats=['%Y-%m-%d %H:%M:%S'], widget=forms.DateInput(format='%Y-%m-%d %H:%M:%S', attrs={'class': 'form-control', 'type': 'datetime-local'}))

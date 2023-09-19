@@ -17,6 +17,14 @@
 
 {% block news_inputs_form %}
 
+    <div class="input-group input-group-static my-3  " id="form_recuperantes">
+        <label for="id_recuperantes">Estudiantes:</label>
+            <select multiple class="form-control" id="estudiantes_recuperacion" name="estudiantes_recuperacion">
+                {% for inscrito_ in inscritos %}
+                    <option value="{{ inscrito_.id }}">{{ inscrito_ }}</option>
+                {% endfor %}
+            </select>
+    </div>
 {% endblock %}
 {% block nombre_boton_submit %}Guardar{% endblock %}
 {% block location_href_destino %}/moodle/?peticion=admcourse&id={{ curso.id }}&option=addtest{% endblock %}
@@ -40,6 +48,17 @@
             $("#id_nombre, #id_minnota, #id_maxnota, #id_fechamaximasubida, #id_horalimite").css({"height": "29px"});
             $("#id_fechamaximasubida").css({"height": "42px"});
             $("#id_descripcion").css({"rowspan": "7"});
+            $("#form_recuperantes").css({"display": "none"})
+
+            $("#id_tipo").change(function () {
+                var tipo = $(this).val();
+                if (parseInt(tipo) == 2) {
+                    $("#form_recuperantes").css({"display": "block"})
+                } else {
+                    $("#form_recuperantes").css({"display": "none"})
+                }
+            })
+
         })
 
         function mensajeSuccess(mensaje) {

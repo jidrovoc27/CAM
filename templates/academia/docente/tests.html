@@ -72,6 +72,10 @@
                             <b>F. inicio: {{ examen.fecha_inicio|date:"d-m-Y H:i" }}</b>
                             <br>
                             <b>F. nota: {{ examen.fecha_nota|date:"d-m-Y H:i" }}</b>
+                            {% if examen.aplicarecuperacion %}
+                                <br>
+                                <span class="label label-warning">Recuperación</span>
+                            {% endif %}
                         </td>
 {#                        <td class="border-top-0 text-center">{{ examen.fecha_inicio|date:"d-m-Y H:i" }}</td>#}
 {#                        <td class="border-top-0 text-center">{{ examen.fecha_nota|date:"d-m-Y H:i" }}</td>#}

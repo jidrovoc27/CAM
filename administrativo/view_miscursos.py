@@ -56,7 +56,7 @@ def view_miscursos(request):
                                 lista_actividades = lista_actividades.values_list('id')
 
                                 #CONSULTA TODOS LOS CUESTIONARIOS REALIZADOS
-                                detalleexamenes = lista_examenes = conteoexam = Examen.objects.filter(status=True, activo=True, detalle=deta)
+                                detalleexamenes = lista_examenes = conteoexam = Examen.objects.filter(status=True, activo=True, detalle=deta, aplicarecuperacion=False)
                                 lista_examenes = lista_examenes.values_list('id')
 
                                 #TOTAL DE CUESTIONARIOS Y ACTIVIDADES

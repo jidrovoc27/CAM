@@ -254,6 +254,7 @@ def dashboard(request):
                     form = AgregarTestForm(request.POST)
                     if form.is_valid():
                         detalle = request.POST['detalle']
+                        tipo = int(request.POST['tipo'])
                         nombre = request.POST['nombre']
                         fecha_inicio = datetime.strptime(request.POST['fecha_inicio'], '%Y-%m-%dT%H:%M')
                         fecha_nota = datetime.strptime(request.POST['fecha_nota'], '%Y-%m-%dT%H:%M')
@@ -263,16 +264,28 @@ def dashboard(request):
                         if 'activo' in request.POST:
                             activo = True
 
-                        examen = Examen(detalle_id=detalle, nombre=nombre,
+                        examen = Examen(detalle_id=detalle, tipo=tipo, nombre=nombre,
                                         fecha_inicio=fecha_inicio, fecha_nota=fecha_nota,
                                         tiempo_restante=duracion, activo=activo,
                                         duracion=duracion, numeropregunta=numeropregunta)
                         examen.save(request)
+                        if tipo == 2:
+                            if 'estudiantes_recuperacion' in request.POST:
+                                estudiantes_recuperacion = request.POST.get('estudiantes_recuperacion')
+                                for idinscrito in estudiantes_recuperacion:
+                                    recuperacion = InscritosRecuperacionTest(examen=examen, inscrito_id=int(idinscrito))
+                                    recuperacion.save(request)
+                                examen.aplicarecuperacion = True
+                                examen.save(request)
+                            else:
+                                return JsonResponse({"respuesta": False, "mensaje": "Por favor, elija al menos 1 estudiante"})
+
 
                         return JsonResponse({"respuesta": True, "mensaje": "Test cargada correctamente."})
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'add_question':
@@ -291,6 +304,7 @@ def dashboard(request):
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'add_literal':
@@ -312,6 +326,7 @@ def dashboard(request):
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'add_recurso':
@@ -337,6 +352,7 @@ def dashboard(request):
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'edit_recurso':
@@ -361,6 +377,7 @@ def dashboard(request):
                         recurso.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'edit_tarea':
@@ -382,6 +399,7 @@ def dashboard(request):
                     # else:
                     #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'edit_actividad':
@@ -417,6 +435,7 @@ def dashboard(request):
                     # else:
                     #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'edit_test':
@@ -425,6 +444,7 @@ def dashboard(request):
                     # if form.is_valid():
                     examen = Examen.objects.get(id=int(request.POST['id']))
                     detalle = request.POST['detalle']
+                    tipo = int(request.POST['tipo'])
                     nombre = request.POST['nombre']
                     fecha_inicio = datetime.strptime(request.POST['fecha_inicio'], '%Y-%m-%dT%H:%M')
                     fecha_nota = datetime.strptime(request.POST['fecha_nota'], '%Y-%m-%dT%H:%M')
@@ -434,6 +454,7 @@ def dashboard(request):
                     if 'activo' in request.POST:
                         activo = True
                     examen.detalle_id = int(detalle)
+                    examen.tipo = tipo
                     examen.nombre = nombre
                     examen.fecha_inicio = fecha_inicio
                     examen.fecha_nota = fecha_nota
@@ -442,10 +463,22 @@ def dashboard(request):
                     examen.tiempo_restante = duracion
                     examen.activo = activo
                     examen.save(request)
+                    if tipo == 2:
+                        if 'estudiantes_recuperacion' in request.POST:
+                            estudiantes_recuperacion = request.POST.get('estudiantes_recuperacion')
+                            for idinscrito in estudiantes_recuperacion:
+                                recuperacion = InscritosRecuperacionTest(examen=examen, inscrito_id=int(idinscrito))
+                                recuperacion.save(request)
+                            examen.aplicarecuperacion = True
+                            examen.save(request)
+                        else:
+                            return JsonResponse(
+                                {"respuesta": False, "mensaje": "Por favor, elija al menos 1 estudiante"})
                     return JsonResponse({"respuesta": True, "mensaje": "Test actualizado correctamente."})
                     # else:
                     #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'edit_question':
@@ -462,6 +495,7 @@ def dashboard(request):
                     # else:
                     #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'edit_literal':
@@ -480,6 +514,7 @@ def dashboard(request):
                     # else:
                     #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'eliminar_recurso':
@@ -489,6 +524,7 @@ def dashboard(request):
                     recurso.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Recurso eliminado correctamente."})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'eliminar_actividad':
@@ -498,6 +534,7 @@ def dashboard(request):
                     actividad.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Actividad eliminada correctamente."})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'eliminar_test':
@@ -507,6 +544,7 @@ def dashboard(request):
                     examen.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Test eliminado correctamente."})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'eliminar_question':
@@ -516,6 +554,7 @@ def dashboard(request):
                     pregunta.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Pregunta eliminada correctamente."})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'eliminar_literal':
@@ -525,6 +564,7 @@ def dashboard(request):
                     literal.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Literal eliminado correctamente."})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             if peticion == 'calificar_deber':
@@ -547,6 +587,7 @@ def dashboard(request):
                         newdeber.save(request)
                     return JsonResponse({"respuesta": True, "mensaje": "Actividad calificada correctamente."})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Error al calificar"})
 
             if peticion == 'actualizar_literal':
@@ -557,6 +598,7 @@ def dashboard(request):
                     literal.save(request)
                     return JsonResponse({"respuesta": True})
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": u'Error al actualizar el literal'})
 
             if peticion == 'marcarrespuesta':
@@ -597,6 +639,7 @@ def dashboard(request):
                             return redirect(
                                 '/moodle/?peticion=revision&id=%s' % encrypt(id) + '&inscrito=%s' % encrypt(inscrito) + '&idex=%s' % encrypt(idex),200)
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Error al elegir la respuesta"})
 
             if peticion == 'enviaryterminar':
@@ -1037,6 +1080,7 @@ def dashboard(request):
                     data['examen'] = examen = Examen.objects.get(id=int(request.GET['id']))
                     form = AgregarTestForm(initial={
                         'detalle': examen.detalle,
+                        'tipo': examen.tipo,
                         'nombre': examen.nombre,
                         'fecha_inicio': examen.fecha_inicio,
                         'fecha_nota': examen.fecha_nota,
@@ -1044,6 +1088,9 @@ def dashboard(request):
                         'numeropregunta': examen.numeropregunta,
                         'activo': examen.activo,
                     })
+                    inscritos = curso.inscritocursoa_set.filter(status=True)
+                    data['inscritos'] = inscritos.order_by('inscrito__apellidos') if inscritos.exists() else inscritos
+                    data['lista_inscritos'] = InscritosRecuperacionTest.objects.filter(status=True, examen=examen)
                     form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
                     data['form'] = form
                     return render(request, "academia/docente/edit_test.html", data)
@@ -1116,7 +1163,7 @@ def dashboard(request):
                             if 'detalle' in request.GET:
                                 data['detalle'] = detalle = int(request.GET['detalle'])
                                 if detalle > 0:
-                                    data['examenes'] = Examen.objects.filter(status=True, detalle_id=detalle)
+                                    data['examenes'] = Examen.objects.filter(status=True, detalle_id=detalle, aplicarecuperacion=False)
                             return render(request, "academia/docente/tests.html", data)
 
                         elif option == 'addresource':
@@ -1220,6 +1267,8 @@ def dashboard(request):
                     data['titulo_formulario'] = 'Adicionar test'
                     data['peticion'] = 'add_test'
                     data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
+                    inscritos = cursoA.inscritocursoa_set.filter(status=True)
+                    data['inscritos'] = inscritos.order_by('inscrito__apellidos') if inscritos.exists() else inscritos
                     form = AgregarTestForm()
                     form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True,
                                                                                               modelo=cursoA.modeloevaluativo)

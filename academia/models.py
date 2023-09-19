@@ -9,6 +9,11 @@ from django.apps import apps
 from django.utils import timezone
 from datetime import timedelta
 
+tipo_test = (
+    (1, u'Normal'),
+    (2, u'Recuperación'),
+)
+
 class PeriodoA(ModeloBase):
     nombre = models.CharField(default='', max_length=200, verbose_name=u'Nombre', blank=True, null=True)
     descripcion = models.CharField(default='', max_length=200, verbose_name=u'Descripción', blank=True, null=True)
@@ -71,7 +76,7 @@ class DetalleModeloEvaluativoA(ModeloBase):
         return DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=self)
 
     def detalleexamenes(self):
-        return Examen.objects.filter(status=True, detalle=self, activo=True)
+        return Examen.objects.filter(status=True, detalle=self, activo=True, aplicarecuperacion=False)
 
     def total_actividad(self, inscrito_id):
         try:
@@ -81,7 +86,7 @@ class DetalleModeloEvaluativoA(ModeloBase):
             count_actividades = count_actividades.count()
 
             #TOTAL DE EXÁMENES
-            examenes = lista_examenes = count_exam = Examen.objects.filter(status=True, detalle=self, activo=True)
+            examenes = lista_examenes = count_exam = Examen.objects.filter(status=True, detalle=self, activo=True, aplicarecuperacion=False)
             lista_examenes = lista_examenes.values_list('id')
             count_examenes = count_exam.count()
 
@@ -267,7 +272,7 @@ class InscritoCursoA(ModeloBase):
             conteoactv = conteoactv.count()
 
             #CALCULAR EXÁMENES
-            examenes = conteoexam = Examen.objects.filter(status=True, detalle=detalle, activo=True)
+            examenes = conteoexam = Examen.objects.filter(status=True, detalle=detalle, activo=True, aplicarecuperacion=False)
             examenes = examenes.values_list('id', flat=True)
             conteoexam = conteoexam.count()
             conteosum = conteoactv + conteoexam
@@ -293,10 +298,12 @@ ESTADO_TAREA = (
 
 class Examen(ModeloBase):
     detalle = models.ForeignKey(DetalleModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u'N1, N2, N3, etc.', blank=True, null=True)
+    tipo = models.IntegerField(default=1, choices=tipo_test, blank=True, null=True, verbose_name=u'Normal o recuperación?')
     nombre = models.CharField(max_length=255, blank=True, null=True)
     fecha_inicio = models.DateTimeField(default=timezone.now, blank=True, null=True)
     fecha_nota = models.DateTimeField(default=timezone.now, blank=True, null=True)
     activo = models.BooleanField(default=True, verbose_name=u'Activo')
+    aplicarecuperacion = models.BooleanField(default=False, verbose_name=u'Está habilitado para recuperación?')
     duracion = models.DurationField(blank=True, null=True)
     numeropregunta = models.IntegerField(default=0, verbose_name=u"Es la cantidad de preguntas que se tomarán en cuenta para que sean aleatorias", blank=True, null=True)
     tiempo_restante = models.DurationField(blank=True, null=True)
@@ -453,7 +460,15 @@ class Respuesta(ModeloBase):
     texto = models.CharField(max_length=255, blank=True, null=True)
     es_correcta = models.BooleanField(default=False, blank=True, null=True)
 
+    def __str__(self):
+        return u'Enunciado: %s' % (self.texto)
 
+class InscritosRecuperacionTest(ModeloBase):
+    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
+    inscrito = models.ForeignKey(InscritoCursoA, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return u'Examen :%s - Inscrito: %s' % (self.examen, self.inscrito)
 
 class PreguntaAsignada(ModeloBase):
     examen = models.ForeignKey(Examen, on_delete=models.CASCADE, blank=True, null=True)
