@@ -204,9 +204,13 @@
                                     {% endfor %}
                                     <td data-title="Promedio" class="text-center">
                                         <a></a>
-                                        {% with modelo=fila|args:curso.id|call:'calcularpromedio' %}
-                                            {{ modelo|floatformat:2 }}
-                                        {% endwith %}
+                                        {% if not curso.finalizarcurso %}
+                                            {% with modelo=fila|args:curso.id|args:fila|call:'calcularpromedio' %}
+                                                {{ modelo|floatformat:2 }}
+                                            {% endwith %}
+                                        {% else %}
+                                            {{ fila.notafinal|floatformat:2 }}
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% empty %}

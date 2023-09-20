@@ -345,10 +345,18 @@ class DetalleModeloEvaluativo(ModeloBase):
                                                                     nombre=self.nombre)
         inscritoacad = InscritoCursoA.objects.get(status=True, curso=cursoacad, inscrito_id=persona_id)
         if detallemodeloacad:
-            detalleactividad = lista_actividades = conteo = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=detallemodeloacad.first())
+            detalleactividad = lista_actividades = conteoactv = DetalleActividadesModeloEvaluativoA.objects.filter(status=True, detalle=detallemodeloacad.first())
             lista_actividades = lista_actividades.values_list('id')
-            conteo = conteo.count()
-            totalnotas = NotaInscritoActividadA.objects.filter(status=True, actividad_id__in=detalleactividad, inscrito=inscritoacad).aggregate(total=Sum('nota'))
+            conteoactv = conteoactv.count()
+
+            #LISTA DE EXÁMENES
+            detalleexamenes = lista_examenes = conteoexam = Examen.objects.filter(status=True, activo=True, detalle=detallemodeloacad.first())
+            lista_examenes = lista_examenes.values_list('id')
+            conteoexam = conteoexam.count()
+
+            conteo = conteoactv + conteoexam
+
+            totalnotas = NotaInscritoActividadA.objects.filter(Q(status=True), (Q(actividad_id__in=lista_actividades) | Q(examen_id__in=lista_examenes)), inscrito=inscritoacad).aggregate(total=Sum('nota'))
             totalnotas = totalnotas['total'] if totalnotas['total'] else 0
             if conteo > 0 and totalnotas:
                 resultado = totalnotas / conteo
@@ -633,10 +641,11 @@ class InscritoCurso(ModeloBase):
         except Exception as ex:
             return False
 
-    def calcularpromedio(self, curso_id):
+    def calcularpromedio(self, curso_id, inscrito):
         cursoadm = Curso.objects.get(id=int(curso_id))
+        inscrito_academia = inscrito.iduseracad
         modeloadm = cursoadm.modeloevaluativo
-        detalles = DetalleModeloEvaluativo.objects.filter(status=True, modelo=modeloadm)
+        detalles = DetalleModeloEvaluativo.objects.filter(status=True, modelo=modeloadm).exclude(Q(nombre__icontains='RECUPERACIÓN') | Q(nombre__icontains='Recuperación') | Q(nombre__icontains='RECUPERACION') | Q(nombre__icontains='Recuperacion'))
         conteo = detalles.count()
         sumnotas = 0
         for detalle in detalles:
@@ -648,6 +657,12 @@ class InscritoCurso(ModeloBase):
             resultado = sumnotas / conteo
         else:
             resultado = 0
+        inscrito_recuperacion = InscritosRecuperacionTest.objects.filter(status=True, inscrito=inscrito_academia)
+        if inscrito_recuperacion.exists():
+            inscrito_recuperacion = inscrito_recuperacion.values_list('examen_id', flat=True)
+            examenes = Examen.objects.filter(status=True, activo=True, aplicarecuperacion=True, id__in=inscrito_recuperacion).values_list('id', flat=True)
+            total_nota_recuperacion = ExamenAlumno.objects.filter(status=True, examen_id__in=examenes, inscrito=inscrito_academia).aggregate(total=Sum('calificacionfinal'))
+            resultado = solo_2_decimales(((float(resultado) + total_nota_recuperacion['total']) / 2), 2) if total_nota_recuperacion['total'] else resultado
         return resultado
 
 

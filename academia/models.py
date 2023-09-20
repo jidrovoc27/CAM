@@ -33,7 +33,7 @@ class PeriodoA(ModeloBase):
         return CursoA.objects.filter(status=True, periodo=self).count()
 
 class ModeloEvaluativoA(ModeloBase):
-    nombre = models.CharField(default='', max_length=100, verbose_name=u"Nombre", blank=True, null=True)
+    nombre = models.CharField(default='', max_length=500, verbose_name=u"Nombre", blank=True, null=True)
     fecha = models.DateField(verbose_name=u"Fecha", blank=True, null=True)
     principal = models.BooleanField(default=False, verbose_name=u"Principal", blank=True, null=True)
     notamaxima = models.FloatField(default=0, verbose_name=u'Nota maxima', blank=True, null=True)
@@ -59,7 +59,7 @@ class ModeloEvaluativoA(ModeloBase):
 
 class DetalleModeloEvaluativoA(ModeloBase):
     modelo = models.ForeignKey(ModeloEvaluativoA, on_delete=models.PROTECT, verbose_name=u"Modelo", blank=True, null=True)
-    nombre = models.CharField(default='', max_length=10, verbose_name=u"Nombre campo", blank=True, null=True)
+    nombre = models.CharField(default='', max_length=500, verbose_name=u"Nombre campo", blank=True, null=True)
     notaminima = models.FloatField(default=0, verbose_name=u'Nota minima', blank=True, null=True)
     notamaxima = models.FloatField(default=0, verbose_name=u'Nota maxima', blank=True, null=True)
     orden = models.IntegerField(default=0, verbose_name=u"Orden en acta", blank=True, null=True)
@@ -77,6 +77,9 @@ class DetalleModeloEvaluativoA(ModeloBase):
 
     def detalleexamenes(self):
         return Examen.objects.filter(status=True, detalle=self, activo=True, aplicarecuperacion=False)
+
+    def detalleexamenes_recuperacion_(self):
+        return Examen.objects.filter(status=True, detalle=self, activo=True, aplicarecuperacion=True)
 
     def detalleexamenes_recuperacion(self, inscrito_id):
         inscrito_recuperacion = InscritosRecuperacionTest.objects.filter(status=True, inscrito_id=inscrito_id).values_list('examen_id', flat=True)
@@ -270,7 +273,7 @@ class InscritoCursoA(ModeloBase):
     def calcularpromedio(self, curso_id):
         cursoacad = CursoA.objects.get(id=int(curso_id))
         modeloadm = cursoacad.modeloevaluativo
-        detalles = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=modeloadm)
+        detalles = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=modeloadm).exclude(Q(nombre__icontains='RECUPERACIÓN') | Q(nombre__icontains='Recuperación') | Q(nombre__icontains='RECUPERACION') | Q(nombre__icontains='Recuperacion'))
         conteo = detalles.count()
         sumnotas = 0
         for detalle in detalles:
@@ -304,7 +307,7 @@ class InscritoCursoA(ModeloBase):
         inscrito_recuperacion = InscritosRecuperacionTest.objects.filter(status=True, inscrito=self).values_list('examen_id', flat=True)
         examenes = Examen.objects.filter(status=True, activo=True, aplicarecuperacion=True, id__in=inscrito_recuperacion).values_list('id', flat=True)
         total_nota_recuperacion = ExamenAlumno.objects.filter(status=True, examen_id__in=examenes, inscrito=self).aggregate(total=Sum('calificacionfinal'))
-        sumatoria = solo_2_decimales(((promedio + total_nota_recuperacion) / 2), 2) if total_nota_recuperacion['total'] else promedio
+        sumatoria = solo_2_decimales(((promedio + total_nota_recuperacion['total']) / 2), 2) if total_nota_recuperacion['total'] else promedio
         return sumatoria
 
 ESTADO_TAREA = (
@@ -368,7 +371,7 @@ class Examen(ModeloBase):
             preguntas_asignadas_alumno = Pregunta.objects.filter(status=True, id__in=consultar_preguntas_asignadas.values_list('pregunta_id', flat=True))
         return preguntas_asignadas_alumno.order_by('id') if preguntas_asignadas_alumno else preguntas_asignadas_alumno
 
-    #FUNCIÓN QUE PERMITA CALCULAR LA NOTA FINAL DEL CUESTIONARIO EN CASO DE QUE SE CIERRE POR MOTIVO DE FECHA DE CIERRE DEL CUESTIONARIO.
+    #FUNCIÓN QUE PERMITA CALCULAR LA NOTA FINAL DEL CUESTIONARIO EN CASO DE QUE SE CIERRE POR MOTIVO DE FECHA DE CIERRE DEL CUESTIONARIO
     def calcular_notafinal(self, inscrito, fechaactual, request):
         if fechaactual > self.fecha_limite_examen() and self.pregunta_set.filter(status=True):
             if not self.rindio_examen(inscrito):

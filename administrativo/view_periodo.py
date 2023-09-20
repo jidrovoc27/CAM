@@ -572,6 +572,7 @@ def view_periodo(request):
                             return JsonResponse({"respuesta": False, "mensaje": "Por algún motivo el curso no se encuentra enrolado"})
 
                 except Exception as ex:
+                    transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Error al intentar matricular a los alumnos"})
 
             elif peticion == 'generar_certificado':

@@ -56,8 +56,16 @@
                             </td>
                             <td class="border-top-0 text-center">
                                 {% with inscritocurso=micurso|args:alumno.id|call:'traer_inscrito' %}
-                                    {% with modelo=inscritocurso|args:micurso.id|call:'calcularpromedio' %}
-                                        {{ modelo|floatformat:2 }}
+                                    {% with examenes_recuperacion=micurso|args:inscritocurso.id|call:'detalleexamenes_recuperacion' %}
+                                        {% if not examenes_recuperacion %}
+                                            {% with modelo=inscritocurso|args:micurso.id|call:'calcularpromedio' %}
+                                                {{ modelo|floatformat:2 }}
+                                            {% endwith %}
+                                        {% else %}
+                                            {% with modelo=inscritocurso|args:micurso.id|call:'calcularpromedio_recuperacion' %}
+                                                {{ modelo|floatformat:2 }}
+                                            {% endwith %}
+                                        {% endif %}
                                     {% endwith %}
                                 {% endwith %}
                             </td>

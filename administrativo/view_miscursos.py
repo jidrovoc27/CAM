@@ -45,7 +45,7 @@ def view_miscursos(request):
                     detallemodeloacad = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=modeloevaluativo)
                     inscritoacad = InscritoCursoA.objects.filter(status=True, curso=cursoacad)
                     resultado = 0
-                    if detallemodeloacad:
+                    if detallemodeloacad.exists():
                         for inscrito in inscritoacad:
                             for deta in detallemodeloacad:
                                 filtro = (Q(status=True) & Q(inscrito=inscrito))
@@ -56,7 +56,7 @@ def view_miscursos(request):
                                 lista_actividades = lista_actividades.values_list('id')
 
                                 #CONSULTA TODOS LOS CUESTIONARIOS REALIZADOS
-                                detalleexamenes = lista_examenes = conteoexam = Examen.objects.filter(status=True, activo=True, detalle=deta, aplicarecuperacion=False)
+                                detalleexamenes = lista_examenes = conteoexam = Examen.objects.filter(status=True, activo=True, detalle=deta)
                                 lista_examenes = lista_examenes.values_list('id')
 
                                 #TOTAL DE CUESTIONARIOS Y ACTIVIDADES
@@ -97,7 +97,7 @@ def view_miscursos(request):
                     curso = Curso.objects.get(id=int(request.POST['id']))
                     inscritos = InscritoCurso.objects.filter(status=True, curso=curso)
                     for inscrito in inscritos:
-                        promediofinal = solo_2_decimales(inscrito.calcularpromedio(curso.id), 2)
+                        promediofinal = solo_2_decimales(inscrito.calcularpromedio(curso.id, inscrito), 2)
                         if promediofinal >= curso.minnota:
                             inscrito.estado = 1
                         else:

@@ -1,5 +1,6 @@
 {% extends 'academia/docente/admcourse.html' %}
 {% load static %}
+{% load adiciones %}
 {% block contentadicional %}
     {% block script %}
         <script>
@@ -114,7 +115,24 @@
                         </div>
                     </div>
                 {% endfor %}
-                {% if not detalle.detalleactividades and not detalle.detalleexamenes %}
+                {% with examenes_recuperacion=detalle|args:inscrito.id|call:'detalleexamenes_recuperacion' %}
+                    {% for exam_recuperacion in examenes_recuperacion %}
+                        <div id="detalle{{ detalle.id }}" class="collapse" data-bs-parent="#accordion"
+                             style="margin-left: 35px;">
+
+                            <div class="card-body" style="display: flex;">
+                                <div class="activityiconcontainer content courseicon align-self-start mr-3"
+                                     style="background-color: #399be2;">
+                                    <img src="{% static 'img/examen.png' %}"
+                                         class="activityicon " alt="book icon">
+                                </div>
+                                <a href="?peticion=verexamen&id={{ curso.id }}&inscrito={{ inscrito.id }}&idex={{ exam_recuperacion.id }}"
+                                   style="margin-top: 12px;margin-left: 5px">{{ exam_recuperacion.nombre }}</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+                {% if not detalle.detalleactividades and not detalle.detalleexamenes and not detalle.detalleexamenes_recuperacion_ %}
                     <div id="detalle{{ detalle.id }}" class="collapse" data-bs-parent="#accordion"
                          style="margin-left: 35px;">
                         <div class="card-body">
