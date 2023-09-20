@@ -461,19 +461,29 @@ def dashboard(request):
                     examen.duracion = duracion
                     examen.numeropregunta = numeropregunta
                     examen.tiempo_restante = duracion
+                    examen.aplicarecuperacion = False
                     examen.activo = activo
                     examen.save(request)
                     if tipo == 2:
                         if 'estudiantes_recuperacion' in request.POST:
                             estudiantes_recuperacion = request.POST.get('estudiantes_recuperacion')
+                            estudiantes_asignados = []
                             for idinscrito in estudiantes_recuperacion:
-                                recuperacion = InscritosRecuperacionTest(examen=examen, inscrito_id=int(idinscrito))
-                                recuperacion.save(request)
+                                consulta_recuperacion = InscritosRecuperacionTest.objects.filter(status=True, examen=examen, inscrito_id=int(idinscrito))
+                                if not consulta_recuperacion.exists():
+                                    recuperacion = InscritosRecuperacionTest(examen=examen, inscrito_id=int(idinscrito))
+                                    recuperacion.save(request)
+                                    estudiantes_asignados.append(recuperacion.id)
+                                else:
+                                    estudiantes_asignados.append(consulta_recuperacion.first().id)
                             examen.aplicarecuperacion = True
                             examen.save(request)
+                            eliminar_recuperacion_inscritos = InscritosRecuperacionTest.objects.filter(status=True, examen=examen).exclude(id__in=estudiantes_asignados).delete()
                         else:
                             return JsonResponse(
                                 {"respuesta": False, "mensaje": "Por favor, elija al menos 1 estudiante"})
+                    else:
+                        eliminar_recuperacion_inscritos = InscritosRecuperacionTest.objects.filter(status=True, examen=examen).delete()
                     return JsonResponse({"respuesta": True, "mensaje": "Test actualizado correctamente."})
                     # else:
                     #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
@@ -946,18 +956,20 @@ def dashboard(request):
                     data['preguntas'] = preguntas = examen.consultar_preguntas_asignadas(idinscrito)
                     data['inscrito'] = inscrito = InscritoCursoA.objects.get(id=idinscrito)
                     data['cursoA'] = cursoA = CursoA.objects.get(id=idcurso)
-                    if 'q' in request.GET:
-                        data['q'] = q = int(encrypt(request.GET['q']))
-                        preguntarecibida = Pregunta.objects.filter(id=q)
-                        if preguntarecibida.exists():
-                            preguntaactual = preguntarecibida.first()
+                    if preguntas:
+                        if 'q' in request.GET:
+                            data['q'] = q = int(encrypt(request.GET['q']))
+                            preguntarecibida = Pregunta.objects.filter(id=q)
+                            if preguntarecibida.exists():
+                                preguntaactual = preguntarecibida.first()
+                            else:
+                                preguntaactual = preguntas.first()
                         else:
                             preguntaactual = preguntas.first()
-                    else:
-                        preguntaactual = preguntas.first()
-                        data['q'] = preguntaactual.id
-                    data['preguntaactual'] = preguntaactual
-                    return render(request, "academia/calificaciones/revisionexamen.html", data)
+                            data['q'] = preguntaactual.id
+                        data['preguntaactual'] = preguntaactual
+                        return render(request, "academia/calificaciones/revisionexamen.html", data)
+                    return redirect('/moodle/?peticion=verexamen&id=%s' % idcurso + '&inscrito=%s' % idinscrito + '&idex=%s' % idex)
                 except Exception as ex:
                     pass
 
@@ -1090,7 +1102,8 @@ def dashboard(request):
                     })
                     inscritos = curso.inscritocursoa_set.filter(status=True)
                     data['inscritos'] = inscritos.order_by('inscrito__apellidos') if inscritos.exists() else inscritos
-                    data['lista_inscritos'] = InscritosRecuperacionTest.objects.filter(status=True, examen=examen)
+                    lista_inscritos = InscritosRecuperacionTest.objects.filter(status=True, examen=examen)
+                    data['lista_inscritos'] = lista_inscritos.values_list('inscrito_id', flat=True)
                     form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
                     data['form'] = form
                     return render(request, "academia/docente/edit_test.html", data)
@@ -1163,7 +1176,7 @@ def dashboard(request):
                             if 'detalle' in request.GET:
                                 data['detalle'] = detalle = int(request.GET['detalle'])
                                 if detalle > 0:
-                                    data['examenes'] = Examen.objects.filter(status=True, detalle_id=detalle, aplicarecuperacion=False)
+                                    data['examenes'] = Examen.objects.filter(status=True, detalle_id=detalle)
                             return render(request, "academia/docente/tests.html", data)
 
                         elif option == 'addresource':

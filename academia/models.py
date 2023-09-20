@@ -78,6 +78,10 @@ class DetalleModeloEvaluativoA(ModeloBase):
     def detalleexamenes(self):
         return Examen.objects.filter(status=True, detalle=self, activo=True, aplicarecuperacion=False)
 
+    def detalleexamenes_recuperacion(self, inscrito_id):
+        inscrito_recuperacion = InscritosRecuperacionTest.objects.filter(status=True, inscrito_id=inscrito_id).values_list('examen_id', flat=True)
+        return Examen.objects.filter(status=True, detalle=self, activo=True, id__in=inscrito_recuperacion)
+
     def total_actividad(self, inscrito_id):
         try:
             #TOTAL DE ACTIVIDADES CON RESPECTO A LAS TAREAS
@@ -86,7 +90,7 @@ class DetalleModeloEvaluativoA(ModeloBase):
             count_actividades = count_actividades.count()
 
             #TOTAL DE EXÁMENES
-            examenes = lista_examenes = count_exam = Examen.objects.filter(status=True, detalle=self, activo=True, aplicarecuperacion=False)
+            examenes = lista_examenes = count_exam = Examen.objects.filter(status=True, detalle=self, activo=True)
             lista_examenes = lista_examenes.values_list('id')
             count_examenes = count_exam.count()
 
@@ -173,6 +177,10 @@ class CursoA(ModeloBase):
         if inscrito:
             return inscrito.first()
         return None
+
+    def detalleexamenes_recuperacion(self, inscrito_id):
+        inscrito_recuperacion = InscritosRecuperacionTest.objects.filter(status=True, inscrito_id=inscrito_id).values_list('examen_id', flat=True)
+        return Examen.objects.filter(status=True, activo=True, id__in=inscrito_recuperacion)
 
 ESTADO_ACTIVIDAD = (
     (1, u'ACTIVO'),
@@ -291,6 +299,14 @@ class InscritoCursoA(ModeloBase):
             resultado = 0
         return resultado
 
+    def calcularpromedio_recuperacion(self, curso_id):
+        promedio = self.calcularpromedio(curso_id)
+        inscrito_recuperacion = InscritosRecuperacionTest.objects.filter(status=True, inscrito=self).values_list('examen_id', flat=True)
+        examenes = Examen.objects.filter(status=True, activo=True, aplicarecuperacion=True, id__in=inscrito_recuperacion).values_list('id', flat=True)
+        total_nota_recuperacion = ExamenAlumno.objects.filter(status=True, examen_id__in=examenes, inscrito=self).aggregate(total=Sum('calificacionfinal'))
+        sumatoria = solo_2_decimales(((promedio + total_nota_recuperacion) / 2), 2) if total_nota_recuperacion['total'] else promedio
+        return sumatoria
+
 ESTADO_TAREA = (
     (1, 'NO CALIFICADO'),
     (2, 'CALIFICADO'),
@@ -343,14 +359,14 @@ class Examen(ModeloBase):
             preguntas_asignadas_alumno = Pregunta.objects.filter(status=True, id__in=preguntasasignadas.values_list('pregunta_id', flat=True))
         else:
             preguntas_asignadas_alumno = Pregunta.objects.filter(status=True, id__in=consultar_preguntas_asignadas.values_list('pregunta_id', flat=True))
-        return preguntas_asignadas_alumno.order_by('id')
+        return preguntas_asignadas_alumno.order_by('id') if preguntas_asignadas_alumno else preguntas_asignadas_alumno
 
     def consultar_preguntas_asignadas(self, idinscrito):
         preguntas_asignadas_alumno = None
         consultar_preguntas_asignadas = PreguntaAsignada.objects.filter(status=True, examen=self, inscrito_id=idinscrito)
         if consultar_preguntas_asignadas.exists():
             preguntas_asignadas_alumno = Pregunta.objects.filter(status=True, id__in=consultar_preguntas_asignadas.values_list('pregunta_id', flat=True))
-        return preguntas_asignadas_alumno.order_by('id')
+        return preguntas_asignadas_alumno.order_by('id') if preguntas_asignadas_alumno else preguntas_asignadas_alumno
 
     #FUNCIÓN QUE PERMITA CALCULAR LA NOTA FINAL DEL CUESTIONARIO EN CASO DE QUE SE CIERRE POR MOTIVO DE FECHA DE CIERRE DEL CUESTIONARIO.
     def calcular_notafinal(self, inscrito, fechaactual, request):

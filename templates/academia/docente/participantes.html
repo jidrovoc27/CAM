@@ -29,8 +29,16 @@
                         </td>
                     {% endfor %}
                     <td class="border-top-0 text-center">
-                        {% with modelo=inscrito|args:curso.id|call:'calcularpromedio' %}
-                            {{ modelo|floatformat:2 }}
+                        {% with examenes_recuperacion=curso|args:inscrito.id|call:'detalleexamenes_recuperacion' %}
+                                {% if not examenes_recuperacion %}
+                                    {% with modelo=inscrito|args:curso.id|call:'calcularpromedio' %}
+                                        {{ modelo|floatformat:2 }}
+                                    {% endwith %}
+                                {% else %}
+                                    {% with modelo=inscrito|args:curso.id|call:'calcularpromedio_recuperacion' %}
+                                        {{ modelo|floatformat:2 }}
+                                    {% endwith %}
+                                {% endif %}
                         {% endwith %}
                     </td>
                 </tr>
