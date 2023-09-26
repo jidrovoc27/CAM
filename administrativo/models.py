@@ -79,6 +79,24 @@ class Persona(ModeloBase):
     def tiene_perfil_persona(self):
         return self.personaperfil_set().exists()
 
+    def tiene_perfil_administrativo(self):
+        return self.personaperfil_set.filter(status=True, is_administrador=True)
+
+    def tiene_perfil_docente(self):
+        return self.personaperfil_set.filter(status=True, is_profesor=True)
+
+    def tiene_perfil_alumno(self):
+        return self.personaperfil_set.filter(status=True, is_alumno=True)
+
+    def tiene_perfil_adm_desactivado(self):
+        return self.personaperfil_set.filter(status=False, is_administrador=True)
+
+    def tiene_perfil_docente_desactivado(self):
+        return self.personaperfil_set.filter(status=False, is_profesor=True)
+
+    def tiene_perfil_alumno_desactivado(self):
+        return self.personaperfil_set.filter(status=False, is_alumno=True)
+
     def totalrubros(self):
         total = Rubro.objects.filter(persona_id=self.id, status=True).aggregate(total=Sum('valor'))
         if not total['total']:
