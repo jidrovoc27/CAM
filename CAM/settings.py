@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-0+tfp&=33hyo5%g()#qw87@eba-sdv*s#w$jniq1dqiizs66mu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'https://eee4-138-122-108-121.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://eee4-138-122-108-121.ngrok-free.app']
 
 # settings.py - Configuración para la aplicación "app1"
 SESSION_COOKIE_NAME = 'administrativo_session'
