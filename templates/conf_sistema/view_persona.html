@@ -1,7 +1,157 @@
 {% extends 'baseapp.html' %}
 {% load static %}
 {% block head %}
+<script>
+    function crear_perfil(peticion, tipo, id){
+        Swal.fire({
+            title: '¿Estás seguro de crear el perfil ' + tipo + '?',
+            text: "Está acción es irrevesible!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, crea!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ reques.path }}',
+                    async: false,
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        peticion: peticion,
+                        tipo: tipo,
+                        id: id,
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
 
+                    }
+                }).done(function (data) {
+                    if (data.respuesta === true) {
+                        Swal.fire(
+                            'Eliminado!',
+                            data.mensaje,
+                            'success'
+                        ).then(function () {
+                            location.reload();
+                        });
+                    } else {
+
+                        Swal.fire(data.mensaje);
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
+                }).always(function () {
+                });
+
+
+            }
+
+        })
+    }
+
+    function activar_perfil(peticion, tipo, id){
+        Swal.fire({
+            title: '¿Estás seguro de activar el perfil ' + tipo + '?',
+            text: "Está acción es irrevesible!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, actívalo!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ reques.path }}',
+                    async: false,
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        peticion: peticion,
+                        tipo: tipo,
+                        id: id,
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
+
+                    }
+                }).done(function (data) {
+                    if (data.respuesta === true) {
+                        Swal.fire(
+                            'Eliminado!',
+                            data.mensaje,
+                            'success'
+                        ).then(function () {
+                            location.reload();
+                        });
+                    } else {
+
+                        Swal.fire(data.mensaje);
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
+                }).always(function () {
+                });
+
+
+            }
+
+        })
+    }
+
+    function desactivar_perfil(peticion, tipo, id){
+        Swal.fire({
+            title: '¿Estás seguro de desactivar el perfil ' + tipo + '?',
+            text: "Está acción es irrevesible!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, desactívalo!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ reques.path }}',
+                    async: false,
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        peticion: peticion,
+                        tipo: tipo,
+                        id: id,
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
+
+                    }
+                }).done(function (data) {
+                    if (data.respuesta === true) {
+                        Swal.fire(
+                            'Eliminado!',
+                            data.mensaje,
+                            'success'
+                        ).then(function () {
+                            location.reload();
+                        });
+                    } else {
+
+                        Swal.fire(data.mensaje);
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
+                }).always(function () {
+                });
+
+
+            }
+
+        })
+    }
+</script>
 {% endblock %}
 {% block contenido %}
 
@@ -92,59 +242,52 @@
                                                 {% if not fila.tiene_perfil_administrativo %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Crear
-                                                        perfil administrativo</a>
+                                                           onclick="crear_perfil('crear_perfil','Administrativo','{{ fila.pk }}')">Crear perfil administrativo</a>
                                                     </li>
                                                 {% elif fila.tiene_perfil_adm_desactivado %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Activar
-                                                        perfil administrativo</a>
+                                                           onclick="activar_perfil('activar_perfil','Administrativo','{{ fila.pk }}')">Activar perfil administrativo</a>
                                                     </li>
                                                 {% else %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Desactivar
-                                                        perfil administrativo</a>
+                                                           onclick="desactivar_perfil('desactivar_perfil','Administrativo','{{ fila.pk }}')">Desactivar perfil administrativo</a>
                                                     </li>
                                                 {% endif %}
 
                                                 {% if not fila.tiene_perfil_docente %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Crear
+                                                           onclick="crear_perfil('crear_perfil','Docente','{{ fila.pk }}')">Crear
                                                         perfil docente</a>
                                                     </li>
                                                 {% elif fila.tiene_perfil_docente_desactivado %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Activar
-                                                        perfil docente</a>
+                                                           onclick="activar_perfil('activar_perfil','Docente','{{ fila.pk }}')">Activar perfil docente</a>
                                                     </li>
                                                 {% else %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Desactivar
-                                                        perfil docente</a>
+                                                           onclick="desactivar_perfil('desactivar_perfil','Docente','{{ fila.pk }}')">Desactivar perfil docente</a>
                                                     </li>
                                                 {% endif %}
 
                                                 {% if not fila.tiene_perfil_alumno %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Crear
-                                                        perfil alumno</a>
+                                                           onclick="crear_perfil('crear_perfil','Docente','{{ fila.pk }}')">Crear perfil alumno</a>
                                                     </li>
                                                 {% elif fila.tiene_perfil_alumno_desactivado %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Activar
-                                                        perfil alumno</a>
+                                                           onclick="activar_perfil('activar_perfil','Docente','{{ fila.pk }}')">Activar perfil alumno</a>
                                                     </li>
                                                 {% else %}
                                                     <li><a class="dropdown-item border-radius-md text-black"
                                                            href="javascript:;"
-                                                           onclick="eliminar_registro('eliminar_persona','{{ fila }}','{{ fila.pk }}')">Desactivar
+                                                           onclick="desactivar_perfil('desactivar_perfil','Docente','{{ fila.pk }}')">Desactivar
                                                         perfil alumno</a>
                                                     </li>
                                                 {% endif %}
