@@ -7,7 +7,7 @@
 {% block canvas %}
     <style type="text/css">
         @page {
-            background-image: url('{{ request.path }}/media/fondo_certificado/fondo_certificado.jpeg');
+            background-image: url('{{ MEDIA_ROOT }}/fondo_certificado/fondo_certificado.png');
             size: A4 landscape;
             top: 0cm;
             left: 2cm;
@@ -30,7 +30,7 @@
         }
 
         @page maintmpl {
-            background-image: url('https://sga.unemi.edu.ec/media/reportes/encabezados_pies/formato_certificado_posgrado_reverso.png?v={{ data.version }}');
+            background-image: url('{{ request.path }}/media/fondo_certificado/fondo_certificado.png');
             size: A4 landscape;
             top: 1cm;
             left: 2cm;
@@ -68,7 +68,7 @@
     </div>
     <div>
         <div id="company_logo">
-            {#                        <img src='{{ request.path }}/media/fondo_certificado/fondo_certificado.jpg' class="top_image"/>#}
+{#   <img src='{{ request.path }}/media/fondo_certificado/fondo_certificado.png' class="top_image"/>#}
         </div>
         <table align="left" style="height: 135px; font-family: Times New Roman;">
             <td style="text-align:center;width:800px;font-size: 30px;padding-left: 23px;padding-top: 21px">

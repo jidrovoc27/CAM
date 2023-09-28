@@ -589,7 +589,7 @@ def view_periodo(request):
                         pass
                     valida = convertir_html_a_pdf_certificado(
                         'administrativo/inscrito/certificado.html',
-                        {'pagesize': 'A4', 'data': data}, name + '.pdf'
+                        {'pagesize': 'A4', 'data': data, 'MEDIA_ROOT': MEDIA_ROOT}, name + '.pdf'
                     )
                     if valida:
                         inscrito.certificado = 'certificados/' + name + '.pdf'
