@@ -446,22 +446,25 @@
 {#                                                class="fe fe-home nav-icon"></i>Inicio</a>#}
 {#                                    </li>#}
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_cursos %}active{% endif %}">
-                                        <a class="nav-link" href="/moodle/"><i
+                                    <li class="nav-item {% if is_cursos %}active{% endif %}" {% if not is_cursos %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                        <a class="nav-link" href="/moodle/" {% if is_cursos %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-book nav-icon"></i>Mis cursos</a>
                                     </li>
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_calificaciones %}active{% endif %}">
-                                        <a class="nav-link" href="?peticion=calificaciones&id={{ alumno.id }}"><i
+                                    <li class="nav-item {% if is_calificaciones %}active{% endif %}" {% if not is_calificaciones %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                        <a class="nav-link" href="?peticion=calificaciones&id={{ alumno.id }}"
+                                        {% if is_calificaciones %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-star nav-icon"></i>Calificaciones</a>
                                     </li>
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_mensajes %}active{% endif %}">
-                                        <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"><i
+                                    <li class="nav-item {% if is_mensajes %}active{% endif %}" {% if not is_mensajes %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                        <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"
+                                        {% if is_mensajes %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
                                     </li>
-                                    <li class="nav-item {% if is_finanza %}active{% endif %}">
-                                        <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i
+                                    <li class="nav-item {% if is_finanza %}active{% endif %}" {% if not is_finanza %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                        <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"
+                                        {% if is_finanza %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
                                     </li>
                                 </ul>
@@ -473,17 +476,20 @@
                                     {#                                                class="fe fe-home nav-icon"></i>Inicio</a>#}
                                     {#                                    </li>#}
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_cursos %}active{% endif %}">
-                                        <a class="nav-link" href="/moodle/"><i
+                                    <li class="nav-item {% if is_cursos %}active{% endif %}" {% if not is_cursos %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                        <a class="nav-link" href="/moodle/"
+                                        {% if is_cursos %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-book nav-icon"></i>Mis cursos</a>
                                     </li>
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_mensajes %}active{% endif %}">
-                                        <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"><i
+                                    <li class="nav-item {% if is_mensajes %}active{% endif %}" {% if not is_mensajes %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                        <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"
+                                        {% if is_mensajes %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
                                     </li>
-                                    <li class="nav-item {% if is_finanza %}active{% endif %}">
-                                        <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i
+                                    <li class="nav-item {% if is_finanza %}active{% endif %}" {% if not is_finanza %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                        <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"
+                                        {% if is_finanza %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
                                     </li>
                                 </ul>
@@ -492,18 +498,21 @@
                             <span class="navbar-header">Configuración</span>
                             <ul class="list-unstyled ms-n2 mb-0">
                                 <!-- Nav item -->
-                                <li class="nav-item {% if is_editperfil %}active{% endif %}">
-                                    <a class="nav-link" href="?peticion=editperfil&id={{ alumno.id }}"><i class="fe fe-settings nav-icon"></i>Editar perfil</a>
+                                <li class="nav-item {% if is_editperfil %}active{% endif %}" {% if not is_editperfil %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <a class="nav-link" href="?peticion=editperfil&id={{ alumno.id }}"
+                                    {% if is_editperfil %}style="color: white !important;"{% endif %}><i class="fe fe-settings nav-icon"></i>Editar perfil</a>
                                 </li>
                                 <!-- Nav item -->
-                                <li class="nav-item {% if is_security %}active{% endif %}">
-                                    <a class="nav-link" href="?peticion=actseguridad&id={{ alumno.id }}"><i class="fe fe-user nav-icon"></i>Seguridad</a>
+                                <li class="nav-item {% if is_security %}active{% endif %}" {% if not is_security %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <a class="nav-link" href="?peticion=actseguridad&id={{ alumno.id }}"
+                                    {% if is_security %}style="color: white !important;"{% endif %}><i class="fe fe-user nav-icon"></i>Seguridad</a>
                                 </li>
 {#                                <li class="nav-item">#}
 {#                                    <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i class="fe fe-bell nav-icon"></i>Notificaciones</a>#}
 {#                                </li>#}
-                                <li class="nav-item {% if is_cerrasesion %}active{% endif %}">
-                                    <a class="nav-link" href="{% url 'logout_usuario_a' %}"><i
+                                <li class="nav-item {% if is_cerrasesion %}active{% endif %}" {% if not is_cerrasesion %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <a class="nav-link" href="{% url 'logout_usuario_a' %}"
+                                    {% if is_cerrasesion %}style="color: white !important;"{% endif %}><i
                                             class="fe fe-power nav-icon"></i>Cerrar
                                         sesión</a>
                                 </li>
@@ -663,8 +672,34 @@
     $(document).ready(function () {
         Block_UI();
         setTimeout($.unblockUI, 400);
+        // Obtén todos los elementos con clase "nav-item"
+        const elementosNav = document.querySelectorAll('.nav-item');
+
+        // Itera a través de los elementos y aplica estilos a los seleccionados
+        elementosNav.forEach(elemento => {
+            if (elemento.classList.contains('active')) {
+                // Aplica estilos a los elementos seleccionados
+                elemento.style.backgroundColor = '#17385A'; // Cambia el color de fondo
+                const enlace = elemento.querySelector('.nav-link');
+                enlace.style.color = 'white !important'; // Cambia el color del texto del enlace
+            }
+        });
+
+
 
     });
+
+    function cambiarColor(elemento) {
+        const enlace = elemento.querySelector('a.nav-link');
+        enlace.style.setProperty('background', '#1192CF', 'important');
+        enlace.style.setProperty('color', 'white', 'important');
+    }
+
+    function restaurarColor(elemento) {
+        const enlace = elemento.querySelector('a.nav-link');
+        enlace.style.setProperty('background', 'transparent', 'important');
+        enlace.style.setProperty('color', 'black', 'important');
+    }
 
     function solo_numeros(e) {
         key = e.keyCode || e.which;
