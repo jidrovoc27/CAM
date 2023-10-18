@@ -56,10 +56,11 @@ def view_persona(request):
                 try:
                     tipo = request.POST['tipo']
                     idpersona = request.POST['id']
-                    filtro = (Q(status=False) & Q(persona_id=idpersona))
+                    filtro = (Q(status=True) & Q(persona_id=idpersona))
                     perfil_ = PersonaPerfil.objects.filter(filtro)
 
                     if perfil_.exists():
+                        perfil_ = perfil_.first()
                         if tipo == 'Administrativo':
                             perfil_.is_administrador = True
                             perfil_.save(request)
@@ -87,11 +88,12 @@ def view_persona(request):
             elif peticion == 'desactivar_perfil':
                 try:
                     tipo = request.POST['tipo']
-                    idpersona = request.POST['id']
-                    filtro = (Q(status=False) & Q(persona_id=idpersona))
+                    idpersona = int(request.POST['id'])
+                    filtro = (Q(status=True) & Q(persona_id=idpersona))
                     perfil_ = PersonaPerfil.objects.filter(filtro)
 
                     if perfil_.exists():
+                        perfil_ = perfil_.first()
                         if tipo == 'Administrativo':
                             perfil_.is_administrador = False
                             perfil_.save(request)
@@ -104,9 +106,9 @@ def view_persona(request):
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": 'La persona no cuenta con perfil'})
 
-                    return JsonResponse({"respuesta": True, "mensaje": 'Perfil activado correctamente'})
+                    return JsonResponse({"respuesta": True, "mensaje": 'Perfil desactivado correctamente'})
                 except Exception as ex:
-                    return JsonResponse({"respuesta": False, "mensaje": 'Error al crear el perfil a la persona'})
+                    return JsonResponse({"respuesta": False, "mensaje": 'Error al desactivar el perfil a la persona'})
 
             elif peticion == 'eliminar_persona':
                 try:

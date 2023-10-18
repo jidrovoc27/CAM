@@ -77,19 +77,19 @@ class Persona(ModeloBase):
         return u'%s %s' % (self.apellidos, self.nombres)
 
     def tiene_perfil_persona(self):
-        return self.personaperfil_set().exists()
+        return self.personaperfil_set.filter(status=True).exists()
 
     def tiene_perfil_administrativo(self):
-        return self.personaperfil_set.filter(status=True, is_administrador=True)
+        return self.personaperfil_set.filter(Q(status=True) & (Q(is_administrador=True) | Q(is_administrador=False)))
 
     def tiene_perfil_docente(self):
-        return self.personaperfil_set.filter(status=True, is_profesor=True)
+        return self.personaperfil_set.filter(Q(status=True) & (Q(is_profesor=True) | Q(is_profesor=False)))
 
     def tiene_perfil_alumno(self):
-        return self.personaperfil_set.filter(status=True, is_alumno=True)
+        return self.personaperfil_set.filter(Q(status=True) & (Q(is_alumno=True) | Q(is_alumno=False)))
 
     def tiene_perfil_adm_desactivado(self):
-        return self.personaperfil_set.filter(status=False, is_administrador=True)
+        return self.personaperfil_set.filter(status=True, is_administrador=False)
 
     def tiene_perfil_docente_desactivado(self):
         return self.personaperfil_set.filter(status=False, is_profesor=True)
