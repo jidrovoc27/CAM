@@ -1,45 +1,61 @@
 {% extends 'baseloginapp.html' %}
 {% load static %}
 {% block contenido %}
-    <section class="vh-100">
+    <section class="vh-100" style="margin-top: 90px;">
         <div class="container-fluid h-custom">
             <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-md-9 col-lg-6 col-xl-5">
-                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                         class="img-fluid" alt="Sample image">
-                </div>
-                <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-                    <form>
-                        <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-                            <p class="lead fw-normal mb-0 me-3"></p>
+                                <div class="col-md-9 col-lg-6 col-xl-5">
+                                    <img src="{% static 'img/geniuspro.png' %}"
+                                         class="img-fluid" alt="Sample image">
+                                </div>
+                <div class="col-md-8 col-lg-6 col-xl-4" style="text-align: center">
+                    <div style="display: flex">
+                        <div style="background: #17385A;height: 50px;margin:0px;width: 39%;border-top-right-radius: 5px;border-top-left-radius: 5px;
+                         vertical-align: center;color: white;font-size: 13px;padding-top: 10px;margin-bottom: -10px;position: relative;z-index: 3;">
+                            <i class="fa fa-user" style="margin-right: 4px"></i> INICIO DE SESIÓN
                         </div>
-
-                        <div class="divider d-flex align-items-center my-4">
-                            <p class="text-center fw-bold mx-3 mb-0">Bienvenido</p>
-                        </div>
+{#                        <div class="col-md-9 col-lg-6 col-xl-5" style="margin-left: 120px">#}
+{#                            <img src="{% static 'img/geniuspro.png' %}"#}
+{#                                 class="img-fluid" alt="Sample image"#}
+{#                                 style="width: 200px;margin-top: -50px;max-height: 150px">#}
+{#                        </div>#}
+                    </div>
+                    <form style="text-align: center;width: 100%;border-style: solid;border-width: 1px;margin-top: 80px;background: white;border-color: white;border-radius: 5px;margin-top: 0px">
+                        <div style="background: #17385A;height: 10px;margin:0px;width: 100%;border-top-left-radius: 5px;border-top-right-radius: 5px;margin-bottom: 20px;"></div>
+                        {#                        <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">#}
+                        {#                            <p class="lead fw-normal mb-0 me-3"></p>#}
+                        {#                        </div>#}
+                        {##}
+                        {#                        <div class="divider d-flex align-items-center my-4">#}
+                        {#                            <p class="text-center fw-bold mx-3 mb-0">Bienvenido</p>#}
+                        {#                        </div>#}
                         <!-- Email input -->
-                        <div class="form-outline mb-4">
-                            <input type="text" id="id_usuario" class="form-control form-control-lg"
-                                   placeholder="Ingrese usuario"/>
+                        <div class="form-outline mb-4" style="text-align: left;margin-left: 20px;margin-right: 20px;">
                             <label class="form-label" for="form3Example3">Usuario</label>
+                            <input style="border-style: solid; border-width: 1px;border-color: gray;border-radius: 4px"
+                                   type="text" id="id_usuario" class="form-control form-control-lg"
+                                   placeholder="usuario"/>
                         </div>
                         <!-- Password input -->
-                        <div class="form-outline mb-3">
-                            <input type="password" id="id_clave" class="form-control form-control-lg"
-                                   placeholder="Ingrese contraseña"/>
+                        <div class="form-outline mb-3" style="text-align: left;margin-left: 20px;margin-right: 20px">
                             <label class="form-label" for="form3Example4">Contraseña</label>
+                            <input style="border-style: solid; border-width: 1px;border-color: gray;border-radius: 4px"
+                                   type="password" id="id_clave" class="form-control form-control-lg"
+                                   placeholder="********"/>
+
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
-{#                            <a href="{% url 'password_reset' %}" class="text-body">Olvidó su contraseña?</a>#}
-                        </div>
-                        <div class="text-center text-lg-start mt-4 pt-2">
+                        {#                        <div class="d-flex justify-content-between align-items-center">#}
+                        {#                            <a href="{% url 'password_reset' %}" class="text-body">Olvidó su contraseña?</a>#}
+                        {#                        </div>#}
+                        <div class="text-center text-lg-center" style="margin-bottom: 20px">
                             <a href="javascript:;" id="id_login_usuario"
-                               class="btn btn-lg bg-gradient-info btn-lg w-100 mt-4 mb-0">Iniciar
+                               class="btn btn-lg bg-gradient btn-lg w-50 mt-4 mb-0"
+                               style="background: #1192CF;color: white">Iniciar
                                 Sesión
                             </a>
-{#                            <p class="small fw-bold mt-2 pt-1 mb-0">No tienes una cuenta? <a#}
-{#                                    href="{% url 'registrate_usuario' %}"#}
-{#                                    class="link-danger">Registrarse</a></p>#}
+                            {#                            <p class="small fw-bold mt-2 pt-1 mb-0">No tienes una cuenta? <a#}
+                            {#                                    href="{% url 'registrate_usuario' %}"#}
+                            {#                                    class="link-danger">Registrarse</a></p>#}
                         </div>
                     </form>
                 </div>
@@ -51,6 +67,11 @@
 
 {% block script %}
     <script>
+        $(document).ready(function () {
+            $(".mainBody").css({"background": "#dedede"})
+        })
+
+
         function delay(time) {
             return new Promise(resolve => setTimeout(resolve, time));
         }
@@ -89,22 +110,22 @@
                         setTimeout(function () {
                             if (data.respuesta === true) {
 
-                            {#Swal.fire(#}
-                            {#    'Login exitoso!',#}
-                            {#    'Bienvenido.',#}
-                            {#    'success'#}
-                            {#).then((result) => {#}
-                            {#    /* Read more about isConfirmed, isDenied below */#}
-                            {#    if (result.isConfirmed) {#}
-                            {#        window.location = data.url;#}
-                            {#    }#}
-                            {# });#}
+                                {#Swal.fire(#}
+                                {#    'Login exitoso!',#}
+                                {#    'Bienvenido.',#}
+                                {#    'success'#}
+                                {#).then((result) => {#}
+                                {#    /* Read more about isConfirmed, isDenied below */#}
+                                {#    if (result.isConfirmed) {#}
+                                {#        window.location = data.url;#}
+                                {#    }#}
+                                {# });#}
                                 window.location = data.url;
 
 
-                        } else {
-                            mensaje_error(data.mensaje, 'Login Fallido.');
-                        }
+                            } else {
+                                mensaje_error(data.mensaje, 'Login Fallido.');
+                            }
                         }, 2999)
 
                     },
