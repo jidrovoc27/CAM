@@ -572,7 +572,7 @@ class InscritoCurso(ModeloBase):
                         rubrocuotas = Rubro(nombre=curso.tiporubrocuota.nombre + ' - ' + curso.nombre,
                                             tiporubro=curso.tiporubrocuota, curso=curso, persona=self.alumno.persona,
                                             cuota=cuota.numerocuota, tipocuota=3, valor=cuota.valor,
-                                            fecha=datetime.now().date(), cancelado=False, saldo=curso.valor)
+                                            fecha=datetime.now().date(), cancelado=False, saldo=cuota.valor)
                         rubrocuotas.save()
 
                 if not curso.inscripcion and not curso.matricula and not curso.gcuotas:

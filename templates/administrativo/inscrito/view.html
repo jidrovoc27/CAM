@@ -178,12 +178,14 @@
                     <div class="col-6 d-flex align-items-center">
                         <h6 class="mb-0">{{ titulo_tabla }}</h6>
                     </div>
-                    <div class="col-6 text-end">
-                        <a class="btn btn-outline-dark btn-sm mb-0"
-                           href="?peticion=add_inscrito&id={{ curso.id }}&idcurso={{ curso.id }}"><i
-                                class="material-icons text-sm">add</i>&nbsp;&nbsp;Inscribir</a>
+                    {% if not curso.finalizarcurso %}
+                        <div class="col-6 text-end">
+                            <a class="btn btn-outline-dark btn-sm mb-0"
+                               href="?peticion=add_inscrito&id={{ curso.id }}&idcurso={{ curso.id }}"><i
+                                    class="material-icons text-sm">add</i>&nbsp;&nbsp;Inscribir</a>
 
-                    </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="card-header pb-0 p-3 ">
