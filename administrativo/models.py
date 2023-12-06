@@ -92,10 +92,10 @@ class Persona(ModeloBase):
         return self.personaperfil_set.filter(status=True, is_administrador=False)
 
     def tiene_perfil_docente_desactivado(self):
-        return self.personaperfil_set.filter(status=False, is_profesor=True)
+        return self.personaperfil_set.filter(status=True, is_profesor=False)
 
     def tiene_perfil_alumno_desactivado(self):
-        return self.personaperfil_set.filter(status=False, is_alumno=True)
+        return self.personaperfil_set.filter(status=True, is_alumno=False)
 
     def totalrubros(self):
         total = Rubro.objects.filter(persona_id=self.id, status=True).aggregate(total=Sum('valor'))

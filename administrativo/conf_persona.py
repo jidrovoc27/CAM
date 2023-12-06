@@ -61,6 +61,8 @@ def view_persona(request):
 
                     if perfil_.exists():
                         perfil_ = perfil_.first()
+                        perfil_.status = True
+                        perfil_.save(request)
                         if tipo == 'Administrativo':
                             perfil_.is_administrador = True
                             perfil_.save(request)
