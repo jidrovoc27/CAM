@@ -1,4 +1,4 @@
-from CAM.settings import *
+from . import *
 
 ALLOWED_HOSTS = ['geniuspro.pythonanywhere.com']
 INSTALLED_APPS += [
