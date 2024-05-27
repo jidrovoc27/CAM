@@ -1429,8 +1429,7 @@ def dashboard(request):
                         # data['mis_perfiles'] = mis_perfiles
                         data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
                         data['inscrito'] = inscrito = InscritoCursoA.objects.filter(status=True,
-                                                                                    inscrito=alumno).order_by(
-                            'curso_id').distinct('curso_id').values_list('curso_id')
+                                                                                    inscrito=alumno)
                         data['miscursos'] = CursoA.objects.filter(status=True, id__in=inscrito)
                         data['is_cursos'] = True
                     return render(request, "academia/alumno/view.html", data)
