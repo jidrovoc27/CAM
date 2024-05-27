@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(r'', include('administrativo.urls')),
-    path(r'', include('academia.urls')),
+    path(r'geniusadmin', include('administrativo.urls')),
+    path(r'geniusmoodle', include('academia.urls')),
     path('chats/', include("chat.urls"))
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
