@@ -1,4 +1,4 @@
-from . import *
+from .settings import *
 
 ALLOWED_HOSTS = ['geniuspro.pythonanywhere.com']
 INSTALLED_APPS += [
