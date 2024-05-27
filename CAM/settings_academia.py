@@ -1,4 +1,6 @@
 from .settings import *
 
 ALLOWED_HOSTS = ['geniuspro.pythonanywhere.com']
-INSTALLED_APPS.append('academia')
+INSTALLED_APPS += [
+    'academia',
+]
