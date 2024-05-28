@@ -27,7 +27,7 @@ class ModuloAdmin(admin.ModelAdmin):
 
     list_display = ('categoria', 'nombre','descripcion','icono','ruta','activo','usuario_creacion','fecha_creacion','usuario_modificacion','fecha_modificacion','status',)
     list_filter = ('nombre','descripcion','activo',)
-    search_fields = (('nombre','descripcion',)
+    search_fields = ('nombre','descripcion',)
 
 @admin.register(Genero)
 class GeneroAdmin(admin.ModelAdmin):
