@@ -16,7 +16,7 @@ class UserAdmin(admin.ModelAdmin):
 class ModuloAdmin(admin.ModelAdmin):
     '''Admin View for Menu'''
 
-    list_display = ('nombre','descripcion','icono','ruta','activo','usuario_creacion','fecha_creacion','usuario_modificacion','fecha_modificacion','status',)
+    list_display = ('categoria', 'nombre','descripcion','icono','ruta','activo','usuario_creacion','fecha_creacion','usuario_modificacion','fecha_modificacion','status',)
     list_filter = ('nombre','descripcion','activo',)
     search_fields = (('nombre','descripcion',)
 
