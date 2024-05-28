@@ -12,6 +12,15 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('username',)
     list_filter = ('is_staff', 'is_active', 'is_superuser',)
 
+
+@admin.register(CategoriaModulo)
+class CategoriaModuloAdmin(admin.ModelAdmin):
+    '''Admin View for Menu'''
+
+    list_display = ('nombre','orden','icono','status',)
+    list_filter = ('nombre','orden','status',)
+    search_fields = ('nombre')
+
 @admin.register(Modulo)
 class ModuloAdmin(admin.ModelAdmin):
     '''Admin View for Menu'''
@@ -19,14 +28,6 @@ class ModuloAdmin(admin.ModelAdmin):
     list_display = ('categoria', 'nombre','descripcion','icono','ruta','activo','usuario_creacion','fecha_creacion','usuario_modificacion','fecha_modificacion','status',)
     list_filter = ('nombre','descripcion','activo',)
     search_fields = (('nombre','descripcion',)
-
-@admin.register(CategoriaModulo))
-class CategoriaModuloAdmin(admin.ModelAdmin):
-    '''Admin View for Menu'''
-
-    list_display = ('nombre','orden','icono','status',)
-    list_filter = ('nombre','orden','status',)
-    search_fields = ('nombre')
 
 @admin.register(Genero)
 class GeneroAdmin(admin.ModelAdmin):
