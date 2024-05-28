@@ -2,6 +2,7 @@
 {% load static %}
 {% load adiciones %}
 {% block head %}
+    <link rel="manifest" href="/manifest.json">
     <style>
         h4 {
             font-size: 16px;
@@ -151,5 +152,17 @@
         });
 
     </script>
+
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function(error) {
+          console.log('ServiceWorker registration failed: ', error);
+        });
+      });
+    }
+  </script>
 
 {% endblock %}
