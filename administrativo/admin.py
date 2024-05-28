@@ -20,8 +20,8 @@ class ModuloAdmin(admin.ModelAdmin):
     list_filter = ('nombre','descripcion','activo',)
     search_fields = (('nombre','descripcion',)
 
-@admin.register(Modulo))
-class CategoriaModulo(admin.ModelAdmin):
+@admin.register(CategoriaModulo))
+class CategoriaModuloAdmin(admin.ModelAdmin):
     '''Admin View for Menu'''
 
     list_display = ('nombre','orden','icono','status',)
