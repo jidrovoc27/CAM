@@ -75,11 +75,11 @@
         {% for categoria in categoriasmodulo %}
             <div class="accordion-item">
                 <h2 class="accordion-header" id="categoria{{ categoria.id }}">
-                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
+                    <button class="rounded-3 accordion-button accordion-btn-white fs-5 px-3 {% if not forloop.first %}collapsed{% endif %}" type="button"
                             data-bs-toggle="collapse" data-bs-target="#categoriaMenu{{ categoria.id }}"
                             aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
-                            aria-controls="categoriaMenu{{ categoria.id }}">
-                        <b class="" style="color: #344767">
+                            aria-controls="categoriaMenu{{ categoria.id }}" style="background: #344767">
+                        <b class="" style="color: white">
                             <i class="{{ categoria.icono }} fs-3 me-2"></i> {{ categoria.nombre }}
                         </b>
                     </button>
@@ -119,6 +119,7 @@
                     </div>
                 </div>
             </div>
+            <br>
         {% endfor %}
     </div>
 
