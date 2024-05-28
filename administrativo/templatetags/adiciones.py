@@ -26,6 +26,9 @@ def callmethod(obj, methodname):
         return ret
     return method()
 
+@register.simple_tag
+def setvar(value):
+    return value
 
 def args(obj, arg):
     if "__callArg" not in obj.__dict__:
@@ -248,6 +251,7 @@ register.filter('fechamayor', fechamayor)
 register.filter('times', times)
 register.filter("call", callmethod)
 register.filter("args", args)
+register.filter("setvar", setvar)
 register.filter("transformar_mes", transformar_mes)
 register.filter("suma", suma)
 register.filter("sumar_pagineo", sumar_pagineo)

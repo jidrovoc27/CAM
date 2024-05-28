@@ -19,8 +19,29 @@ def generar_secuencial_factura():
         secuencial.save()
     return secuencial.factura
 
+class CategoriaModulo(ModeloBase):
+    orden = models.IntegerField(default=0, verbose_name='Orden')
+    nombre = models.CharField(default='', max_length=1000, verbose_name=u'Nombre')
+    icono = models.CharField(default='', max_length=100, verbose_name=u'Icono')
+
+    def mismodulos(self, persona, grupo):
+        menu = AccesoModulo.objects.values_list('modulo_id').filter(status=True, activo=True, grupo__id=grupo)
+        modulos = Modulo.objects.filter(status=True, activo=True, pk__in=menu, categoria=self)
+        return modulos
+
+    def todos_los_modulos(self):
+        return Modulo.objects.filter(status=True, activo=True, categoria=self)
+
+
+    def __str__(self):
+        return u'%s' % (self.nombre)
+
+    def save(self, *args, **kwargs):
+        self.nombre = self.nombre.strip()
+        super(CategoriaModulo, self).save(*args, **kwargs)
 
 class Modulo(ModeloBase):
+    categoria = models.ForeignKey(CategoriaModulo, on_delete=models.CASCADE, verbose_name=u'Categoria', null=True, blank=True)
     nombre = models.CharField(verbose_name="Nombre del módulo", max_length=100, unique=True)
     descripcion = models.CharField(verbose_name="Descripción", default='', max_length=200)
     icono = models.ImageField(verbose_name="Icono", upload_to='icono/')

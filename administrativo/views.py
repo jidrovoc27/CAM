@@ -136,6 +136,8 @@ def dashboard(request):
                 else:
                     menu = AccesoModulo.objects.values_list('modulo_id').filter(status = True, activo = True ,grupo__id = tipoperfil)
                     modulos = Modulo.objects.filter(status=True, activo=True, pk__in = menu )
+                data['categoriasmodulo'] = CategoriaModulo.objects.filter(status=True)
+                data['tg'] = tipoperfil
                 data['persona_logeado'] = persona_logeado
                 data['modulos'] = modulos
                 return render(request, "registration/dashboard.html", data)
