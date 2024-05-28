@@ -19,7 +19,7 @@ class CategoriaModuloAdmin(admin.ModelAdmin):
 
     list_display = ('nombre','orden','icono','status',)
     list_filter = ('nombre','orden','status',)
-    search_fields = ('nombre')
+    search_fields = ('nombre',)
 
 @admin.register(Modulo)
 class ModuloAdmin(admin.ModelAdmin):
