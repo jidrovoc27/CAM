@@ -6,6 +6,7 @@ from academia.views import *
 
 
 urlpatterns = [
+path(r'', dashboard, name='dashboard'),
 path(r'moodle/', dashboard, name='dashboard'),
     path(r'loginacademia/', login_academia, name='login_academia'),
     path(r'registrate/', registrate, name='registrate_usuario'),

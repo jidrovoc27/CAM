@@ -13,10 +13,8 @@ class SubdomainMiddleware:
 
         if host == 'geniuspro.pythonanywhere.com':
             settings.ROOT_URLCONF = 'academia.urls'
-            settings.LOGIN_REDIRECT_URL = '/moodle/'
         elif host == 'geniuspro.pythonanywhere.com':
             settings.ROOT_URLCONF = 'administrativo.urls'
-            settings.LOGIN_REDIRECT_URL = '/'
         else:
             return HttpResponseNotFound('Domain not found')
 
