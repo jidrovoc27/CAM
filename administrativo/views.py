@@ -76,7 +76,7 @@ def paginaweb(request):
     data['docentes'] = Docente.objects.filter(status=True)
     return render(request, "baseweb.html", data)
 
-@login_required(redirect_field_name='next', login_url='/login')
+@login_required(redirect_field_name='next', login_url='/loginacademia/')
 @transaction.atomic()
 def dashboard(request):
     global ex
