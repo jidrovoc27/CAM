@@ -136,7 +136,7 @@ def view_alumno(request):
                         persona.telefono_convencional=request.POST['telefono_convencional']
                         persona.save(request)
                         if 'foto' in request.FILES:
-                            foto = request.FILES['foto']
+                            foto = form.cleaned_data['foto']
                             persona.foto = foto
                             persona.save(request)
                             existe = Profile.objects.filter(user_id=persona.usuario.id)
