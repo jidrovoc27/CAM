@@ -1356,7 +1356,8 @@ def dashboard(request):
                     data['user'] = user
                     return render(request, "chat/index.html", data)
                 except Exception as ex:
-                    pass
+                    transaction.set_rollback(True)
+                    return JsonResponse({"respuesta": False, "mensaje": 'Error on line {}'.format(sys.exc_info()[-1].tb_lineno)})
 
             if peticion == 'add_profile':
                 try:
