@@ -331,7 +331,7 @@ def dashboard(request):
 
             if peticion == 'add_recurso':
                 try:
-                    form = AgregarRecursoForm(request.POST)
+                    form = AgregarRecursoForm(request.POST, request.FILES)
                     if form.is_valid():
                         curso = CursoA.objects.get(id=int(request.POST['id']))
                         nombre = form.cleaned_data['nombre']
