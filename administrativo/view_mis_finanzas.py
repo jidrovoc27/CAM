@@ -60,7 +60,7 @@ def view_mis_finanzas(request):
                             return JsonResponse({"respuesta": True, "mensaje": "Pago registrado correctamente."})
                         return JsonResponse({"respuesta": False, "mensaje": "El valor cancelado supera el valor a pagar de $"+str(("{0:.2f}".format(valorrestante_porpagar)))})
                     else:
-                       return JsonResponse( {"respuesta": False, "mensaje": "Por favor, complete el formulario correctamente"})
+                       return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:

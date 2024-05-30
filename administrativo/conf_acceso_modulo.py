@@ -40,7 +40,7 @@ def view_acceso_modulo(request):
                         )
                         registro.save(request)
                     else:
-                       return JsonResponse(  {"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+                       return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
                     return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
                 except Exception as ex:

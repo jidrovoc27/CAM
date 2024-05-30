@@ -111,7 +111,7 @@ def view_alumno(request):
                         newalumno.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
                     else:
-                       return JsonResponse(  {"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+                       return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:
@@ -143,6 +143,8 @@ def view_alumno(request):
                             if existe.exists():
                                 existe.update(pic=persona.foto)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro Modificado correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:

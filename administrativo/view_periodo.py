@@ -144,7 +144,7 @@ def view_periodo(request):
                         newperiodo.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
                     else:
-                       return JsonResponse(  {"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+                       return JsonResponse(  {"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:
@@ -166,6 +166,8 @@ def view_periodo(request):
                             periodo.activo = False
                         periodo.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Registro Modificado correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:
@@ -277,8 +279,10 @@ def view_periodo(request):
                             curso.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
-                    pass
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 
             elif peticion == 'add_modeloevaluativo':
                 try:
@@ -289,6 +293,8 @@ def view_periodo(request):
                         asignar.modeloevaluativo = modelo
                         asignar.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Modelo asignado correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     pass
 
@@ -315,8 +321,10 @@ def view_periodo(request):
                             return JsonResponse({"respuesta": True, "mensaje": "Alumno inscrito correctamente"})
                         else:
                             return JsonResponse({"respuesta": False, "mensaje": "La persona ya se encuentra inscrita en este curso"})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
-                    pass
+                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos"})
 
 
             elif peticion == 'edit_curso':

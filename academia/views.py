@@ -503,8 +503,8 @@ def dashboard(request):
                         pregunta.calificacion = calificacion
                         pregunta.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Pregunta actualizada correctamente."})
-                    # else:
-                    #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
@@ -522,8 +522,8 @@ def dashboard(request):
                         literal.es_correcta = es_correcta
                         literal.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Literal actualizado correctamente."})
-                    # else:
-                    #     return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})

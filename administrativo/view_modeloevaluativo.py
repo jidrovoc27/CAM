@@ -63,7 +63,7 @@ def view_modeloevaluativo(request):
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
                     else:
-                       return JsonResponse(  {"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+                       return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:
@@ -99,7 +99,7 @@ def view_modeloevaluativo(request):
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro modificado correctamente."})
                     else:
-                       return JsonResponse(  {"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+                       return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:
@@ -133,7 +133,7 @@ def view_modeloevaluativo(request):
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro modificado correctamente."})
                     else:
-                       return JsonResponse(  {"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+                       return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:
@@ -164,7 +164,7 @@ def view_modeloevaluativo(request):
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
                     else:
-                       return JsonResponse(  {"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+                       return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:
@@ -199,6 +199,8 @@ def view_modeloevaluativo(request):
                         modelo.save(request)
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro modificado correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
 
                 except Exception as ex:

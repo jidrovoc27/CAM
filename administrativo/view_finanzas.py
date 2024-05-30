@@ -102,6 +102,8 @@ def view_finanzas(request):
                             registro_factura = Factura(pago_id=request.POST['idpago'], archivo=archivo)
                             registro_factura.save(request)
                         return JsonResponse({"respuesta": True, "mensaje": "Factura registrada correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     pass
         return JsonResponse({"respuesta": False, "mensaje": "acción Incorrecta."})
