@@ -11,9 +11,9 @@ class SubdomainMiddleware:
     def __call__(self, request):
         host = request.get_host().split(':')[0]  # Obtiene el host sin el puerto
 
-        if host == 'sgageniuspro.com':
+        if host == 'www.sgageniuspro.com':
             settings.ROOT_URLCONF = 'administrativo.urls'
-        elif host == 'moodlegeniuspro.com':
+        elif host == 'www.moodlegeniuspro.com':
             settings.ROOT_URLCONF = 'academia.urls'
         else:
             return HttpResponseNotFound('Domain not found')
