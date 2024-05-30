@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from administrativo.funciones import *
 from academia.conf_acceso_modulo import view_acceso_modulo
 from academia.views import *
@@ -21,4 +21,5 @@ path(r'moodle/', dashboard, name='dashboard'),
     # path(r'finanzas/',view_finanzas ,name='finanzas'),
     # path(r'mis_finanzas/',view_mis_finanzas ,name='mis_finanzas'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
+    path('chats/', include("chat.urls"))
 ]
