@@ -354,7 +354,7 @@ def dashboard(request):
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     transaction.set_rollback(True)
-                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
+                    return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
 
             if peticion == 'edit_recurso':
                 try:
