@@ -358,25 +358,28 @@ def dashboard(request):
 
             if peticion == 'edit_recurso':
                 try:
-                    form = AgregarRecursoForm(request.POST)
-                    # if form.is_valid():
-                    recurso = RecursosCurso.objects.get(id=int(request.POST['id']))
-                    nombre = request.POST['nombre']
-                    tipo = request.POST['tipo']
-                    recurso.nombre = nombre
-                    recurso.tipo = int(tipo)
-                    recurso.save(request)
-                    if recurso.tipo == 1:
-                        if 'archivo' in request.FILES:
-                            archivo = request.FILES['archivo']
-                            recurso.archivo = archivo
-                            recurso.save(request)
-                        else:
-                            return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba un archivo"})
-                    else:
-                        recurso.enlace = request.POST['enlace']
+                    form = AgregarRecursoForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        recurso = RecursosCurso.objects.get(id=int(request.POST['id']))
+                        nombre = request.POST['nombre']
+                        tipo = request.POST['tipo']
+                        recurso.nombre = nombre
+                        recurso.tipo = int(tipo)
                         recurso.save(request)
-                    return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
+                        if recurso.tipo == 1:
+                            if 'archivo' in request.FILES:
+                                archivo = request.FILES['archivo']
+                                recurso.archivo = archivo
+                                recurso.save(request)
+                                return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
+                            else:
+                                return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba un archivo"})
+                        else:
+                            recurso.enlace = request.POST['enlace']
+                            recurso.save(request)
+                        return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
+                    else:
+                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
                 except Exception as ex:
                     transaction.set_rollback(True)
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
