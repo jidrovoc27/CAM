@@ -66,6 +66,7 @@
 
 
             $('#formulario_data_enviar').submit(function (e) {
+                bloquearMovimiento();
                 e.preventDefault();
                 var $form = $(this);
                 // check if the input is valid using a 'valid' property
@@ -86,6 +87,7 @@
                         processData: false,
                         success: function (data) {
                             if (data.respuesta === true) {
+                                $.unblockUI();
                                 Swal.fire(
                                     'Envio de datos',
                                     data.mensaje,
@@ -98,12 +100,14 @@
                                 });
 
                             } else {
+                                $.unblockUI();
                                 Swal.fire(
                                     'Advertencia!',
                                     data.mensaje,
                                     'warning'
                                 )
                                 if (data.repetidos) {
+                                    $.unblockUI();
                                     if (data.repetidos.length > 0) {
                                         myToast.reset('all')
                                         repetidos = data.repetidos;
@@ -123,6 +127,7 @@
 
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
+                            $.unblockUI();
                             var mensaje = '';
                             if (jqXHR.status === 0) {
                                 mensaje = 'Not connect: Verify Network.';

@@ -602,6 +602,21 @@
 <script src="{% static 'js/ruc_jquery_validator.min.js' %}"></script>
 <script>
 
+    function bloquearMovimiento() {
+            $.blockUI({
+                message: '<span class="spinner-grow spinner-border-lg text-info" role="status" aria-hidden="true" style="width: 10rem; height: 10rem;"></span>',
+                css: {
+                    backgroundColor: 'transparent',
+                    border: '0',
+                    zIndex: 9999999
+                },
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    zIndex: 9999990
+                }
+            });
+        }
 
     function eliminar_registro(peticion, registro, id) {
 

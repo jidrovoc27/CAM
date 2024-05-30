@@ -43,6 +43,26 @@
           href="{% static 'css/tempusdominus-bootstrap-4.min.css' %}">
 
     <script>
+        function bloquearMovimiento() {
+            $.blockUI({
+                message: '<span class="spinner-grow spinner-border-lg text-info" role="status" aria-hidden="true" style="width: 10rem; height: 10rem;"></span>',
+                css: {
+                    backgroundColor: 'transparent',
+                    border: '0',
+                    zIndex: 9999999
+                },
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    zIndex: 9999990
+                }
+            });
+        }
+
+        function desbloquear(){
+            $.unblockUI = function(opts) { remove(window, opts); };
+        }
+
         $(function (){
             $(".cambioperfil").click(function (){
                 var href = $(this).attr('tipo')
