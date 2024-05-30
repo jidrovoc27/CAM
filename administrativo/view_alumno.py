@@ -147,7 +147,7 @@ def view_alumno(request):
 
                 except Exception as ex:
                     transaction.set_rollback(True)
-                    return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error, intente más tarde."})
+                    return JsonResponse({"respuesta": False, "mensaje": 'Error on line {}'.format(sys.exc_info()[-1].tb_lineno)})
 
             if peticion == 'eliminar_alumno':
                 try:
