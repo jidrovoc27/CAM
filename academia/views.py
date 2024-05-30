@@ -343,6 +343,7 @@ def dashboard(request):
                                 archivo = form.cleaned_data['archivo']
                                 recurso.archivo = archivo
                                 recurso.save(request)
+                                return JsonResponse({"respuesta": True, "mensaje": "Recurso cargado correctamente."})
                             else:
                                 return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba un archivo"})
                         else:
