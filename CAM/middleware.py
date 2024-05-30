@@ -12,7 +12,7 @@ class SubdomainMiddleware:
         host = request.get_host().split(':')[0]  # Obtiene el host sin el puerto
 
         if host == 'www.sgageniuspro.com':
-            settings.ROOT_URLCONF = 'administrativo.urls'
+            settings.ROOT_URLCONF = 'CAM.urls'
         elif host == 'www.moodlegeniuspro.com':
             settings.ROOT_URLCONF = 'academia.urls'
         else:
