@@ -1,4 +1,6 @@
 import sys
+import datetime
+from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -71,7 +73,7 @@ def view_persona(request):
                             perfil_.save(request)
                             consultar_docente = Docente.objects.filter(status=True, persona_id=idpersona)
                             if not consultar_docente.exists():
-                               crear_docente = Docente(persona_id=idpersona)
+                               crear_docente = Docente(persona_id=idpersona, fechaingreso=datetime.now().date())
                                crear_docente.save(request)
                         elif tipo == 'Alumno':
                             perfil_.is_alumno = True

@@ -203,7 +203,7 @@ class Cargo(ModeloBase):
 class Docente(ModeloBase):
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, null=True, blank=True)
-    fechaingreso = models.DateField(verbose_name=u'Fecha ingreso')
+    fechaingreso = models.DateField(verbose_name=u'Fecha ingreso', null=True, blank=True)
     contrato = models.CharField(default='', max_length=50, null=True, blank=True, verbose_name=u"Contrato")
     activo = models.BooleanField(default=True, verbose_name=u"Activo")
 

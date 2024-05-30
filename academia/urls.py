@@ -3,6 +3,7 @@ from django.urls import path, include
 from administrativo.funciones import *
 from academia.conf_acceso_modulo import view_acceso_modulo
 from academia.views import *
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -22,4 +23,4 @@ path(r'moodle/', dashboard, name='dashboard'),
     # path(r'mis_finanzas/',view_mis_finanzas ,name='mis_finanzas'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
     path('chats/', include("chat.urls"))
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
