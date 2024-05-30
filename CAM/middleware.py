@@ -11,7 +11,7 @@ class SubdomainMiddleware:
     def __call__(self, request):
         host = request.get_host().split(':')[0]  # Obtiene el host sin el puerto
 
-        if host == 'geniuspro.pythonanywhere.com':
+        if host == 'www.sgageniuspro.com':
             settings.ROOT_URLCONF = 'administrativo.urls'
         elif host == 'geniuspro.pythonanywhere.com':
             settings.ROOT_URLCONF = 'academia.urls'
