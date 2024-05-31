@@ -22,5 +22,5 @@ path(r'moodle/', dashboard, name='dashboard'),
     # path(r'finanzas/',view_finanzas ,name='finanzas'),
     # path(r'mis_finanzas/',view_mis_finanzas ,name='mis_finanzas'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
-    path('chats/', include("chat.urls"))
+    path('chats/', include("chat.urls")),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
