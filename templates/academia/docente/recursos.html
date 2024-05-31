@@ -61,8 +61,10 @@
                         <td class="border-top-0 text-center" style="">{{ recurso.get_tipo_display }}</td>
                         <td class="border-top-0 text-center">
                             {% if recurso.tipo == 1 %}
-                                <a href="/media/{{ recurso.archivo }}" target="_blank"
-                                   class="btn btn-success">Archivo</a>
+                                {% if recurso.archivo %}
+                                    <a href="/media/{{ recurso.archivo }}" target="_blank"
+                                       class="btn btn-success">Archivo</a>
+                                {% endif %}
                             {% else %}
                                 <a href="//{{ recurso.enlace }}" target="_blank" class="btn btn-success">Link</a>
                             {% endif %}
