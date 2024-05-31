@@ -42,7 +42,7 @@ def view_modulo(request):
                         modulo = Modulo(
                             nombre=form.cleaned_data['nombre'],
                             descripcion=form.cleaned_data['descripcion'],
-                            icono=request.FILES['icono'],
+                            icono=form.cleaned_data['icono'],
                             ruta=form.cleaned_data['ruta'],
                             activo=form.cleaned_data['activo']
                         )
