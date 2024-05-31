@@ -220,6 +220,9 @@ class Docente(ModeloBase):
     def __str__(self):
         return u'%s' % self.persona
 
+    def get_foto(self):
+        return self.persona.get_foto()
+
     def en_uso(self):
         return Curso.objects.filter(status=True, docente=self).exists()
 

@@ -63,10 +63,18 @@
                                 <tr>
                                     <td class="text-uppercase text-secondary text-xxs font-weight-bolder text-center">{{ forloop.counter }}</td>
                                     <td data-title="Nombre/ Cedula">
-                                        <div class="d-flex flex-column justify-content-center">
-                                            <h6 class="mb-0 text-xs">{{ fila.persona }}</h6>
-                                            <p class="text-xs text-secondary mb-0">
-                                                <strong>Cédula:{{ fila.persona.cedula }} </strong></p>
+                                        <div class="row">
+                                            <div class="col-auto">
+                                                <div class="avatar avatar-lg">
+                                                    <img alt="avatar" src="{{ fila.get_foto }}"
+                                                         class="rounded-circle bg-white" style="object-fit: cover; width: 90%; height: 90%;">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <h6 class="mb-0 text-xs">{{ fila.persona }}</h6>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    <strong>Cédula:{{ fila.persona.cedula }} </strong></p>
+                                            </div>
                                         </div>
                                     </td>
                                     <td data-title=" Ruta(url)">
