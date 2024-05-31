@@ -34,7 +34,8 @@
                         {% endblock %}
 
                         <div class="d-flex justify-content-end ">
-                            {% block cancelar %}<a href="javascript:history.back()" name="button" class="btn btn-light m-0">Cancelar</a>{% endblock %}
+                            {% block cancelar %}<a href="javascript:history.back()" name="button"
+                                                   class="btn btn-light m-0">Cancelar</a>{% endblock %}
                             <button id="submit" type="submit" class="btn btn-success m-0 ms-2">
                                 {% block nombre_boton_submit %}{% endblock %}</button>
                             {% block botones_extras %}
@@ -65,97 +66,62 @@
         {# });#}
 
 
-            $('#formulario_data_enviar').submit(function (e) {
-                e.preventDefault();
-                var $form = $(this);
-                // check if the input is valid using a 'valid' property
-                if (!$form.valid) {
-                    var forms = $('#formulario_data_enviar')[0];
-                    var formData = new FormData(forms);
-                    bloquearMovimiento();
-                    {% block lista_de_items_many_to_many %}
+        $('#formulario_data_enviar').submit(function (e) {
+            e.preventDefault();
 
-                    {% endblock %}
+            var $form = $(this);
+            var formData = new FormData($form[0]);
 
-                    $.ajax({
-                        url: '{{request.path}}',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: formData,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success: function (data) {
-                            if (data.respuesta === true) {
-                                $.unblockUI();
-                                Swal.fire(
-                                    'Envio de datos',
-                                    data.mensaje,
-                                    'success'
-                                ).then((result) => {
-                                    /* Read more about isConfirmed, isDenied below */
-                                    if (result.isConfirmed) {
-                                        location.href = "{% block location_href_destino %}/{% endblock %}" + ((data.id) ? data.id : "");
-                                    }
-                                });
+            Block_UI();
 
-                            } else {
-                                $.unblockUI();
-                                Swal.fire(
-                                    'Advertencia!',
-                                    data.mensaje,
-                                    'warning'
-                                )
-                                if (data.repetidos) {
-                                    $.unblockUI();
-                                    if (data.repetidos.length > 0) {
-                                        myToast.reset('all')
-                                        repetidos = data.repetidos;
-                                        $.toast({
-                                            heading: data.mensaje,
-                                            text: repetidos,
-                                            showHideTransition: 'slide',
-                                            icon: 'info',
-                                            position: 'top-right',
-                                            stack: false
-                                        });
-
-                                    }
-                                }
-
+            fetch('{{ request.path }}', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.respuesta === true) {
+                        $.unblockUI();
+                        Swal.fire(
+                            'Envio de datos',
+                            data.mensaje,
+                            'success'
+                        ).then((result) => {
+                            if (result.isConfirmed) {
+                                location.href = "{% block location_href_destino %}
+                                    /{% endblock %}" + ((data.id) ? data.id : "");
                             }
-
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
+                        });
+                    } else {
+                        $.unblockUI();
+                        Swal.fire(
+                            'Advertencia!',
+                            data.mensaje,
+                            'warning'
+                        );
+                        if (data.repetidos) {
                             $.unblockUI();
-                            var mensaje = '';
-                            if (jqXHR.status === 0) {
-                                mensaje = 'Not connect: Verify Network.';
-                            } else if (jqXHR.status == 404) {
-                                mensaje = 'Requested page not found [404]';
-                            } else if (jqXHR.status == 500) {
-                                mensaje = 'Internal Server Error [500].';
-                            } else if (textStatus === 'parsererror') {
-                                mensaje = 'Requested JSON parse failed.';
-                            } else if (textStatus === 'timeout') {
-                                mensaje = 'Time out error.';
-                            } else if (textStatus === 'abort') {
-                                mensaje = 'Ajax request aborted.';
-                            } else {
-                                mensaje = 'Uncaught Error: ' + jqXHR.responseText;
+                            if (data.repetidos.length > 0) {
+                                myToast.reset('all');
+                                repetidos = data.repetidos;
+                                $.toast({
+                                    heading: data.mensaje,
+                                    text: repetidos,
+                                    showHideTransition: 'slide',
+                                    icon: 'info',
+                                    position: 'top-right',
+                                    stack: false
+                                });
                             }
-                            //smoke.alert("Error al enviar los datos: " + msg);
-                            alert("Error al enviar los datos: " + mensaje);
-                        },
-
-                    });
-
-                } else {
+                        }
+                    }
+                })
+                .catch(error => {
                     $.unblockUI();
-                    return false;
-                }
+                    alert("Error al enviar los datos: " + error.message);
+                });
+        });
 
-            });
     </script>
 
     <script type="text/javascript">
