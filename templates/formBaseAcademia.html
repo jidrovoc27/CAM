@@ -80,8 +80,8 @@
             })
                 .then(response => response.json())
                 .then(data => {
+                    $.unblockUI();
                     if (data.respuesta === true) {
-                        $.unblockUI();
                         Swal.fire(
                             'Envio de datos',
                             data.mensaje,
@@ -93,14 +93,12 @@
                             }
                         });
                     } else {
-                        $.unblockUI();
                         Swal.fire(
                             'Advertencia!',
                             data.mensaje,
                             'warning'
                         );
                         if (data.repetidos) {
-                            $.unblockUI();
                             if (data.repetidos.length > 0) {
                                 myToast.reset('all');
                                 repetidos = data.repetidos;
