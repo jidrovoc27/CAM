@@ -368,7 +368,7 @@ def dashboard(request):
                         recurso.save(request)
                         if recurso.tipo == 1:
                             if 'archivo' in request.FILES:
-                                archivo = form.cleaned_data['archivo']
+                                archivo = request.FILES['archivo']
                                 recurso.archivo = archivo
                                 recurso.save()
                                 return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
