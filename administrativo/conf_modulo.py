@@ -2,7 +2,6 @@ import sys
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 from django.db import transaction
 from django.forms import model_to_dict
 from django.http import JsonResponse
@@ -44,14 +43,11 @@ def view_modulo(request):
                         modulo = Modulo(
                             nombre=form.cleaned_data['nombre'],
                             descripcion=form.cleaned_data['descripcion'],
+                            icono=form.cleaned_data['icono'],
                             ruta=form.cleaned_data['ruta'],
                             activo=form.cleaned_data['activo']
                         )
                         modulo.save(request)
-                        if 'icono' in request.FILES:
-                            default_storage.save('uploads/' + form.cleaned_data['icono'].name, ContentFile(form.cleaned_data['icono'].read()))
-                            modulo.icono = 'uploads/' + form.cleaned_data['icono'].name
-                            modulo.save()
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
 
                     else:
