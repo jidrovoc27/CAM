@@ -72,6 +72,7 @@
                 if (!$form.valid) {
                     var forms = $('#formulario_data_enviar')[0];
                     var formData = new FormData(forms);
+                    Block_UI();
                     {% block lista_de_items_many_to_many %}
 
                     {% endblock %}
@@ -86,6 +87,7 @@
                         processData: false,
                         success: function (data) {
                             if (data.respuesta === true) {
+                                $.unblockUI();
                                 Swal.fire(
                                     'Envio de datos',
                                     data.mensaje,
