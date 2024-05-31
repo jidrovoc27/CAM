@@ -367,8 +367,7 @@ def dashboard(request):
                         recurso.tipo = int(tipo)
                         if recurso.tipo == 1:
                             if 'archivo' in request.FILES:
-                                recurso.archivo = request.FILES['archivo']
-                                recurso.save()
+                                actualizar = RecursosCurso.objects.filter(id=int(request.POST['id'])).update(archivo=request.FILES['archivo'])
                                 return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
                             else:
                                 return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba un archivo"})
