@@ -51,8 +51,8 @@
     <div class="container-fluid px-0">
         <a class="navbar-brand" href="../index.html"
         >
-{#                        <img src="{% static 'images/brand/logo/logo.svg' %}" alt=""/>#}
-{#            CAM#}
+            {#                        <img src="{% static 'images/brand/logo/logo.svg' %}" alt=""/>#}
+            {#            CAM#}
         </a>
         <!-- Mobile view nav wrap -->
         <ul
@@ -78,7 +78,7 @@
                     <div class="avatar avatar-md avatar-indicators avatar-online">
                         <img
                                 alt="avatar"
-                                src="../assets/images/avatar/avatar-1.jpg"
+                                src="{{ persona_logeado.get_foto }}"
                                 class="rounded-circle"
                         />
                     </div>
@@ -89,67 +89,36 @@
                             <div class="avatar avatar-md avatar-indicators avatar-online">
                                 <img
                                         alt="avatar"
-                                        src="{% static 'images/avatar/avatar-1.jpg' %}"
+                                        src="{{ persona_logeado.get_foto }}"
                                         class="rounded-circle"
                                 />
                             </div>
                             <div class="ms-3 lh-1">
-                                <h5 class="mb-1">Annette Black</h5>
-                                <p class="mb-0 text-muted">annette@geeksui.com</p>
+                                <h5 class="mb-1">{{ persona_logeado }}</h5>
+                                <p class="mb-0 text-muted">{{ emailuser }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="dropdown-divider"></div>
                     <ul class="list-unstyled">
-                        <li class="dropdown-submenu">
-                            <a
-                                    class="dropdown-item dropdown-list-group-item dropdown-toggle"
-                                    href="#"
-                            >
-                                <i class="fe fe-circle me-2"></i>Status
-                            </a>
-                            <ul class="dropdown-menu">
+                        {% for perfil in mis_perfiles %}
+                            {% if perfil.is_profesor %}
                                 <li>
-                                    <a class="dropdown-item" href="#">
-                                        <span class="badge-dot bg-success me-2"></span>Online
+                                    <a class="dropdown-item {% if identificadorperfil == 'is_profesor' %}active{% endif %}"
+                                       href="/moodle/?peticion=cambioperfil&tipoperfil=is_profesor">
+                                        <i class="fe fe-settings me-2"></i>Perfil docente
                                     </a>
                                 </li>
+                            {% endif %}
+                            {% if perfil.is_alumno %}
                                 <li>
-                                    <a class="dropdown-item" href="#">
-                                        <span class="badge-dot bg-secondary me-2"></span>Offline
+                                    <a class="dropdown-item {% if identificadorperfil == 'is_alumno' %}active{% endif %}"
+                                       href="/moodle/?peticion=cambioperfil&tipoperfil=is_alumno">
+                                        <i class="fe fe-settings me-2"></i>Perfil alumno
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <span class="badge-dot bg-warning me-2"></span>Away
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <span class="badge-dot bg-danger me-2"></span>Busy
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" href="profile-edit.html">
-                                <i class="fe fe-user me-2"></i>Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                    class="dropdown-item"
-                                    href="student-subscriptions.html"
-                            >
-                                <i class="fe fe-star me-2"></i>Subscription
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fe fe-settings me-2"></i>Settings
-                            </a>
-                        </li>
+                            {% endif %}
+                        {% endfor %}
                     </ul>
                     <div class="dropdown-divider"></div>
                     <ul class="list-unstyled">
@@ -181,140 +150,140 @@
             <form class="mt-3 mt-lg-0 ms-lg-3 d-flex align-items-center">
             </form>
             <ul class="navbar-nav navbar-right-wrap ms-auto d-none d-lg-block">
-{#                <li class="dropdown d-inline-block stopevent">#}
-{#                    <a#}
-{#                            class="btn btn-light btn-icon rounded-circle text-muted indicator indicator-primary"#}
-{#                            href="#"#}
-{#                            role="button"#}
-{#                            id="dropdownNotificationSecond"#}
-{#                            data-bs-toggle="dropdown"#}
-{#                            aria-haspopup="true"#}
-{#                            aria-expanded="false"#}
-{#                    >#}
-{#                        <i class="fe fe-bell"> </i>#}
-{#                    </a>#}
-{#                    <div#}
-{#                            class="dropdown-menu dropdown-menu-end dropdown-menu-lg"#}
-{#                            aria-labelledby="dropdownNotificationSecond"#}
-{#                    >#}
-{#                        <div>#}
-{#                            <div#}
-{#                                    class="border-bottom px-3 pb-3 d-flex justify-content-between align-items-center"#}
-{#                            >#}
-{#                                <span class="h5 mb-0">Notifications</span>#}
-{#                                <a href="# " class="text-muted"#}
-{#                                ><span class="align-middle"#}
-{#                                ><i class="fe fe-settings me-1"></i></span#}
-{#                                ></a>#}
-{#                            </div>#}
-{#                            <ul class="list-group list-group-flush  " style="height: 300px;" data-simplebar>#}
-{#                                <li class="list-group-item bg-light">#}
-{#                                    <div class="row">#}
-{#                                        <div class="col">#}
-{#                                            <a class="text-body" href="#">#}
-{#                                                <div class="d-flex">#}
-{#                                                    <img#}
-{#                                                            src="../assets/images/avatar/avatar-1.jpg"#}
-{#                                                            alt=""#}
-{#                                                            class="avatar-md rounded-circle"#}
-{#                                                    />#}
-{#                                                    <div class="ms-3">#}
-{#                                                        <h5 class="fw-bold mb-1">Kristin Watson:</h5>#}
-{#                                                        <p class="mb-3 text-body">#}
-{#                                                            Krisitn Watsan like your comment on course#}
-{#                                                            Javascript Introduction!#}
-{#                                                        </p>#}
-{#                                                        <span class="fs-6 text-muted">#}
-{#														<span#}
-{#                                                        ><span#}
-{#                                                                class="fe fe-thumbs-up text-success me-1"#}
-{#                                                        ></span#}
-{#                                                        >2 hours ago,</span#}
-{#                                                        >#}
-{#														<span class="ms-1">2:19 PM</span>#}
-{#													</span>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </a>#}
-{#                                        </div>#}
-{#                                        <div class="col-auto text-center me-2">#}
-{##}
-{#                                            <a#}
-{#                                                    href="#"#}
-{#                                                    class="badge-dot bg-info"#}
-{#                                                    data-bs-toggle="tooltip"#}
-{#                                                    data-bs-placement="top"#}
-{##}
-{#                                                    title="Mark as read"#}
-{#                                            >#}
-{#                                            </a>#}
-{#                                            <div>#}
-{#                                                <a#}
-{#                                                        href="#"#}
-{#                                                        class="bg-transparent"#}
-{#                                                        data-bs-toggle="tooltip"#}
-{#                                                        data-bs-placement="top"#}
-{##}
-{#                                                        title="Remove"#}
-{#                                                >#}
-{#                                                    <i class="fe fe-x text-muted"></i>#}
-{#                                                </a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </li>#}
-{#                                <li class="list-group-item">#}
-{#                                    <div class="row">#}
-{#                                        <div class="col">#}
-{#                                            <a class="text-body" href="#">#}
-{#                                                <div class="d-flex">#}
-{#                                                    <img#}
-{#                                                            src="../assets/images/avatar/avatar-2.jpg"#}
-{#                                                            alt=""#}
-{#                                                            class="avatar-md rounded-circle"#}
-{#                                                    />#}
-{#                                                    <div class="ms-3">#}
-{#                                                        <h5 class="fw-bold mb-1">Brooklyn Simmons</h5>#}
-{#                                                        <p class="mb-3 text-body">#}
-{#                                                            Just launched a new Courses React for Beginner.#}
-{#                                                        </p>#}
-{#                                                        <span class="fs-6 text-muted">#}
-{#														<span#}
-{#                                                        ><span#}
-{#                                                                class="fe fe-thumbs-up text-success me-1"#}
-{#                                                        ></span#}
-{#                                                        >Oct 9,</span#}
-{#                                                        >#}
-{#														<span class="ms-1">1:20 PM</span>#}
-{#													</span>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </a>#}
-{#                                        </div>#}
-{#                                        <div class="col-auto text-center me-2">#}
-{#                                            <a#}
-{#                                                    href="#"#}
-{#                                                    class="badge-dot bg-secondary"#}
-{#                                                    data-bs-toggle="tooltip"#}
-{#                                                    data-bs-placement="top"#}
-{##}
-{#                                                    title="Mark as unread"#}
-{#                                            >#}
-{#                                            </a>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </li>#}
-{#                            </ul>#}
-{#                            <div class="border-top px-3 pt-3 pb-0">#}
-{#                                <a#}
-{#                                        href="notification-history.html"#}
-{#                                        class="text-link fw-semi-bold"#}
-{#                                >Ver todas las notificaciones</a#}
-{#                                >#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </li>#}
+                {#                <li class="dropdown d-inline-block stopevent">#}
+                {#                    <a#}
+                {#                            class="btn btn-light btn-icon rounded-circle text-muted indicator indicator-primary"#}
+                {#                            href="#"#}
+                {#                            role="button"#}
+                {#                            id="dropdownNotificationSecond"#}
+                {#                            data-bs-toggle="dropdown"#}
+                {#                            aria-haspopup="true"#}
+                {#                            aria-expanded="false"#}
+                {#                    >#}
+                {#                        <i class="fe fe-bell"> </i>#}
+                {#                    </a>#}
+                {#                    <div#}
+                {#                            class="dropdown-menu dropdown-menu-end dropdown-menu-lg"#}
+                {#                            aria-labelledby="dropdownNotificationSecond"#}
+                {#                    >#}
+                {#                        <div>#}
+                {#                            <div#}
+                {#                                    class="border-bottom px-3 pb-3 d-flex justify-content-between align-items-center"#}
+                {#                            >#}
+                {#                                <span class="h5 mb-0">Notifications</span>#}
+                {#                                <a href="# " class="text-muted"#}
+                {#                                ><span class="align-middle"#}
+                {#                                ><i class="fe fe-settings me-1"></i></span#}
+                {#                                ></a>#}
+                {#                            </div>#}
+                {#                            <ul class="list-group list-group-flush  " style="height: 300px;" data-simplebar>#}
+                {#                                <li class="list-group-item bg-light">#}
+                {#                                    <div class="row">#}
+                {#                                        <div class="col">#}
+                {#                                            <a class="text-body" href="#">#}
+                {#                                                <div class="d-flex">#}
+                {#                                                    <img#}
+                {#                                                            src="../assets/images/avatar/avatar-1.jpg"#}
+                {#                                                            alt=""#}
+                {#                                                            class="avatar-md rounded-circle"#}
+                {#                                                    />#}
+                {#                                                    <div class="ms-3">#}
+                {#                                                        <h5 class="fw-bold mb-1">Kristin Watson:</h5>#}
+                {#                                                        <p class="mb-3 text-body">#}
+                {#                                                            Krisitn Watsan like your comment on course#}
+                {#                                                            Javascript Introduction!#}
+                {#                                                        </p>#}
+                {#                                                        <span class="fs-6 text-muted">#}
+                {#														<span#}
+                {#                                                        ><span#}
+                {#                                                                class="fe fe-thumbs-up text-success me-1"#}
+                {#                                                        ></span#}
+                {#                                                        >2 hours ago,</span#}
+                {#                                                        >#}
+                {#														<span class="ms-1">2:19 PM</span>#}
+                {#													</span>#}
+                {#                                                    </div>#}
+                {#                                                </div>#}
+                {#                                            </a>#}
+                {#                                        </div>#}
+                {#                                        <div class="col-auto text-center me-2">#}
+                {##}
+                {#                                            <a#}
+                {#                                                    href="#"#}
+                {#                                                    class="badge-dot bg-info"#}
+                {#                                                    data-bs-toggle="tooltip"#}
+                {#                                                    data-bs-placement="top"#}
+                {##}
+                {#                                                    title="Mark as read"#}
+                {#                                            >#}
+                {#                                            </a>#}
+                {#                                            <div>#}
+                {#                                                <a#}
+                {#                                                        href="#"#}
+                {#                                                        class="bg-transparent"#}
+                {#                                                        data-bs-toggle="tooltip"#}
+                {#                                                        data-bs-placement="top"#}
+                {##}
+                {#                                                        title="Remove"#}
+                {#                                                >#}
+                {#                                                    <i class="fe fe-x text-muted"></i>#}
+                {#                                                </a>#}
+                {#                                            </div>#}
+                {#                                        </div>#}
+                {#                                    </div>#}
+                {#                                </li>#}
+                {#                                <li class="list-group-item">#}
+                {#                                    <div class="row">#}
+                {#                                        <div class="col">#}
+                {#                                            <a class="text-body" href="#">#}
+                {#                                                <div class="d-flex">#}
+                {#                                                    <img#}
+                {#                                                            src="../assets/images/avatar/avatar-2.jpg"#}
+                {#                                                            alt=""#}
+                {#                                                            class="avatar-md rounded-circle"#}
+                {#                                                    />#}
+                {#                                                    <div class="ms-3">#}
+                {#                                                        <h5 class="fw-bold mb-1">Brooklyn Simmons</h5>#}
+                {#                                                        <p class="mb-3 text-body">#}
+                {#                                                            Just launched a new Courses React for Beginner.#}
+                {#                                                        </p>#}
+                {#                                                        <span class="fs-6 text-muted">#}
+                {#														<span#}
+                {#                                                        ><span#}
+                {#                                                                class="fe fe-thumbs-up text-success me-1"#}
+                {#                                                        ></span#}
+                {#                                                        >Oct 9,</span#}
+                {#                                                        >#}
+                {#														<span class="ms-1">1:20 PM</span>#}
+                {#													</span>#}
+                {#                                                    </div>#}
+                {#                                                </div>#}
+                {#                                            </a>#}
+                {#                                        </div>#}
+                {#                                        <div class="col-auto text-center me-2">#}
+                {#                                            <a#}
+                {#                                                    href="#"#}
+                {#                                                    class="badge-dot bg-secondary"#}
+                {#                                                    data-bs-toggle="tooltip"#}
+                {#                                                    data-bs-placement="top"#}
+                {##}
+                {#                                                    title="Mark as unread"#}
+                {#                                            >#}
+                {#                                            </a>#}
+                {#                                        </div>#}
+                {#                                    </div>#}
+                {#                                </li>#}
+                {#                            </ul>#}
+                {#                            <div class="border-top px-3 pt-3 pb-0">#}
+                {#                                <a#}
+                {#                                        href="notification-history.html"#}
+                {#                                        class="text-link fw-semi-bold"#}
+                {#                                >Ver todas las notificaciones</a#}
+                {#                                >#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </li>#}
 
                 <li class="dropdown ms-2 d-inline-block">
                     <a
@@ -327,7 +296,7 @@
                         <div class="avatar avatar-md avatar-indicators avatar-online">
                             <img
                                     alt="avatar"
-                                    src="/media/{{ persona_logeado.foto }}"
+                                    src="{{ persona_logeado.get_foto }}"
                                     class="rounded-circle"
                             />
                         </div>
@@ -391,22 +360,22 @@
             <!-- User info -->
             <div class="col-xl-12 col-lg-12 col-md-12 col-12">
                 <!-- Bg -->
-{#                <div class="pt-16 rounded-top-md" style="#}
-{#                        background: url({% static 'images/background/profile-bg.jpg' %}) no-repeat;#}
-{#                        background-size: cover;#}
-{#                        "></div>#}
+                {#                <div class="pt-16 rounded-top-md" style="#}
+                {#                        background: url({% static 'images/background/profile-bg.jpg' %}) no-repeat;#}
+                {#                        background-size: cover;#}
+                {#                        "></div>#}
                 <div
                         class="d-flex align-items-end justify-content-between bg-white px-4 pt-2 pb-4 rounded-none rounded-bottom-md shadow-sm">
                     <div class="d-flex align-items-center">
                         <div class="">
-                            <img src="/media/{{ persona_logeado.foto }}"
+                            <img src="{{ persona_logeado.get_foto }}"
                                  class="avatar-xl rounded-circle border border-4 border-white position-relative"
                                  alt=""/>
-{#                            <a href="#" class="position-absolute top-0 end-0" data-bs-toggle="tooltip"#}
-{#                               data-placement="top"#}
-{#                               title="Verified">#}
-{#                                <img src="../assets/images/svg/checked-mark.svg" alt="" height="30" width="30"/>#}
-{#                            </a>#}
+                            {#                            <a href="#" class="position-absolute top-0 end-0" data-bs-toggle="tooltip"#}
+                            {#                               data-placement="top"#}
+                            {#                               title="Verified">#}
+                            {#                                <img src="../assets/images/svg/checked-mark.svg" alt="" height="30" width="30"/>#}
+                            {#                            </a>#}
                         </div>
                         <div class="lh-1">
                             <h2 class="mb-0">{{ persona_logeado }}</h2>
@@ -441,30 +410,39 @@
                             {% if identificadorperfil == 'is_alumno' %}
                                 <ul class="list-unstyled ms-n2 mb-4">
                                     <!-- Nav item -->
-{#                                    <li class="nav-item">#}
-{#                                        <a class="nav-link" href="dashboard-instructor.html"><i#}
-{#                                                class="fe fe-home nav-icon"></i>Inicio</a>#}
-{#                                    </li>#}
+                                    {#                                    <li class="nav-item">#}
+                                    {#                                        <a class="nav-link" href="dashboard-instructor.html"><i#}
+                                    {#                                                class="fe fe-home nav-icon"></i>Inicio</a>#}
+                                    {#                                    </li>#}
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_cursos %}active{% endif %}" {% if not is_cursos %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
-                                        <a class="nav-link" href="/moodle/" {% if is_cursos %}style="color: white !important;"{% endif %}><i
+                                    <li class="nav-item {% if is_cursos %}active{% endif %}"
+                                        {% if not is_cursos %}onmouseenter="cambiarColor(this)"
+                                        onmouseleave="restaurarColor(this)"{% endif %}>
+                                        <a class="nav-link" href="/moodle/"
+                                           {% if is_cursos %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-book nav-icon"></i>Mis cursos</a>
                                     </li>
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_calificaciones %}active{% endif %}" {% if not is_calificaciones %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <li class="nav-item {% if is_calificaciones %}active{% endif %}"
+                                        {% if not is_calificaciones %}onmouseenter="cambiarColor(this)"
+                                        onmouseleave="restaurarColor(this)"{% endif %}>
                                         <a class="nav-link" href="?peticion=calificaciones&id={{ alumno.id }}"
-                                        {% if is_calificaciones %}style="color: white !important;"{% endif %}><i
+                                           {% if is_calificaciones %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-star nav-icon"></i>Calificaciones</a>
                                     </li>
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_mensajes %}active{% endif %}" {% if not is_mensajes %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <li class="nav-item {% if is_mensajes %}active{% endif %}"
+                                        {% if not is_mensajes %}onmouseenter="cambiarColor(this)"
+                                        onmouseleave="restaurarColor(this)"{% endif %}>
                                         <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"
-                                        {% if is_mensajes %}style="color: white !important;"{% endif %}><i
+                                           {% if is_mensajes %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
                                     </li>
-                                    <li class="nav-item {% if is_finanza %}active{% endif %}" {% if not is_finanza %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <li class="nav-item {% if is_finanza %}active{% endif %}"
+                                        {% if not is_finanza %}onmouseenter="cambiarColor(this)"
+                                        onmouseleave="restaurarColor(this)"{% endif %}>
                                         <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"
-                                        {% if is_finanza %}style="color: white !important;"{% endif %}><i
+                                           {% if is_finanza %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
                                     </li>
                                 </ul>
@@ -476,20 +454,26 @@
                                     {#                                                class="fe fe-home nav-icon"></i>Inicio</a>#}
                                     {#                                    </li>#}
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_cursos %}active{% endif %}" {% if not is_cursos %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <li class="nav-item {% if is_cursos %}active{% endif %}"
+                                        {% if not is_cursos %}onmouseenter="cambiarColor(this)"
+                                        onmouseleave="restaurarColor(this)"{% endif %}>
                                         <a class="nav-link" href="/moodle/"
-                                        {% if is_cursos %}style="color: white !important;"{% endif %}><i
+                                           {% if is_cursos %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-book nav-icon"></i>Mis cursos</a>
                                     </li>
                                     <!-- Nav item -->
-                                    <li class="nav-item {% if is_mensajes %}active{% endif %}" {% if not is_mensajes %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <li class="nav-item {% if is_mensajes %}active{% endif %}"
+                                        {% if not is_mensajes %}onmouseenter="cambiarColor(this)"
+                                        onmouseleave="restaurarColor(this)"{% endif %}>
                                         <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"
-                                        {% if is_mensajes %}style="color: white !important;"{% endif %}><i
+                                           {% if is_mensajes %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
                                     </li>
-                                    <li class="nav-item {% if is_finanza %}active{% endif %}" {% if not is_finanza %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                    <li class="nav-item {% if is_finanza %}active{% endif %}"
+                                        {% if not is_finanza %}onmouseenter="cambiarColor(this)"
+                                        onmouseleave="restaurarColor(this)"{% endif %}>
                                         <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"
-                                        {% if is_finanza %}style="color: white !important;"{% endif %}><i
+                                           {% if is_finanza %}style="color: white !important;"{% endif %}><i
                                                 class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
                                     </li>
                                 </ul>
@@ -498,21 +482,29 @@
                             <span class="navbar-header">Configuración</span>
                             <ul class="list-unstyled ms-n2 mb-0">
                                 <!-- Nav item -->
-                                <li class="nav-item {% if is_editperfil %}active{% endif %}" {% if not is_editperfil %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                <li class="nav-item {% if is_editperfil %}active{% endif %}"
+                                    {% if not is_editperfil %}onmouseenter="cambiarColor(this)"
+                                    onmouseleave="restaurarColor(this)"{% endif %}>
                                     <a class="nav-link" href="?peticion=editperfil&id={{ alumno.id }}"
-                                    {% if is_editperfil %}style="color: white !important;"{% endif %}><i class="fe fe-settings nav-icon"></i>Editar perfil</a>
+                                       {% if is_editperfil %}style="color: white !important;"{% endif %}><i
+                                            class="fe fe-settings nav-icon"></i>Editar perfil</a>
                                 </li>
                                 <!-- Nav item -->
-                                <li class="nav-item {% if is_security %}active{% endif %}" {% if not is_security %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                <li class="nav-item {% if is_security %}active{% endif %}"
+                                    {% if not is_security %}onmouseenter="cambiarColor(this)"
+                                    onmouseleave="restaurarColor(this)"{% endif %}>
                                     <a class="nav-link" href="?peticion=actseguridad&id={{ alumno.id }}"
-                                    {% if is_security %}style="color: white !important;"{% endif %}><i class="fe fe-user nav-icon"></i>Seguridad</a>
+                                       {% if is_security %}style="color: white !important;"{% endif %}><i
+                                            class="fe fe-user nav-icon"></i>Seguridad</a>
                                 </li>
-{#                                <li class="nav-item">#}
-{#                                    <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i class="fe fe-bell nav-icon"></i>Notificaciones</a>#}
-{#                                </li>#}
-                                <li class="nav-item {% if is_cerrasesion %}active{% endif %}" {% if not is_cerrasesion %}onmouseenter="cambiarColor(this)" onmouseleave="restaurarColor(this)"{% endif %}>
+                                {#                                <li class="nav-item">#}
+                                {#                                    <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i class="fe fe-bell nav-icon"></i>Notificaciones</a>#}
+                                {#                                </li>#}
+                                <li class="nav-item {% if is_cerrasesion %}active{% endif %}"
+                                    {% if not is_cerrasesion %}onmouseenter="cambiarColor(this)"
+                                    onmouseleave="restaurarColor(this)"{% endif %}>
                                     <a class="nav-link" href="{% url 'logout_usuario_a' %}"
-                                    {% if is_cerrasesion %}style="color: white !important;"{% endif %}><i
+                                       {% if is_cerrasesion %}style="color: white !important;"{% endif %}><i
                                             class="fe fe-power nav-icon"></i>Cerrar
                                         sesión</a>
                                 </li>
@@ -684,7 +676,6 @@
                 enlace.style.color = 'white !important'; // Cambia el color del texto del enlace
             }
         });
-
 
 
     });
