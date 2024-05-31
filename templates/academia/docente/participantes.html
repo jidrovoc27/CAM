@@ -19,7 +19,18 @@
             {% for inscrito in inscritos %}
                 <tr>
                     <td class="border-top-0">
-                        {{ inscrito }}
+                        <div class="row">
+                            <div class="col-auto">
+                                <div class="avatar avatar-lg" style="margin-right: -45px">
+                                    <img alt="avatar" src="{{ inscrito.get_foto }}"
+                                         class="rounded-circle bg-white"
+                                         style="object-fit: cover; width: 50%; height: 50%;">
+                                </div>
+                            </div>
+                            <div class="col" style="width:10%;white-space: normal">
+                                {{ inscrito }}
+                            </div>
+                        </div>
                     </td>
                     {% for detalle in curso.modeloevaluativo.detallecalificacion %}
                         <td class="border-top-0 text-center">

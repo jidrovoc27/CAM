@@ -265,6 +265,9 @@ class InscritoCursoA(ModeloBase):
     def __str__(self):
         return u'%s' % (self.inscrito)
 
+    def get_foto(self):
+        return self.inscrito.get_foto()
+
     class Meta:
         verbose_name = u"Inscrito"
         verbose_name_plural = u"Inscritos"
