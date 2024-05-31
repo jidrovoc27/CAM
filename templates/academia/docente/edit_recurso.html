@@ -33,7 +33,7 @@
 
         $("#id_tipo").change(function () {
             var tipo = $(this).val();
-            if (tipo == 1) {
+            if (parseInt(tipo) == 1) {
                 $("#form_enlace").css({'display': 'none'})
                 $("#form_archivo").removeAttr('style')
             } else {
