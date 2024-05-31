@@ -97,6 +97,11 @@ class Persona(ModeloBase):
     def __str__(self):
         return u'%s %s' % (self.apellidos, self.nombres)
 
+    def get_foto(self):
+        if self.foto:
+            return self.foto.url
+        return '/static/reutilizables/user.png'
+
     def tiene_perfil_persona(self):
         return self.personaperfil_set.filter(status=True).exists()
 
@@ -229,6 +234,9 @@ class Alumno(ModeloBase):
 
     def __str__(self):
         return u'%s' % self.persona
+
+    def get_foto(self):
+        return self.persona.get_foto()
 
     def totalrubros(self):
         total = Rubro.objects.filter(persona_id=self.persona.id, status=True).aggregate(total=Sum('valor'))
