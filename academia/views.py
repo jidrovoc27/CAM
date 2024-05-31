@@ -367,7 +367,7 @@ def dashboard(request):
                         recurso.tipo = int(tipo)
                         if recurso.tipo == 1:
                             if 'archivo' in request.FILES:
-                                archivo = form.cleaned_data['archivo']
+                                archivo = request.FILES['archivo']
                                 recurso.archivo = archivo
                             else:
                                 return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba un archivo"})
