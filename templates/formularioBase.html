@@ -66,13 +66,13 @@
 
 
             $('#formulario_data_enviar').submit(function (e) {
-                bloquearMovimiento();
                 e.preventDefault();
                 var $form = $(this);
                 // check if the input is valid using a 'valid' property
                 if (!$form.valid) {
                     var forms = $('#formulario_data_enviar')[0];
                     var formData = new FormData(forms);
+                    bloquearMovimiento();
                     {% block lista_de_items_many_to_many %}
 
                     {% endblock %}
