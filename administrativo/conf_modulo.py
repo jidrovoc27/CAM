@@ -49,8 +49,8 @@ def view_modulo(request):
                         )
                         modulo.save(request)
                         if 'icono' in request.FILES:
-                            default_storage.save('uploads/' + request.FILES['icono'].name, ContentFile(request.FILES['icono'].read()))
-                            modulo.icono = 'uploads/' + request.FILES['icono'].name
+                            default_storage.save('uploads/' + form.cleaned_data['icono'].name, ContentFile(form.cleaned_data['icono'].read()))
+                            modulo.icono = 'uploads/' + form.cleaned_data['icono'].name
                             modulo.save()
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
 
