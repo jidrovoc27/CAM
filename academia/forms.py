@@ -139,9 +139,6 @@ class AgregarRecursoForm(forms.Form):
     def sin_archivo(self):
         campo_no_requerido(self, 'archivo')
 
-    def sin_imagen(self):
-        campo_no_requerido(self, 'imagen')
-
 class AgregarProfile(forms.Form):
     contacto = forms.ModelChoiceField(label=u"Contacto",required=True, queryset=Persona.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))
 

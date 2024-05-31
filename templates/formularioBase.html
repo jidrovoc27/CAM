@@ -65,97 +65,98 @@
         {# });#}
 
 
-            $('#formulario_data_enviar').submit(function (e) {
-                e.preventDefault();
-                var $form = $(this);
-                // check if the input is valid using a 'valid' property
-                if (!$form.valid) {
-                    var forms = $('#formulario_data_enviar')[0];
-                    var formData = new FormData(forms);
-                    bloquearMovimiento();
-                    {% block lista_de_items_many_to_many %}
+        $('#formulario_data_enviar').submit(function (e) {
+            e.preventDefault(); // Evitar el comportamiento predeterminado del formulario
 
-                    {% endblock %}
+            var $form = $(this);
 
-                    $.ajax({
-                        url: '{{request.path}}',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: formData,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success: function (data) {
-                            if (data.respuesta === true) {
-                                $.unblockUI();
-                                Swal.fire(
-                                    'Envio de datos',
-                                    data.mensaje,
-                                    'success'
-                                ).then((result) => {
-                                    /* Read more about isConfirmed, isDenied below */
-                                    if (result.isConfirmed) {
-                                        location.href = "{% block location_href_destino %}/{% endblock %}" + ((data.id) ? data.id : "");
-                                    }
-                                });
+            // Verificar la validez del formulario utilizando el método 'valid()' del plugin jQuery Validation
+            if ($form.valid()) {
+                // Crear un objeto FormData para enviar los datos del formulario, incluidos los archivos adjuntos
+                var forms = $('#formulario_data_enviar')[0];
+                var formData = new FormData(forms);
 
-                            } else {
-                                $.unblockUI();
-                                Swal.fire(
-                                    'Advertencia!',
-                                    data.mensaje,
-                                    'warning'
-                                )
-                                if (data.repetidos) {
-                                    $.unblockUI();
-                                    if (data.repetidos.length > 0) {
-                                        myToast.reset('all')
-                                        repetidos = data.repetidos;
-                                        $.toast({
-                                            heading: data.mensaje,
-                                            text: repetidos,
-                                            showHideTransition: 'slide',
-                                            icon: 'info',
-                                            position: 'top-right',
-                                            stack: false
-                                        });
+                // Bloquear la interfaz mientras se envían los datos
+                bloquearMovimiento();
 
-                                    }
+                // Realizar la solicitud AJAX para enviar los datos del formulario
+                $.ajax({
+                    url: '{{ request.path }}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: formData,
+                    cache: false,
+                    contentType: false, // Indicar a jQuery que no configure automáticamente el tipo de contenido de la solicitud
+                    processData: false, // Indicar a jQuery que no procese los datos
+                    success: function (data) {
+                        // Manejar la respuesta exitosa del servidor
+                        if (data.respuesta === true) {
+                            $.unblockUI(); // Desbloquear la interfaz
+                            // Mostrar un mensaje de éxito utilizando la biblioteca Swal (SweetAlert)
+                            Swal.fire(
+                                'Envio de datos',
+                                data.mensaje,
+                                'success'
+                            ).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Redirigir a una ubicación específica después del éxito
+                                    location.href = "{% block location_href_destino %}
+                                        /{% endblock %}" + ((data.id) ? data.id : "");
                                 }
-
+                            });
+                        } else {
+                            // Manejar la respuesta del servidor si no fue exitosa
+                            $.unblockUI(); // Desbloquear la interfaz
+                            Swal.fire(
+                                'Advertencia!',
+                                data.mensaje,
+                                'warning'
+                            );
+                            if (data.repetidos) {
+                                $.unblockUI();
+                                if (data.repetidos.length > 0) {
+                                    myToast.reset('all')
+                                    repetidos = data.repetidos;
+                                    $.toast({
+                                        heading: data.mensaje,
+                                        text: repetidos,
+                                        showHideTransition: 'slide',
+                                        icon: 'info',
+                                        position: 'top-right',
+                                        stack: false
+                                    });
+                                }
                             }
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        // Manejar errores de la solicitud AJAX
+                        $.unblockUI(); // Desbloquear la interfaz
+                        var mensaje = '';
+                        if (jqXHR.status === 0) {
+                            mensaje = 'Not connect: Verify Network.';
+                        } else if (jqXHR.status == 404) {
+                            mensaje = 'Requested page not found [404]';
+                        } else if (jqXHR.status == 500) {
+                            mensaje = 'Internal Server Error [500].';
+                        } else if (textStatus === 'parsererror') {
+                            mensaje = 'Requested JSON parse failed.';
+                        } else if (textStatus === 'timeout') {
+                            mensaje = 'Time out error.';
+                        } else if (textStatus === 'abort') {
+                            mensaje = 'Ajax request aborted.';
+                        } else {
+                            mensaje = 'Uncaught Error: ' + jqXHR.responseText;
+                        }
+                        alert("Error al enviar los datos: " + mensaje);
+                    },
+                });
+            } else {
+                $.unblockUI();
+                return false; // Devolver falso para evitar el envío del formulario si no es válido
+            }
+        });
 
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            $.unblockUI();
-                            var mensaje = '';
-                            if (jqXHR.status === 0) {
-                                mensaje = 'Not connect: Verify Network.';
-                            } else if (jqXHR.status == 404) {
-                                mensaje = 'Requested page not found [404]';
-                            } else if (jqXHR.status == 500) {
-                                mensaje = 'Internal Server Error [500].';
-                            } else if (textStatus === 'parsererror') {
-                                mensaje = 'Requested JSON parse failed.';
-                            } else if (textStatus === 'timeout') {
-                                mensaje = 'Time out error.';
-                            } else if (textStatus === 'abort') {
-                                mensaje = 'Ajax request aborted.';
-                            } else {
-                                mensaje = 'Uncaught Error: ' + jqXHR.responseText;
-                            }
-                            //smoke.alert("Error al enviar los datos: " + msg);
-                            alert("Error al enviar los datos: " + mensaje);
-                        },
-
-                    });
-
-                } else {
-                    $.unblockUI();
-                    return false;
-                }
-
-            });
     </script>
 
     <script type="text/javascript">
