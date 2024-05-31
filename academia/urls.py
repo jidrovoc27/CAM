@@ -24,4 +24,4 @@ path(r'moodle/', dashboard, name='dashboard'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
     path('chats/', include("chat.urls")),
     path('admin/', admin.site.urls),
-]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
