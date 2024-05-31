@@ -365,18 +365,15 @@ def dashboard(request):
                         tipo = request.POST['tipo']
                         recurso.nombre = nombre
                         recurso.tipo = int(tipo)
-                        recurso.save(request)
                         if recurso.tipo == 1:
                             if 'archivo' in request.FILES:
                                 archivo = form.cleaned_data['archivo']
                                 recurso.archivo = archivo
-                                recurso.save()
-                                return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
                             else:
                                 return JsonResponse({"respuesta": False, "mensaje": "Por favor, suba un archivo"})
                         else:
                             recurso.enlace = request.POST['enlace']
-                            recurso.save(request)
+                        recurso.save()
                         return JsonResponse({"respuesta": True, "mensaje": "Recurso actualizado correctamente."})
                     else:
                         return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
