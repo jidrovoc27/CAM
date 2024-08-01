@@ -226,7 +226,7 @@ def view_finanzas(request):
                     var = request.GET['var']
                     data['var'] = var
                     filtro = filtro & (Q(nombres__icontains=var) |
-                                       Q(apellidos__icontains=var) |
+                                       Q(apellido1__icontains=var) |
                                        Q(cedula__icontains=var))
                     ruta_paginado += "?var=" + var + "&"
                 lista = Persona.objects.filter(filtro)

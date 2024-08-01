@@ -24,6 +24,7 @@ from administrativo.view_lead import *
 from administrativo.view_modeloevaluativo import *
 from administrativo.view_miscursos import *
 from administrativo.view_facturas import *
+from administrativo.view_firmardocumentos import *
 
 urlpatterns = [
 path(r'', dashboard, name='dashboard'),
@@ -51,4 +52,7 @@ path(r'', dashboard, name='dashboard'),
     path(r'miscursos/',view_miscursos ,name='miscursos'),
     path('change-password/', PasswordChangeView.as_view(), name="CambiarContraseña"),
     path(r'CAM/', paginaweb, name='paginaweb'),
+
+    #MÓDULO FIRMAR DOCUMENTOS
+    path(r'firmardocumentos/',view_firmardocumentos ,name='firmardocumentos'),
 ]

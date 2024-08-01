@@ -352,3 +352,23 @@ def conviert_html_to_pdf(template_src, context_dict):
     if not pisaStatus.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return JsonResponse({"result": "bad", "mensaje": u"Problemas al ejecutar el reporte."})
+
+def generar_nombre(nombre, original):
+    nombre = quitar_caracteres(nombre).lower().replace(' ', '_')
+    ext = ""
+    if original.find(".") > 0:
+        ext = original[original.rfind("."):]
+    fecha = datetime.now().date()
+    hora = datetime.now().time()
+    return nombre + fecha.year.__str__() + fecha.month.__str__() + fecha.day.__str__() + hora.hour.__str__() + hora.minute.__str__() + hora.second.__str__() + ext.lower()
+
+def customgetattr(object, name):
+    r = getattr(object, name)
+    if str(type(r)) == "<class 'method'>" or str(type(r)) == "<class 'function'>":
+        return r()
+    return r
+
+def remover_caracteres_tildes_unicode(cadena):
+    return cadena.replace(u'Á', u'A').replace(u'á', u'a').replace(u'É', u'E').replace(u'é', u'e').replace(u'Í',
+                                                                                                          u'I').replace(
+        u'í', u'i').replace(u'Ó', u'O').replace(u'ó', u'o').replace(u'Ú', u'U').replace(u'ú', u'u')

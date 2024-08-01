@@ -158,7 +158,7 @@ def view_facturas(request):
                     var = request.GET['var']
                     data['var'] = var
                     filtro = filtro & (Q(persona__nombres__icontains=var) |
-                                       Q(persona__apellidos__icontains=var) |
+                                       Q(persona__apellido1__icontains=var) |
                                        Q(persona__cedula__icontains=var) |
                                        Q(nombre__icontains=var))
                     ruta_paginado += "var=" + var + "&"

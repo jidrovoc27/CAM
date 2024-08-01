@@ -145,10 +145,10 @@ class PersonaForm(forms.Form):
                              widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)',  }))
     # nombre2 = forms.CharField(label='2ª Nombre', required=True,
     #                          widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)',  }))
-    apellidos = forms.CharField(label='Apellidos', required=True,
+    apellido1 = forms.CharField(label='Primer apellido', required=True,
                              widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
-    # apellido2 = forms.CharField(label='2º Apellido', required=True,
-    #                          widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)',  }))
+    apellido2 = forms.CharField(label='Segundo Apellido', required=True,
+                             widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)',  }))
     email = forms.CharField(label="Correo electrónico", max_length=200, required=False,
                             widget=forms.TextInput(attrs={'class': 'form-control',}))
     cedula = forms.CharField(label="Cédula", max_length=10, required=False,
@@ -179,7 +179,8 @@ class PersonaForm(forms.Form):
 class DocenteForm(forms.Form):
     cargo = forms.ModelChoiceField(label=u"Cargo", required=False, queryset=Cargo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
     nombres = forms.CharField(label='Nombres', required=True, widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)',  }))
-    apellidos = forms.CharField(label='Apellidos', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
+    apellido1 = forms.CharField(label='Primer apellido', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
+    apellido2 = forms.CharField(label='Segundo apellido', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
     email = forms.CharField(label="Correo electrónico", max_length=200, required=False, widget=forms.TextInput(attrs={'class': 'form-control',}))
     cedula = forms.CharField(label="Cédula", max_length=10, required=False, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_numeros(event)',}))
     genero = forms.ModelChoiceField(label="Género",required=True, queryset=Genero.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))
@@ -197,7 +198,8 @@ class DocenteForm(forms.Form):
 
 class EditarPerfilForm(forms.Form):
     nombres = forms.CharField(label='Nombres', required=False, widget=forms.TextInput(attrs={'class': ' form-control','onKeyPress' : 'return solo_letras(event)', 'readonly':'readonly' }))
-    apellidos = forms.CharField(label='Apellidos', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', 'readonly':'readonly' }))
+    apellido1 = forms.CharField(label='Primer apellido', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', 'readonly':'readonly' }))
+    apellido2 = forms.CharField(label='Segundo apellido', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', 'readonly':'readonly' }))
     email = forms.CharField(label="Correo electrónico", max_length=200, required=False, widget=forms.TextInput(attrs={'class': 'form-control',}))
     cedula = forms.CharField(label="Cédula", max_length=10, required=False, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_numeros(event)', 'readonly':'readonly', 'style':'width:50%'}))
     genero = forms.ModelChoiceField(label="Género",required=True, queryset=Genero.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control',}))

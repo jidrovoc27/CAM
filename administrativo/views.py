@@ -186,7 +186,8 @@ def registrate(request):
                         persona = Persona(
                             usuario=usuario,
                             nombres=nombres,
-                            apellidos=apellidos,
+                            apellido1=apellido1,
+                            apellido2=apellido2,
                             email=email,
                             cedula=cedula,
                             genero=genero,

@@ -78,7 +78,8 @@ class Genero(ModeloBase):
 class Persona(ModeloBase):
     usuario = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     nombres = models.CharField(max_length=500, verbose_name=u'1er Nombre')
-    apellidos = models.CharField(max_length=500, verbose_name=u"1er Apellido")
+    apellido1 = models.CharField(max_length=500, verbose_name=u"1er Apellido", blank=True, null=True)
+    apellido2 = models.CharField(default='',max_length=500, verbose_name=u"2do Apellido", blank=True, null=True)
     email = models.CharField(default='', max_length=300, verbose_name=u"Correo electronico personal")
     cedula = models.CharField(max_length=13, verbose_name=u'Cédula', null=True, blank=True)
     telefono_movil = models.CharField(max_length=13, verbose_name=u"Teléfono móvil", null=True, blank=True)
@@ -95,7 +96,7 @@ class Persona(ModeloBase):
         ordering = ['id']
 
     def __str__(self):
-        return u'%s %s' % (self.apellidos, self.nombres)
+        return u'%s %s %s' % (self.apellido1, self.apellido2, self.nombres)
 
     def get_foto(self):
         if self.foto:

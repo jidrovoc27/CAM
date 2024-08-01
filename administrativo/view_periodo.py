@@ -802,7 +802,7 @@ def view_periodo(request):
                         var = request.GET['var']
                         data['var'] = var
                         filtro = filtro & (Q(nombre__icontains=var) | Q(docente__persona__nombres__icontains=var) |
-                                           Q(docente__persona__apellidos__icontains=var) |
+                                           Q(docente__persona__apellido1__icontains=var) |
                                            Q(docente__persona__cedula__icontains=var))
                         ruta_paginado += "var=" + var + "&"
                     if 'estadocurso' in request.GET:
@@ -834,7 +834,7 @@ def view_periodo(request):
                     if 'var' in request.GET:
                         var = request.GET['var']
                         data['var'] = var
-                        filtro = filtro & (Q(alumno__persona__nombres__icontains=var) | Q(alumno__persona__apellidos__icontains=var)
+                        filtro = filtro & (Q(alumno__persona__nombres__icontains=var) | Q(alumno__persona__apellido1__icontains=var)
                                            | Q(alumno__persona__cedula__icontains=var))
                         ruta_paginado += "var=" + var + "&"
                     if 'estadoinscrito' in request.GET:

@@ -1,0 +1,151 @@
+{% extends "basebs.html" %}
+{% load sga_extras %}
+{% load humanize %}
+{% load sga_extras %}
+{% block heading %}
+    <style>
+        input[type="file"] {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 3px;
+            height: 50px;
+        }
+
+        .texto_alerta {
+            color: #FC7E00;
+            margin-bottom: -9px;
+        }
+
+        #nav-footer {
+            visibility: hidden;
+        }
+
+        .caja-fixed {
+            position: sticky;
+            top: 63px;
+            z-index: 999;
+        }
+    </style>
+{% endblock %}
+
+{% block canvas %}
+
+    <div class='row-fluid'>
+        <div class='span12'>
+            <div class="headtitle">
+                <h3 class="texto-blue"><i class="fa fa-signature"></i> {{ title }}</h3>
+            </div>
+        </div>
+    </div>
+    {% if archivo_url %}
+        <div class='row-fluid'>
+            <div class="span4" id="formularioSubmit">
+                <form class="form-horizontal form-modal well" autocomplete="off" method="post" enctype="multipart/form-data" action="{{ request.path }}">
+                    {% csrf_token %}
+                    <div class="row-fluid">
+                        <input type="hidden" name="action" value="{{ action }}">
+                        <input type="hidden" name="id" value="{{ id }}">
+                        <div id="fieldset_firma" class="span12">
+                            <label class="control-label pr-2" for="id_firma"><b>Firma Electrónica<span style="color:red;margin-left:2px;"><strong>*</strong></span>&nbsp;:</b></label>
+                            <input type="file" name="firma" class="form-control" required id="id_firma" accept=".p12,.pfx" style="padding: 12px 6px !important;">
+                            <p class="help-text">Formato permitido .p12 y .pfx </p>
+                        </div>
+                        <div id="fieldset_pass" class="span12" style="float: left; padding-right: 10px;">
+                            <label class="control-label pr-2" for="id_archivo"><b>Contraseña<span style="color:red;margin-left:2px;"><strong>*</strong></span>&nbsp;:</b></label>
+                            <input type="password" name="palabraclave" class="form-control" required id="id_palabraclave" placeholder="Contraseña">
+                        </div>
+                        <input autocomplete="False" type='hidden' id="id_txtFirmas" name='txtFirmas' value=''/>
+                        <div class="span-12"><br>
+                            <div class="mt-2 text-center" style="text-align: center">
+                                <button type="submit" class="btn btn-success" id="btnFirmar"><i class="fa fa-check-circle"></i> Firmar Documento</button>
+                                <br><br><a href="javascript:void(0)" class="texto_alerta"><b>Nota:</b> Para proteger a nuestros usuarios le recordamos que ninguna firma usada en nuestras palataformas quedará guardada.</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="span8" id="cajaRender">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fa fa-bookmark"></i> <b>Recuerda:</b> Puedes <b>firmar más de una vez</b>, <b>deslizar
+                    / mover</b> la estampa y <b>doble clic para quitarla</b>.
+                </div>
+                <div class='row-fluid well caja-fixed' id="cajaAccion">
+                    <div class="span3">
+                        <div class="input-group">
+                            <button type="button"
+                                    class="btn btn-primary w-100 btn-block" id="bntPegarFirma">
+                                <i class="fa fa-tag"></i> Estampar aquí
+                            </button>
+                        </div>
+                    </div>
+                    <div class="span3">
+                        <select id="current_page" style="text-align: center; width: 100%">
+                            <option value="">
+
+                            </option>
+                        </select>
+                    </div>
+                    <div class="span6">
+                    <span id="firmasInfo">
+                    </span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div id="fileContainer" style="width: 100%;">
+                        <div id="fileViewer" style="width: 100%;">
+                            <canvas id="fileRendered"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row-fluid">
+            <div class="span12" style="text-align: center">
+                <i class="fa fa-times text-error"></i> Debe enviar un archivo a firmar.
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block moreblock %}
+    <script src="/static/firmaec/pdf.js"></script>
+    <script src="/static/firmaec/pdf.worker.js"></script>
+    <script src="/static/firmaec/konva.min.js"></script>
+    {% include 'adm_firmardocumentos/script.html' %}
+
+
+    <div class="modal fade static" id="itemcerrar" style="display: none;">
+        <div class="modal-body">
+            <div class="row-fluid">
+                <div class="col-lg-12" style="text-align: center">
+                    <i class="fa fa-refresh fa-spin"></i> No cierre la ventana hasta que se descargue el documento, una vez descargado el sera guardado automaticamente con la firma.<br>
+                    <a onclick="window.close()" class="btn btn-danger"><i class="fa fa-time"></i> Cerrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('#formularioSubmit').submit(function (e) {
+            bloqueointerface();
+            var funcfirma = funcionAntesDeGuardarFirma();
+            if (!funcfirma) {
+                e.preventDefault();
+                $.unblockUI();
+                return false;
+            } else {
+                $('#itemcerrar').modal({"backdrop": "static"}).modal('show');
+                $.unblockUI();
+            }
+        });
+
+        window.addEventListener('beforeunload', function () {
+            window.opener.location.reload(); // Recargar la ventana principal
+        });
+
+    </script>
+{% endblock %}

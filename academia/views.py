@@ -755,7 +755,7 @@ def dashboard(request):
                     data['titulo_formulario'] = 'Editar perfil'
                     data['peticion'] = 'editperfil'
                     data['alumno'] = alumno = Persona.objects.get(id=persona_logeado.id)
-                    form = EditarPerfilForm(initial={'nombres': alumno.nombres, 'apellidos': alumno.apellidos,
+                    form = EditarPerfilForm(initial={'nombres': alumno.nombres, 'apellidos': alumno.apellido1,
                                                      'email': alumno.email, 'cedula': alumno.cedula,
                                                      'genero': alumno.genero,
                                                      'telefono_movil': alumno.telefono_movil,
@@ -1103,7 +1103,7 @@ def dashboard(request):
                         'activo': examen.activo,
                     })
                     inscritos = curso.inscritocursoa_set.filter(status=True)
-                    data['inscritos'] = inscritos.order_by('inscrito__apellidos') if inscritos.exists() else inscritos
+                    data['inscritos'] = inscritos.order_by('inscrito__apellido1') if inscritos.exists() else inscritos
                     lista_inscritos = InscritosRecuperacionTest.objects.filter(status=True, examen=examen)
                     data['lista_inscritos'] = lista_inscritos.values_list('inscrito_id', flat=True)
                     form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True, modelo=curso.modeloevaluativo)
@@ -1158,7 +1158,7 @@ def dashboard(request):
                             return render(request, "academia/docente/resumen.html", data)
                         elif option == 'participants':
                             data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by(
-                                'inscrito__apellidos')
+                                'inscrito__apellido1')
                             return render(request, "academia/docente/participantes.html", data)
                         elif option == 'addactv':
                             data['infoactv'] = True
@@ -1250,7 +1250,7 @@ def dashboard(request):
             if peticion == 'calificar':
                 try:
                     data['curso'] = curso = CursoA.objects.get(id=int(request.GET['course']))
-                    data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by('inscrito__apellidos')
+                    data['inscritos'] = InscritoCursoA.objects.filter(status=True, curso=curso).order_by('inscrito__apellido1')
                     data['option'] = option = request.GET['option']
                     data['is_cursos'] = 'is_cursos'
                     if 'id' in request.GET:
@@ -1283,7 +1283,7 @@ def dashboard(request):
                     data['peticion'] = 'add_test'
                     data['curso'] = cursoA = CursoA.objects.get(id=int(request.GET['id']))
                     inscritos = cursoA.inscritocursoa_set.filter(status=True)
-                    data['inscritos'] = inscritos.order_by('inscrito__apellidos') if inscritos.exists() else inscritos
+                    data['inscritos'] = inscritos.order_by('inscrito__apellido1') if inscritos.exists() else inscritos
                     form = AgregarTestForm()
                     form.fields['detalle'].queryset = DetalleModeloEvaluativoA.objects.filter(status=True,
                                                                                               modelo=cursoA.modeloevaluativo)
@@ -1497,7 +1497,8 @@ def registrate(request):
                         persona = Persona(
                             usuario=usuario,
                             nombres=nombres,
-                            apellidos=apellidos,
+                            apellido1=apellido1,
+                            apellido2=apellido2,
                             email=email,
                             cedula=cedula,
                             genero=genero,

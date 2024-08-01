@@ -198,7 +198,7 @@ def view_sesioncaja(request):
                     var = request.GET['var']
                     data['var'] = var
                     filtro = filtro & (Q(caja__persona__nombres__icontains=var) |
-                                       Q(caja__persona__apellidos__icontains=var) |
+                                       Q(caja__persona__apellido1__icontains=var) |
                                        Q(caja__persona__cedula__icontains=var) |
                                        Q(caja__nombre__icontains=var))
                     ruta_paginado += "?var=" + var + "&"

@@ -133,7 +133,7 @@ def view_miscursos(request):
                         var = request.GET['var']
                         data['var'] = var
                         filtro = filtro & (Q(alumno__persona__nombres__icontains=var) |
-                                           Q(alumno__persona__apellidos__icontains=var) |
+                                           Q(alumno__persona__apellido1__icontains=var) |
                                            Q(alumno__persona__cedula__icontains=var))
                         ruta_paginado += "var=" + var + "&"
                     lista = InscritoCurso.objects.filter(filtro).order_by('id')

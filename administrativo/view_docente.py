@@ -57,7 +57,8 @@ def view_docente(request):
                         username = form.cleaned_data['nombres']
                         password = form.cleaned_data['nombres'].replace(' ','')
                         nombres = form.cleaned_data['nombres']
-                        apellidos = form.cleaned_data['apellidos']
+                        apellido1 = form.cleaned_data['apellido1']
+                        apellido2 = form.cleaned_data['apellido2']
                         cedula = form.cleaned_data['cedula']
                         genero = form.cleaned_data['genero']
                         ciudad = form.cleaned_data['ciudad']
@@ -78,8 +79,8 @@ def view_docente(request):
                             usuario=usuario,
                             nombres=nombres,
                             # nombre2=nombre2,
-                            apellidos=apellidos,
-                            # apellido2=apellido2,
+                            apellido1=apellido1,
+                            apellido2=apellido2,
                             email=email,
                             cedula=cedula,
                             genero=genero,
@@ -129,7 +130,8 @@ def view_docente(request):
                         docente.save(request)
                         persona = Persona.objects.get(pk = docente.persona_id)
                         persona.nombres =request.POST['nombres']
-                        persona.apellidos=request.POST['apellidos']
+                        persona.apellido1=request.POST['apellido1']
+                        persona.apellido2=request.POST['apellido2']
                         persona.email=request.POST['email']
                         persona.cedula=request.POST['cedula']
                         persona.genero_id=request.POST['genero']
@@ -255,7 +257,8 @@ def view_docente(request):
                     form = DocenteForm(initial={
                         'cargo':docente.cargo,
                         'nombres':docente.persona.nombres,
-                        'apellidos': docente.persona.apellidos,
+                        'apellido1': docente.persona.apellido1,
+                        'apellido2': docente.persona.apellido2,
                         'email': docente.persona.email,
                         'cedula': docente.persona.cedula,
                         'genero': docente.persona.genero,
@@ -344,7 +347,7 @@ def view_docente(request):
                     var = request.GET['var']
                     data['var'] = var
                     filtro = filtro & (Q(persona__nombres__icontains=var) |
-                                       Q(persona__apellidos__icontains=var) |
+                                       Q(persona__apellido1__icontains=var) |
                                        Q(persona__cedula__icontains=var))
                     ruta_paginado += "?var=" + var + "&"
                 lista = Docente.objects.filter(filtro).order_by('id')

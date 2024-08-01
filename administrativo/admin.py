@@ -41,8 +41,8 @@ class GeneroAdmin(admin.ModelAdmin):
 class PersonaAdmin(admin.ModelAdmin):
     '''Admin View for Persona'''
 
-    list_display = ('usuario','nombres','apellidos','cedula','genero','telefono_movil','telefono_convencional','email','usuario_creacion','fecha_creacion','usuario_modificacion','fecha_modificacion','status',)
-    search_fields = ('apellidos','nombres','email',)
+    list_display = ('usuario','nombres','apellido1', 'apellido2','cedula','genero','telefono_movil','telefono_convencional','email','usuario_creacion','fecha_creacion','usuario_modificacion','fecha_modificacion','status',)
+    search_fields = ('apellido1', 'apellido2','nombres','email',)
 
 @admin.register(Alumno)
 class AlumnoAdmin(admin.ModelAdmin):

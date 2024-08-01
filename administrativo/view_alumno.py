@@ -56,8 +56,8 @@ def view_alumno(request):
                         password = form.cleaned_data['cedula'].replace(' ','')
                         nombres = form.cleaned_data['nombres']
                         # nombre2 = form.cleaned_data['nombre2']
-                        apellidos = form.cleaned_data['apellidos']
-                        # apellido2 = form.cleaned_data['apellido2']
+                        apellido1 = form.cleaned_data['apellido1']
+                        apellido2 = form.cleaned_data['apellido2']
                         cedula = form.cleaned_data['cedula']
                         genero = form.cleaned_data['genero']
                         ciudad = form.cleaned_data['ciudad']
@@ -78,8 +78,8 @@ def view_alumno(request):
                             usuario=usuario,
                             nombres=nombres,
                             # nombre2=nombre2,
-                            apellidos=apellidos,
-                            # apellido2=apellido2,
+                            apellido1=apellido1,
+                            apellido2=apellido2,
                             email=email,
                             cedula=cedula,
                             genero=genero,
@@ -125,7 +125,8 @@ def view_alumno(request):
                         paciente = Alumno.objects.get(pk=request.POST['id'])
                         persona = Persona.objects.get(pk = paciente.persona_id)
                         persona.nombres =request.POST['nombres']
-                        persona.apellidos=request.POST['apellidos']
+                        persona.apellido1=request.POST['apellido1']
+                        persona.apellido2=request.POST['apellido2']
                         persona.email=request.POST['email']
                         persona.cedula=request.POST['cedula']
                         persona.genero_id=request.POST['genero']
@@ -251,7 +252,8 @@ def view_alumno(request):
                     data['alumno'] = alumno = Alumno.objects.get(pk=request.GET['id'])
                     form = PersonaForm(initial={
                         'nombres':alumno.persona.nombres,
-                        'apellidos': alumno.persona.apellidos,
+                        'apellido1': alumno.persona.apellido1,
+                        'apellido2': alumno.persona.apellido2,
                         'email': alumno.persona.email,
                         'cedula': alumno.persona.cedula,
                         'genero': alumno.persona.genero,
@@ -319,7 +321,7 @@ def view_alumno(request):
                     var = request.GET['var']
                     data['var'] = var
                     filtro = filtro & (Q(persona__nombres__icontains=var) |
-                                       Q(persona__apellidos__icontains=var) |
+                                       Q(persona__apellido1__icontains=var) |
                                        Q(persona__cedula__icontains=var))
                     ruta_paginado += "?var=" + var + "&"
                 lista = Alumno.objects.filter(filtro).order_by('id')
