@@ -11,7 +11,6 @@ from django.core.files.base import ContentFile
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.db import transaction
-from pdf2image import convert_from_bytes
 
 
 from administrativo.models import Persona
