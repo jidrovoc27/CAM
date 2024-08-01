@@ -10,7 +10,7 @@ from django.contrib import messages
 from endesive.pdf import cms
 from PIL import Image
 import random
-import pyqrcode
+
 from endesive.signer import cert2asn
 from pdf2image import convert_from_bytes
 from datetime import datetime
