@@ -117,7 +117,7 @@ def view_firmardocumentos(request):
             if 'action' in request.GET:
                 data['action'] = action = request.GET['action']
 
-            data['title'] = f'Firmar documentos (Firma EC)'
+            data['titulo'] = f'Firmar documentos electrónicamente'
             return render(request, 'administrativo/firmardocumentos/view.html', data)
         except Exception as ex:
             texto_notify = 'Error al acceder, {} error en la linea: {}'.format(str(ex), sys.exc_info()[-1].tb_lineno)
