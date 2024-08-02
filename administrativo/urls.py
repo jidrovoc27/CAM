@@ -54,5 +54,5 @@ path(r'', dashboard, name='dashboard'),
     path(r'CAM/', paginaweb, name='paginaweb'),
 
     #MÓDULO FIRMAR DOCUMENTOS
-    path(r'firmardocumentos/',view_firmardocumentos ,name='firmardocumentos'),
+    #path(r'firmardocumentos/',view_firmardocumentos ,name='firmardocumentos'),
 ]
