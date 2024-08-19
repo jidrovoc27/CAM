@@ -96,7 +96,7 @@ class Persona(ModeloBase):
         ordering = ['id']
 
     def __str__(self):
-        return u'%s %s %s' % (self.apellido1, self.apellido2, self.nombres)
+        return "{} {} {}".format(self.apellido1 or '', self.apellido2 or '', self.nombres or '')
 
     def get_foto(self):
         if self.foto:
