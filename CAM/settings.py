@@ -172,3 +172,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'aerolinefly@gmail.com'
 EMAIL_HOST_PASSWORD = 'chdtrfnftdufpvnw'
 EMAIL_PORT = 587
+SITE_STORAGE = os.path.dirname(os.path.realpath("../manage.py"))
+SITE_POPPLER = ''
