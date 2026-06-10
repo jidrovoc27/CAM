@@ -123,8 +123,8 @@ class RegistroUsuarioForm(UserCreationForm):
         }
 
 class ModuloForm(forms.Form):
-    nombre = forms.CharField(label='Nombre', required=True,
-                             widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
+    categoria = forms.ModelChoiceField(label="Categoría", required=True, queryset=CategoriaModulo.objects.filter(status=True), widget=forms.Select(attrs={'class': 'form-control', }))
+    nombre = forms.CharField(label='Nombre', required=True, widget=forms.TextInput(attrs={'class': 'form-control','onKeyPress' : 'return solo_letras(event)', }))
     descripcion = forms.CharField(label='Descripción', required=True,
                                   widget=forms.TextInput(attrs={'class': ' form-control ','onKeyPress' : 'return solo_letras(event)', }))
     ruta = forms.CharField(label='Ruta', required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))

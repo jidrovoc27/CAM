@@ -41,6 +41,7 @@ def view_modulo(request):
                         if campos_repetidos:
                             return JsonResponse({"respuesta": False, "mensaje": "registro ya existe.",'repetidos':campos_repetidos})
                         modulo = Modulo(
+                            categoria=form.cleaned_data['categoria'],
                             nombre=form.cleaned_data['nombre'],
                             descripcion=form.cleaned_data['descripcion'],
                             icono=form.cleaned_data['icono'],
@@ -71,6 +72,7 @@ def view_modulo(request):
                             return JsonResponse({"respuesta": False, "mensaje": "registro ya existe.",
                                                      'repetidos': campos_repetidos})
                         modulo = Modulo.objects.get(pk=request.POST['id'])
+                        modulo.categoria = form.cleaned_data['categoria']
                         modulo.nombre = form.cleaned_data['nombre']
                         modulo.descripcion = form.cleaned_data['descripcion']
                         if form.cleaned_data['icono']:
