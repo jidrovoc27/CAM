@@ -1,137 +1,256 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load adiciones %}
-{#{% load humanize %}#}
+
 {% block contenido %}
-    <div class="col-lg-9 col-md-8 col-12">
-        <!-- Card -->
-        <div class="card mb-4">
-            <!-- Card header -->
-            <div class="card-header">
-                <h3 class="mb-0">{{ examen.nombre }}</h3>
-                <br>
-                <h5>
-                    Hola a todos. Este es el examen. Tienen {{ examen.duracion }} para realizar el examen.
-                    <br>
-                    Recuerden leer atentamente cada consigna y sus opciones de respuesta. No dejen ninguna pregunta sin
-                    marcar.
-                    <br>
-                    ¡Éxitos!
-                </h5>
-            </div>
-            <!-- Card body -->
-            <div class="card-body">
-                <!-- Form -->
-                <div class="table-responsive border-0 overflow-y-hidden">
-                    <table class="table mb-0 text-nowrap">
-                        <thead class="table-light">
-                        <tr>
-                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Intentos
-                                permitidos: 1
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Este
-                                cuestionario está abierto el {{ examen.fecha_inicio|date:"d-m-Y H:i" }}</th>
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Este
-                                cuestionario se cierra el {{ fecha_final|date:"d-m-Y H:i" }}</th>
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Límite de
-                                tiempo: {{ examen.duracion }}</th>
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0 text-center" colspan="6" style="background: white">Método de
-                                calificación: Primer intento
-                            </th>
-                        </tr>
-                        {% with rindio_examen=examen|args:inscrito.id|call:'rindio_examen' %}
-                            {% if not rindio_examen and fechaactual >= examen.fecha_inicio and fechaactual <= fecha_final %}
-                                <tr>
-                                    <th scope="col" class="border-0 text-center" colspan="6" style="background: white">
-                                        <a href="?peticion=rendirexamen&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" class="btn btn-primary" style="background: blue; font-size: 12px">Intentar resolver el cuestionario ahora</a>
-                                    </th>
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <th scope="col" class="border-0 text-left" colspan="6" style="background: white">
-                                        <h5>Resúmen de sus intentos previos</h5>
-                                    </th>
-                                </tr>
-                                <table class="table mb-0 text-nowrap">
-                                    <thead class="table-light">
-                                    <tr>
-                                        <th scope="col" class="border-0 text-left" colspan="3" style="background: white">
-                                            Cuestionario
-                                        </th>
-                                        <th scope="col" class="border-0 text-center" colspan="2"
-                                            style="background: white;text-align:right">
-                                            Fecha inicio
-                                        </th>
-                                        <th scope="col" class="border-0 text-center" colspan="2"
-                                            style="background: white;text-align:right">
-                                            Fecha terminación
-                                        </th>
-                                        <th scope="col" class="border-0 text-center" colspan="2"
-                                            style="background: white;text-align:right">
-                                            Calificación
-                                        </th>
-                                        <th scope="col" class="border-0 text-right" colspan="2"
-                                            style="background: white;text-align:right">
-                                            Acciones
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for examenrendido in examenesrendidos %}
-                                        <tr>
-                                            <td scope="col" class="border-0 text-left" colspan="3"
-                                                style="background: gray;color: white;opacity: 80%">{{ examenrendido.examen.nombre }}</td>
-                                            <td scope="col" class="border-0 text-center" colspan="2"
-                                                style="background: gray;color: white;opacity: 80%">{{ examenrendido.fecha_inicio|date:"d-m-Y H:i" }}</td>
-                                            <td scope="col" class="border-0 text-center" colspan="2"
-                                                style="background: gray;color: white;opacity: 80%">{{ examenrendido.fecha_termina|date:"d-m-Y H:i" }}</td>
-                                            <td scope="col" class="border-0 text-center" colspan="2"
-                                                style="background: gray;color:white;opacity: 80%;text-align:center">{% if fechaactual > examen.fecha_nota %}{{ examenrendido.calificacionfinal }}{% else %}---{% endif %}</td>
-                                            <td scope="col" class="border-0 text-right" colspan="2"
-                                                style="background: gray;color:white;opacity: 80%;text-align:right">
-                                                <a href="?peticion=reviewanswers&id={{ cursoA.id|encrypt }}&idex={{ examenrendido.examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}" style="cursor: pointer;color: white">Revisión</a></td>
-                                        </tr>
-                                    {% empty %}
-                                        <tr>
-                                            <th scope="col" class="border-0 text-center" colspan="12"
-                                                style="background: white">
-                                                No registra intentos
-                                            </th>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            {% endif %}
-                        {% endwith %}
-                        </thead>
-                    </table>
-                    <br>
-                    {% if puedesubirtarea %}
-                        {% if nota %}
-                            {% if nota.estado == 1 %}
-                                <div class="col-6 text-end" style="float: right">
-                                <a class="btn btn-outline-dark btn-sm mb-0"
-                                   href="?peticion=edit_tarea&nota={{ nota.id }}&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
-                                        class="material-icons text-sm"></i>Editar entrega</a>
-                            {% endif %}
-                        {% else %}
-                            <div class="col-6 text-end" style="float: right">
-                                <a class="btn btn-outline-dark btn-sm mb-0"
-                                   href="?peticion=add_tarea&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
-                                        class="material-icons text-sm"></i>Agregar entrega</a>
-                            </div>
-                        {% endif %}
-                    {% endif %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    .exam-wrap { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 1rem; }
+
+    .fin-card {
+        background: #fff; border: 1px solid #e2e8f0;
+        border-radius: 12px; overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+
+    .card-hdr {
+        padding: .9rem 1.25rem; border-bottom: 1px solid #f1f5f9;
+        background: #fafbfd; display: flex; align-items: center; gap: .65rem;
+    }
+    .card-hdr .hdr-icon {
+        width: 32px; height: 32px; border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: .85rem; flex-shrink: 0;
+    }
+    .icon-exam    { background: linear-gradient(135deg,#fbbf24,#d97706); }
+    .icon-history { background: linear-gradient(135deg,#60a5fa,#1192CF); }
+    .card-hdr h5  { font-size: .92rem; font-weight: 700; color: #1e293b; margin: 0; }
+
+    /* Info cards */
+    .exam-info-body { padding: 1.1rem 1.25rem; }
+
+    .exam-title { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 .4rem; }
+    .exam-desc  { font-size: .84rem; color: #475569; line-height: 1.65; margin: 0; }
+
+    .info-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: .65rem; margin-top: 1rem;
+    }
+
+    .info-pill {
+        background: #f8fafc; border: 1px solid #e2e8f0;
+        border-radius: 10px; padding: .7rem .9rem;
+    }
+    .info-pill .ip-label {
+        font-size: .67rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .08em; color: #94a3b8; margin-bottom: .2rem;
+    }
+    .info-pill .ip-val {
+        font-size: .85rem; font-weight: 600; color: #1e293b;
+        display: flex; align-items: center; gap: .35rem;
+    }
+    .info-pill .ip-val i { color: #1192CF; font-size: .8rem; }
+
+    /* Botón rendir */
+    .btn-rendir {
+        display: inline-flex; align-items: center; gap: .5rem;
+        background: #1192CF; color: #fff;
+        font-size: .88rem; font-weight: 600;
+        padding: .65rem 1.4rem; border-radius: 9px;
+        text-decoration: none; transition: background .15s, transform .1s;
+        margin-top: 1.1rem;
+    }
+    .btn-rendir:hover { background: #0e7ab0; color: #fff; transform: translateY(-1px); }
+
+    .btn-rendir-wrap {
+        padding: 1.1rem 1.25rem 1.25rem;
+        display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .rendir-note {
+        font-size: .78rem; color: #64748b;
+        display: flex; align-items: center; gap: .35rem;
+    }
+
+    /* Tabla de intentos */
+    .intentos-table { width: 100%; border-collapse: collapse; }
+
+    .intentos-table thead tr { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+    .intentos-table thead th {
+        font-size: .7rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .07em; color: #94a3b8; padding: .7rem 1.1rem; white-space: nowrap;
+    }
+
+    .intentos-table tbody tr {
+        border-bottom: 1px solid #f1f5f9; transition: background .1s;
+    }
+    .intentos-table tbody tr:last-child { border-bottom: none; }
+    .intentos-table tbody tr:hover { background: #f8faff; }
+
+    .intentos-table tbody td {
+        padding: .75rem 1.1rem; font-size: .83rem; color: #334155; vertical-align: middle;
+    }
+
+    .nota-circle {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 38px; height: 38px; border-radius: 50%;
+        font-weight: 700; font-size: .82rem;
+    }
+    .nota-alta  { background: #dcfce7; color: #15803d; }
+    .nota-media { background: #fef9c3; color: #854d0e; }
+    .nota-baja  { background: #fee2e2; color: #dc2626; }
+    .nota-oculta{ background: #f1f5f9; color: #94a3b8; }
+
+    .btn-revision {
+        display: inline-flex; align-items: center; gap: .35rem;
+        font-size: .75rem; font-weight: 600;
+        background: #eff6ff; color: #1192CF;
+        padding: .3rem .75rem; border-radius: 7px;
+        text-decoration: none; transition: background .12s;
+    }
+    .btn-revision:hover { background: #dbeafe; color: #1d4ed8; }
+
+    .sin-intentos {
+        text-align: center; padding: 2rem 1rem; color: #94a3b8;
+    }
+    .sin-intentos i { font-size: 1.8rem; display: block; margin-bottom: .5rem; }
+    .sin-intentos p { font-size: .82rem; margin: 0; }
+</style>
+
+<div class="exam-wrap">
+
+    <!-- ── INFO DEL EXAMEN ── -->
+    <div class="fin-card">
+        <div class="card-hdr">
+            <div class="hdr-icon icon-exam"><i class="fe fe-edit-3"></i></div>
+            <h5>{{ examen.nombre }}</h5>
+        </div>
+        <div class="exam-info-body">
+            <p class="exam-desc">
+                Hola a todos. Este es el examen. Tienen <strong>{{ examen.duracion }}</strong> para realizarlo.
+                Recuerden leer atentamente cada consigna. No dejen ninguna pregunta sin marcar. ¡Éxitos!
+            </p>
+
+            <div class="info-grid">
+                <div class="info-pill">
+                    <div class="ip-label">Intentos permitidos</div>
+                    <div class="ip-val"><i class="fe fe-refresh-cw"></i> 1 intento</div>
+                </div>
+                <div class="info-pill">
+                    <div class="ip-label">Apertura</div>
+                    <div class="ip-val">
+                        <i class="fe fe-calendar"></i>
+                        {{ examen.fecha_inicio|date:"d/m/Y H:i" }}
                     </div>
+                </div>
+                <div class="info-pill">
+                    <div class="ip-label">Cierre</div>
+                    <div class="ip-val">
+                        <i class="fe fe-calendar"></i>
+                        {{ fecha_final|date:"d/m/Y H:i" }}
+                    </div>
+                </div>
+                <div class="info-pill">
+                    <div class="ip-label">Límite de tiempo</div>
+                    <div class="ip-val"><i class="fe fe-clock"></i> {{ examen.duracion }}</div>
+                </div>
+                <div class="info-pill">
+                    <div class="ip-label">Método de calificación</div>
+                    <div class="ip-val"><i class="fe fe-award"></i> Primer intento</div>
                 </div>
             </div>
         </div>
+
+        {% with rindio_examen=examen|args:inscrito.id|call:'rindio_examen' %}
+        {% if not rindio_examen and fechaactual >= examen.fecha_inicio and fechaactual <= fecha_final %}
+            <div class="btn-rendir-wrap" style="border-top:1px solid #f1f5f9; background:#fafbfd;">
+                <a class="btn-rendir"
+                   href="?peticion=rendirexamen&id={{ cursoA.id|encrypt }}&idex={{ examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}">
+                    <i class="fe fe-play-circle"></i> Intentar resolver el cuestionario
+                </a>
+                <span class="rendir-note">
+                    <i class="fe fe-info"></i>
+                    Asegúrate de tener tiempo suficiente antes de comenzar.
+                </span>
+            </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- ── HISTORIAL DE INTENTOS ── -->
+    {% with rindio_examen=examen|args:inscrito.id|call:'rindio_examen' %}
+    {% if rindio_examen or fechaactual > fecha_final %}
+    <div class="fin-card">
+        <div class="card-hdr">
+            <div class="hdr-icon icon-history"><i class="fe fe-list"></i></div>
+            <h5>Resumen de intentos previos</h5>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="intentos-table">
+                <thead>
+                    <tr>
+                        <th>Cuestionario</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th style="text-align:center;">Calificación</th>
+                        <th style="text-align:center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for examenrendido in examenesrendidos %}
+                    <tr>
+                        <td style="font-weight:600; color:#1e293b;">
+                            {{ examenrendido.examen.nombre }}
+                        </td>
+                        <td>
+                            <span style="font-size:.8rem; color:#64748b;">
+                                <i class="fe fe-calendar" style="font-size:.75rem;"></i>
+                                {{ examenrendido.fecha_inicio|date:"d/m/Y H:i" }}
+                            </span>
+                        </td>
+                        <td>
+                            <span style="font-size:.8rem; color:#64748b;">
+                                <i class="fe fe-calendar" style="font-size:.75rem;"></i>
+                                {{ examenrendido.fecha_termina|date:"d/m/Y H:i" }}
+                            </span>
+                        </td>
+                        <td style="text-align:center;">
+                            {% if fechaactual > examen.fecha_nota %}
+                                {% with cal=examenrendido.calificacionfinal %}
+                                <span class="nota-circle
+                                    {% if cal >= 70 %}nota-alta
+                                    {% elif cal >= 50 %}nota-media
+                                    {% else %}nota-baja{% endif %}">
+                                    {{ cal }}
+                                </span>
+                                {% endwith %}
+                            {% else %}
+                                <span class="nota-circle nota-oculta">—</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center;">
+                            <a class="btn-revision"
+                               href="?peticion=reviewanswers&id={{ cursoA.id|encrypt }}&idex={{ examenrendido.examen.id|encrypt }}&inscrito={{ inscrito.id|encrypt }}">
+                                <i class="fe fe-eye"></i> Revisión
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="sin-intentos">
+                                <i class="fe fe-inbox"></i>
+                                <p>No registra intentos previos.</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+</div>
 {% endblock %}

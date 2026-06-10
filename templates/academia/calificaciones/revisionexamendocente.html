@@ -1,105 +1,233 @@
 {% extends 'baseexamen.html' %}
 {% load static %}
 {% load adiciones %}
-{#{% load humanize %}#}
-{% block script %}
-    <script>
-        var checkboxes = document.querySelectorAll('.checkbox-input');
 
-        checkboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
-                checkboxes.forEach(function (otherCheckbox) {
-                    if (otherCheckbox !== checkbox) {
-                        otherCheckbox.checked = false;
-                    }
-                });
+{% block script %}
+<script>
+    var checkboxes = document.querySelectorAll('.checkbox-input');
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            checkboxes.forEach(function (other) {
+                if (other !== checkbox) other.checked = false;
             });
         });
-    </script>
-    <script>
+    });
 
-        function obtenerrespuesta() {
-            var checkboxes = document.querySelectorAll('.checkbox-input');
-
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked) {
-                    return checkboxes[i].getAttribute('data-value');
-                }
-            }
+    function obtenerrespuesta() {
+        var checkboxes = document.querySelectorAll('.checkbox-input');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) return checkboxes[i].getAttribute('data-value');
         }
+    }
 
-        function elegirrespuesta() {
-            var idl = obtenerrespuesta()
-            if (idl) {
-                enviarpeticion('POST', '/moodle/', {
-                    peticion: 'marcarrespuesta',
-                    'id':{{ cursoA.id }},
-                    'literal': idl,
-                    'inscrito':{{ inscrito.id }},
-                    'idex':{{ examen.id }},
-                    'inscrito':{{ inscrito.id }},
-                    'q':{{ preguntaactual.id }},
-                });
-            } else {
-                Swal.fire("Por favor, escoja una de las opciones presentadas");
-            }
+    function elegirrespuesta() {
+        var idl = obtenerrespuesta();
+        if (idl) {
+            enviarpeticion('POST', '/moodle/', {
+                peticion: 'marcarrespuesta',
+                'id': {{ cursoA.id }},
+                'literal': idl,
+                'inscrito': {{ inscrito.id }},
+                'idex': {{ examen.id }},
+                'q': {{ preguntaactual.id }},
+            });
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin selección',
+                text: 'Por favor, escoja una de las opciones presentadas.',
+                confirmButtonColor: '#1192CF'
+            });
         }
-    </script>
+    }
+</script>
 {% endblock %}
-{% block contenido %}
-    <div class="col-lg-9 col-md-8 col-12">
-        <!-- Card -->
-        <div class="card mb-4">
-            <!-- Card header -->
-            <div class="card-header">
-                <h5>
-                    {{ preguntaactual.enunciado }}
-                    <br>
-                    Equivale a {{ preguntaactual.calificacion }} puntos.
-                </h5>
-            </div>
-            <!-- Card body -->
-            <div class="card-body" style="margin-top: -50px">
-                <!-- Form -->
-                <div class="table-responsive border-0 overflow-y-hidden">
-                    <table class="table mb-0 text-nowrap">
-                        <thead class="table-light">
-                        <tr>
-                            <th scope="col" class="border-0 text-left" colspan="6" style="background: white">Seleccione
-                                una:
-                            </th>
-                        </tr>
-                        {% for literal in preguntaactual.mis_literales %}
-                            <tr>
-                                <th scope="col" class="border-0 text-left"
-                                    style="background: white;width:10%;text-align: center">
-                                    {% if literal.es_seleccionado %}<i class="fe fe-{% if literal.es_seleccionado and literal.es_respuesta_correcta %}check text-success{% elif literal.es_seleccionado and not literal.es_respuesta_correcta %}x text-danger{% endif %}"></i>{% else %}<i class="fe fe-bold" style="visibility: hidden"></i>{% endif %}
-                                    <input
-                                            {% if literal.es_seleccionado %}checked{% endif %}
-                                            data-value="{{ literal.id }}"
-                                            type="checkbox" class="checkbox-input" disabled style="cursor: pointer;">
-                                </th>
-                                <th scope="col" class="border-0 text-left" style="background: white">
-                                    <div style="width: 100%; word-wrap: break-word; white-space: normal;background: white">
-                                        {{ literal.texto }}
-                                    </div>
-                                </th>
-                            </tr>
-                            <br>
-                        {% endfor %}
 
-                        </thead>
-                    </table>
-                <br>
-                    <div class="btn btn-success" style="text-align: left;opacity: 90%;width: 100%">
-                        <b>Respuesta correcta:</b>
-                        <br>
-                        <br>
-                        {{ preguntaactual.consultar_respuestacorrecta }}
-                    </div>
-                    <br>
-                </div>
+{% block contenido %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    .review-wrap { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 1rem; }
+
+    .fin-card {
+        background: #fff; border: 1px solid #e2e8f0;
+        border-radius: 12px; overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+
+    /* Header pregunta */
+    .q-header { padding: 1.1rem 1.25rem; border-bottom: 1px solid #f1f5f9; }
+
+    .q-meta {
+        display: flex; align-items: center; gap: .6rem;
+        margin-bottom: .65rem; flex-wrap: wrap;
+    }
+    .q-badge {
+        font-size: .7rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .07em; background: #eff6ff; color: #1192CF;
+        padding: .25rem .65rem; border-radius: 20px;
+    }
+    .q-puntos {
+        font-size: .75rem; font-weight: 600;
+        background: #fef9c3; color: #854d0e;
+        padding: .25rem .65rem; border-radius: 20px;
+        display: flex; align-items: center; gap: .3rem;
+    }
+
+    .q-enunciado {
+        font-size: .95rem; font-weight: 600; color: #1e293b;
+        line-height: 1.6; margin: 0;
+    }
+
+    /* Opciones */
+    .opciones-body { padding: .9rem 1.25rem; display: flex; flex-direction: column; gap: .5rem; }
+
+    .opcion-label {
+        font-size: .75rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .07em; color: #94a3b8; margin-bottom: .2rem;
+        display: block;
+    }
+
+    .opcion-item {
+        display: flex; align-items: flex-start; gap: .85rem;
+        padding: .75rem 1rem;
+        border: 1px solid #e2e8f0; border-radius: 10px;
+        transition: border-color .12s, background .12s;
+        cursor: default;
+    }
+
+    /* Estado correcta */
+    .opcion-correcta {
+        border-color: #86efac;
+        background: #f0fdf4;
+    }
+    /* Estado incorrecta seleccionada */
+    .opcion-incorrecta {
+        border-color: #fca5a5;
+        background: #fef2f2;
+    }
+    /* Seleccionada sin resultado visible */
+    .opcion-seleccionada {
+        border-color: #93c5fd;
+        background: #eff6ff;
+    }
+
+    .opcion-icono {
+        width: 22px; height: 22px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .75rem; flex-shrink: 0; margin-top: 1px;
+    }
+    .icono-correcto   { background: #dcfce7; color: #15803d; }
+    .icono-incorrecto { background: #fee2e2; color: #dc2626; }
+    .icono-neutro     { background: #f1f5f9; color: #94a3b8; }
+
+    .opcion-check {
+        width: 18px; height: 18px;
+        border: 2px solid #cbd5e1; border-radius: 4px;
+        flex-shrink: 0; margin-top: 2px;
+        display: flex; align-items: center; justify-content: center;
+        background: #fff;
+    }
+    .opcion-check.checked { background: #1192CF; border-color: #1192CF; }
+    .opcion-check.checked::after {
+        content: ''; width: 5px; height: 9px;
+        border: 2px solid #fff; border-top: none; border-left: none;
+        transform: rotate(45deg) translateY(-1px);
+    }
+    .opcion-check.correct { background: #15803d; border-color: #15803d; }
+    .opcion-check.correct::after {
+        content: ''; width: 5px; height: 9px;
+        border: 2px solid #fff; border-top: none; border-left: none;
+        transform: rotate(45deg) translateY(-1px);
+    }
+
+    .opcion-texto {
+        font-size: .86rem; color: #334155; line-height: 1.55;
+        word-break: break-word; white-space: normal; flex: 1;
+    }
+
+    /* Respuesta correcta */
+    .respuesta-correcta-box {
+        margin: 0 1.25rem 1.25rem;
+        background: #f0fdf4; border: 1px solid #86efac;
+        border-radius: 10px; padding: .85rem 1rem;
+    }
+    .respuesta-correcta-box .rc-label {
+        font-size: .7rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .08em; color: #15803d;
+        display: flex; align-items: center; gap: .35rem;
+        margin-bottom: .4rem;
+    }
+    .respuesta-correcta-box .rc-text {
+        font-size: .86rem; color: #1e293b; font-weight: 500; line-height: 1.55;
+    }
+</style>
+
+<div class="review-wrap">
+    <div class="fin-card">
+
+        <!-- Header con enunciado -->
+        <div class="q-header">
+            <div class="q-meta">
+                <span class="q-badge"><i class="fe fe-help-circle" style="font-size:.7rem;"></i> Pregunta</span>
+                <span class="q-puntos">
+                    <i class="fe fe-star" style="font-size:.7rem;"></i>
+                    {{ preguntaactual.calificacion }} punto{{ preguntaactual.calificacion|pluralize }}
+                </span>
             </div>
+            <p class="q-enunciado">{{ preguntaactual.enunciado }}</p>
         </div>
+
+        <!-- Opciones -->
+        <div class="opciones-body">
+            <span class="opcion-label">Seleccione una opción:</span>
+
+            {% for literal in preguntaactual.mis_literales %}
+            <div class="opcion-item
+                {% if literal.es_seleccionado and literal.es_respuesta_correcta %}opcion-correcta
+                {% elif literal.es_seleccionado and not literal.es_respuesta_correcta %}opcion-incorrecta
+                {% elif literal.es_seleccionado %}opcion-seleccionada{% endif %}">
+
+                <!-- Ícono de resultado -->
+                <div class="opcion-icono
+                    {% if literal.es_seleccionado and literal.es_respuesta_correcta %}icono-correcto
+                    {% elif literal.es_seleccionado and not literal.es_respuesta_correcta %}icono-incorrecto
+                    {% else %}icono-neutro{% endif %}">
+                    {% if literal.es_seleccionado and literal.es_respuesta_correcta %}
+                        <i class="fe fe-check"></i>
+                    {% elif literal.es_seleccionado and not literal.es_respuesta_correcta %}
+                        <i class="fe fe-x"></i>
+                    {% else %}
+                        <i class="fe fe-minus"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Checkbox visual (readonly) -->
+                <div class="opcion-check
+                    {% if literal.es_seleccionado and literal.es_respuesta_correcta %}correct
+                    {% elif literal.es_seleccionado %}checked{% endif %}">
+                </div>
+
+                <!-- Input real (oculto visualmente pero funcional) -->
+                <input type="checkbox" class="checkbox-input"
+                       {% if literal.es_seleccionado %}checked{% endif %}
+                       data-value="{{ literal.id }}"
+                       disabled
+                       style="display:none;">
+
+                <span class="opcion-texto">{{ literal.texto }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Respuesta correcta -->
+        <div class="respuesta-correcta-box">
+            <div class="rc-label">
+                <i class="fe fe-check-circle"></i> Respuesta correcta
+            </div>
+            <div class="rc-text">{{ preguntaactual.consultar_respuestacorrecta }}</div>
+        </div>
+
     </div>
+</div>
 {% endblock %}

@@ -2,45 +2,81 @@
 {% load static %}
 {% block script %}
     <script src="{% static 'js/select2.min.js' %}"></script>
-<link href="{% static 'css/select2.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/select2.min.css' %}" rel="stylesheet"/>
 {% endblock %}
 {% block contenido %}
-    <div class="col-lg-9 col-md-8 col-12">
-        <!-- Card -->
-        <div class="card mb-4">
-            <!-- Card header -->
-            <div class="card-header">
-                <h3 class="mb-0">{{ curso }}</h3>
-                <span></span>
-            </div>
-            <nav class="navbar navbar-expand-lg navbar-light" style="border-bottom-style: solid;border-bottom-width: 1.2px;border-bottom-color: #eeeee7;">
-                <div class="container-fluid">
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav" style="margin-left: -20px">
-                            <li id="li_resumen" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
-                                <a id="link_resumen" class="nav-link {% if option == 'summary' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=summary">Resumen</a>
-                            </li>
-                            <li id="li_participantes" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
-                                <a class="nav-link {% if option == 'participants' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=participants">Participantes</a>
-                            </li>
-                            <li id="li_actividades" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
-                                <a class="nav-link {% if option == 'addactv' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=addactv">Actividades</a>
-                            </li>
-                            <li id="li_tests" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">
-                                <a class="nav-link {% if option == 'addtest' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=addtest">Tests</a>
-                            </li>
-{#                            <li id="li_clases" class="nav-item" style="margin-right: 20px;padding-right: 13px;border-right-style: solid;border-right-width: 3px;border-right-color: #e6e6de;">#}
-{#                                <a class="nav-link {% if option == 'addclass' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=addclass" tabindex="-1" aria-disabled="true">Clases</a>#}
-{#                            </li>#}
-                            <li id="li_recursos" class="nav-item">
-                                <a class="nav-link {% if option == 'addresource' %}active{% endif %}" href="?peticion=admcourse&id={{ curso.id }}&option=addresource" tabindex="-1" aria-disabled="true">Recursos</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            {% block contentadicional %}
-            {% endblock %}
+    <div class="card mb-4"
+         style="border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 1px 4px rgba(0,0,0,.06); overflow:hidden;">
+
+        <!-- Card header -->
+        <div class="card-header d-flex align-items-center justify-content-between"
+             style="background:#fff; border-bottom:1px solid #e2e8f0; padding:.9rem 1.25rem;">
+            <h5 class="mb-0 fw-700" style="font-family:'Inter',sans-serif; font-size:1.05rem; color:#1e293b;">
+                {{ curso }}
+            </h5>
         </div>
+
+        <!-- Tabs de navegación -->
+        <nav style="border-bottom:1px solid #e2e8f0; background:#fafbfd; padding:0 1.1rem;">
+            <ul class="nav" style="gap:.15rem; flex-wrap:nowrap; overflow-x:auto;">
+                <li id="li_resumen" class="nav-item">
+                    <a id="link_resumen"
+                       class="nav-link {% if option == 'summary' %}active{% endif %}"
+                       href="?peticion=admcourse&id={{ curso.id }}&option=summary"
+                       style="font-size:.83rem; font-weight:500; padding:.65rem .9rem; white-space:nowrap;
+                               color:{% if option == 'summary' %}#1192CF{% else %}#64748b{% endif %};
+                               border-bottom:2px solid {% if option == 'summary' %}#1192CF{% else %}transparent{% endif %};
+                               border-radius:0; background:transparent;">
+                        Resumen
+                    </a>
+                </li>
+                {% if identificadorperfil == 'is_profesor' %}
+                    <li id="li_participantes" class="nav-item">
+                        <a class="nav-link {% if option == 'participants' %}active{% endif %}"
+                           href="?peticion=admcourse&id={{ curso.id }}&option=participants"
+                           style="font-size:.83rem; font-weight:500; padding:.65rem .9rem; white-space:nowrap;
+                                   color:{% if option == 'participants' %}#1192CF{% else %}#64748b{% endif %};
+                                   border-bottom:2px solid {% if option == 'participants' %}#1192CF{% else %}transparent{% endif %};
+                                   border-radius:0; background:transparent;">
+                            Participantes
+                        </a>
+                    </li>
+                    <li id="li_actividades" class="nav-item">
+                        <a class="nav-link {% if option == 'addactv' %}active{% endif %}"
+                           href="?peticion=admcourse&id={{ curso.id }}&option=addactv"
+                           style="font-size:.83rem; font-weight:500; padding:.65rem .9rem; white-space:nowrap;
+                                   color:{% if option == 'addactv' %}#1192CF{% else %}#64748b{% endif %};
+                                   border-bottom:2px solid {% if option == 'addactv' %}#1192CF{% else %}transparent{% endif %};
+                                   border-radius:0; background:transparent;">
+                            Actividades
+                        </a>
+                    </li>
+                    <li id="li_tests" class="nav-item">
+                        <a class="nav-link {% if option == 'addtest' %}active{% endif %}"
+                           href="?peticion=admcourse&id={{ curso.id }}&option=addtest"
+                           style="font-size:.83rem; font-weight:500; padding:.65rem .9rem; white-space:nowrap;
+                                   color:{% if option == 'addtest' %}#1192CF{% else %}#64748b{% endif %};
+                                   border-bottom:2px solid {% if option == 'addtest' %}#1192CF{% else %}transparent{% endif %};
+                                   border-radius:0; background:transparent;">
+                            Tests
+                        </a>
+                    </li>
+                    <li id="li_recursos" class="nav-item">
+                        <a class="nav-link {% if option == 'addresource' %}active{% endif %}"
+                           href="?peticion=admcourse&id={{ curso.id }}&option=addresource"
+                           style="font-size:.83rem; font-weight:500; padding:.65rem .9rem; white-space:nowrap;
+                                   color:{% if option == 'addresource' %}#1192CF{% else %}#64748b{% endif %};
+                                   border-bottom:2px solid {% if option == 'addresource' %}#1192CF{% else %}transparent{% endif %};
+                                   border-radius:0; background:transparent;">
+                            Recursos
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Contenido de cada tab -->
+        {% block contentadicional %}{% endblock %}
+
     </div>
 {% endblock %}

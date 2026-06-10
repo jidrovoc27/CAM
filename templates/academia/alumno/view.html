@@ -1,143 +1,369 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block contenido %}
 
-    <div class="col-lg-9 col-md-8 col-12">
-        <!-- Card -->
-        <div class="card mb-4">
-            <!-- Card header -->
-            <div class="card-header">
-                <h3 class="mb-0">Cursos</h3>
-                <span>Administre sus cursos y su actualización.</span>
-            </div>
-            <!-- Card body -->
-            <div class="card-body">
-                <!-- Form -->
-                <form class="row">
-                    <div class="col-lg-9 col-md-7 col-12 mb-lg-0 mb-2">
-                        <input type="search" id="buscar_curso" class="form-control" placeholder="Buscar cursos"
-                               />
-                    </div>
-                    <div class="col-lg-3 col-md-5 col-12">
-                        <select class="selectpicker" data-width="100%">
-                            <option value="">Date Created</option>
-                            <option value="Newest">Newest</option>
-                            <option value="High Rated">High Rated</option>
-                            <option value="Law Rated">Law Rated</option>
-                            <option value="High Earned">High Earned</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <!-- Table -->
-            <div class="table-responsive border-0 overflow-y-hidden">
-                <table class="table mb-0 text-nowrap" id="filtro_cursos">
-                    <thead class="table-light">
-                    <tr>
-                        <th scope="col" class="border-0">Mis Cursos</th>
-                        <th scope="col" class="border-0">Fecha inicio / fin</th>
-                        <th scope="col" class="border-0">Calificación mínima</th>
-                        <th scope="col" class="border-0 text-center">Estado</th>
-                        {#                                <th scope="col" class="border-0"></th>#}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for micurso in miscursos %}
-                        <tr>
-                            <td class="border-top-0">
-                                <div class="d-lg-flex">
-                                    <div>
-                                        <a href="#">
-                                            <img src="/media/{{ micurso.fondocursos }}" alt=""
-                                                 class="rounded img-4by3-lg"/></a>
-                                    </div>
-                                    <div class="ms-lg-3 mt-2 mt-lg-0">
-                                        <h4 class="mb-1 h5">
-                                            <a href="?peticion=viewcurso&id={{ micurso.id }}" class="text-inherit">
-                                                {{ micurso }}
-                                            </a>
-                                        </h4>
-                                        <ul class="list-inline fs-6 mb-0">
-                                            <li class="list-inline-item">
-                                                <i class="mdi mdi-clock-time-four-outline text-muted me-1"></i>{{ micurso.horasvirtual }}
-                                            </li>
-                                            <li class="list-inline-item">
-                                                <svg class="me-1 mt-n1" width="16" height="16" viewBox="0 0 16 16"
-                                                     fill="none"
-                                                     xmlns="http://www.w3.org/2000/svg">
-                                                    <rect x="3" y="8" width="2" height="6" rx="1"
-                                                          fill="#754FFE"></rect>
-                                                    <rect x="7" y="5" width="2" height="9" rx="1"
-                                                          fill="#754FFE"></rect>
-                                                    <rect x="11" y="2" width="2" height="12" rx="1"
-                                                          fill="#754FFE"></rect>
-                                                </svg>
-                                                Virtual
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="border-top-0">{{ micurso.fechainicio|date:"d-m-Y" }}
-                                / {{ micurso.fechafin|date:"d-m-Y" }}</td>
-                            <td class="border-top-0 text-center">
-                                {{ micurso.minasistencia }}
-                            </td>
-                            <td class="border-top-0 text-center">
-                                <span class="badge bg-success">{{ micurso.get_estado_display }}</span>
-                            </td>
-                            {#                                <td class="text-muted border-top-0">#}
-                            {#											<span class="dropdown dropstart">#}
-                            {#												<a class="btn-icon btn btn-ghost btn-sm rounded-circle " href="#"#}
-                            {#                                                   role="button" id="courseDropdown"#}
-                            {#                                                   data-bs-toggle="dropdown" data-bs-offset="-20,20"#}
-                            {#                                                   aria-expanded="false">#}
-                            {#													<i class="fe fe-more-vertical"></i>#}
-                            {#												</a>#}
-                            {#												<span class="dropdown-menu" aria-labelledby="courseDropdown">#}
-                            {#													<span class="dropdown-header">Setting </span>#}
-                            {#													<a class="dropdown-item" href="#"><i#}
-                            {#                                                            class="fe fe-edit dropdown-item-icon"></i>Edit</a>#}
-                            {#													<a class="dropdown-item" href="#"><i#}
-                            {#                                                            class="fe fe-trash dropdown-item-icon"></i>Remove</a>#}
-                            {#												</span>#}
-                            {#											</span>#}
-                            {#                                </td>#}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+{% block contenido %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    .cursos-wrap { font-family: 'Inter', sans-serif; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    .page-header h4 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .page-header p {
+        font-size: .8rem;
+        color: #64748b;
+        margin: .15rem 0 0;
+    }
+
+    /* ── SEARCH BAR ── */
+    .search-bar {
+        position: relative;
+        max-width: 320px;
+        width: 100%;
+    }
+
+    .search-bar i {
+        position: absolute;
+        left: .75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: .85rem;
+        pointer-events: none;
+    }
+
+    .search-bar input {
+        width: 100%;
+        padding: .5rem .9rem .5rem 2.1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: .83rem;
+        font-family: 'Inter', sans-serif;
+        color: #1e293b;
+        background: #fff;
+        outline: none;
+        transition: border-color .15s, box-shadow .15s;
+    }
+
+    .search-bar input:focus {
+        border-color: #1192CF;
+        box-shadow: 0 0 0 3px rgba(17,146,207,.1);
+    }
+
+    /* ── TABLA ── */
+    .cursos-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+
+    .cursos-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .cursos-table thead tr {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .cursos-table thead th {
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #94a3b8;
+        padding: .75rem 1.1rem;
+        white-space: nowrap;
+    }
+
+    .cursos-table tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background .1s;
+    }
+
+    .cursos-table tbody tr:last-child { border-bottom: none; }
+    .cursos-table tbody tr:hover { background: #f8faff; }
+
+    .cursos-table tbody td {
+        padding: .85rem 1.1rem;
+        vertical-align: middle;
+        font-size: .84rem;
+        color: #334155;
+    }
+
+    /* Celda del curso con imagen */
+    .curso-cell {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+    }
+
+    .curso-thumb {
+        width: 72px;
+        height: 52px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #afbdd8, #399be2);
+    }
+
+    .curso-thumb-placeholder {
+        width: 72px;
+        height: 52px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #afbdd8, #399be2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .curso-nombre {
+        font-size: .87rem;
+        font-weight: 600;
+        color: #1e293b;
+        text-decoration: none;
+        display: block;
+        margin-bottom: .2rem;
+        transition: color .12s;
+        line-height: 1.3;
+    }
+
+    .curso-nombre:hover { color: #1192CF; }
+
+    .curso-meta {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        flex-wrap: wrap;
+    }
+
+    .curso-meta span {
+        font-size: .73rem;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: .25rem;
+    }
+
+    /* Fechas */
+    .fecha-cell {
+        font-size: .8rem;
+        color: #475569;
+        white-space: nowrap;
+    }
+
+    .fecha-cell .fecha-inicio { color: #1e293b; font-weight: 500; }
+    .fecha-cell .fecha-sep    { color: #cbd5e1; margin: 0 .25rem; }
+
+    /* Nota mínima */
+    .nota-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: #eff6ff;
+        color: #1192CF;
+        font-weight: 700;
+        font-size: .82rem;
+    }
+
+    /* Estado */
+    .estado-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .72rem;
+        font-weight: 600;
+        padding: .3rem .75rem;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .estado-aperturado { background: #dcfce7; color: #15803d; }
+    .estado-cerrado    { background: #fee2e2; color: #dc2626; }
+    .estado-proceso    { background: #fef9c3; color: #854d0e; }
+    .estado-default    { background: #f1f5f9; color: #64748b; }
+
+    .estado-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        flex-shrink: 0;
+    }
+
+    /* Sin resultados */
+    .sin-cursos {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #94a3b8;
+    }
+
+    .sin-cursos i { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
+    .sin-cursos p { font-size: .85rem; margin: 0; }
+
+    /* Contador */
+    .cursos-count {
+        font-size: .75rem;
+        color: #94a3b8;
+        padding: .6rem 1.1rem;
+        border-top: 1px solid #f1f5f9;
+        background: #fafbfd;
+    }
+</style>
+
+<div class="cursos-wrap">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h4>Mis Cursos</h4>
+            <p>Accede y gestiona tus cursos activos</p>
+        </div>
+        <div class="search-bar">
+            <i class="fe fe-search"></i>
+            <input type="search" id="buscar_curso" placeholder="Buscar curso…" autocomplete="off">
         </div>
     </div>
-    {% block script %}
-        <script>
-            $('#buscar_curso').keyup(function (e) {
-                // Obtener el valor del campo de entrada y convertirlo a minúsculas
-                var input = document.getElementById("buscar_curso");
-                var filter = input.value.toLowerCase();
 
-                // Obtener la tabla y las filas de la tabla
-                var table = document.getElementById("filtro_cursos");
-                var rows = table.getElementsByTagName("tr");
+    <!-- Tabla -->
+    <div class="cursos-card">
+        <div style="overflow-x:auto;">
+            <table class="cursos-table" id="filtro_cursos">
+                <thead>
+                    <tr>
+                        <th>Curso</th>
+                        <th>Fecha inicio / fin</th>
+                        <th style="text-align:center;">Nota mín.</th>
+                        <th style="text-align:center;">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for micurso in miscursos %}
+                    <tr>
+                        <!-- Curso -->
+                        <td>
+                            <div class="curso-cell">
+                                {% if micurso.fondocursos %}
+                                    <img src="/media/{{ micurso.fondocursos }}"
+                                         alt="{{ micurso }}" class="curso-thumb">
+                                {% else %}
+                                    <div class="curso-thumb-placeholder">
+                                        <i class="fe fe-book"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <a href="?peticion=viewcurso&id={{ micurso.id }}" class="curso-nombre">
+                                        {{ micurso }}
+                                    </a>
+                                    <div class="curso-meta">
+                                        <span>
+                                            <i class="fe fe-clock"></i>
+                                            {{ micurso.horasvirtual }}h
+                                        </span>
+                                        <span>
+                                            <i class="fe fe-monitor"></i>
+                                            Virtual
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
 
-                // Recorrer las filas de la tabla y mostrar/ocultar según el filtro de búsqueda
-                for (var i = 1; i < rows.length; i++) { // Comenzar desde 1 para omitir la fila de encabezado
-                    var courseName = rows[i].getElementsByTagName("td")[0];
-                    if (courseName) {
-                        var textValue = courseName.textContent || courseName.innerText;
-                        if (textValue.toLowerCase().indexOf(filter) > -1) {
-                            rows[i].style.display = "";
-                        } else {
-                            rows[i].style.display = "none";
-                        }
-                    }
-                }
-            });
+                        <!-- Fechas -->
+                        <td>
+                            <div class="fecha-cell">
+                                <span class="fecha-inicio">{{ micurso.fechainicio|date:"d/m/Y" }}</span>
+                                <span class="fecha-sep">→</span>
+                                <span>{{ micurso.fechafin|date:"d/m/Y" }}</span>
+                            </div>
+                        </td>
 
-            function filterTable() {
+                        <!-- Nota mínima -->
+                        <td style="text-align:center;">
+                            <span class="nota-badge">{{ micurso.minnota }}</span>
+                        </td>
 
-            }
-        </script>
-    {% endblock %}
+                        <!-- Estado -->
+                        <td style="text-align:center;">
+                            {% with estado=micurso.get_estado_display %}
+                            <span class="estado-badge
+                                {% if 'APERT' in estado|upper %}estado-aperturado
+                                {% elif 'CERR' in estado|upper %}estado-cerrado
+                                {% elif 'PROCESO' in estado|upper %}estado-proceso
+                                {% else %}estado-default{% endif %}">
+                                <span class="estado-dot"></span>
+                                {{ estado }}
+                            </span>
+                            {% endwith %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">
+                            <div class="sin-cursos">
+                                <i class="fe fe-inbox"></i>
+                                <p>No tienes cursos inscritos aún.</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Contador -->
+        {% if miscursos %}
+        <div class="cursos-count">
+            {{ miscursos|length }} curso{{ miscursos|length|pluralize }} encontrado{{ miscursos|length|pluralize }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    document.getElementById('buscar_curso').addEventListener('keyup', function () {
+        const filter = this.value.toLowerCase();
+        const rows   = document.querySelectorAll('#filtro_cursos tbody tr');
+        let visible  = 0;
+
+        rows.forEach(row => {
+            const nombre = row.querySelector('td')?.textContent?.toLowerCase() || '';
+            const show   = nombre.includes(filter);
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        // Actualiza contador
+        const count = document.querySelector('.cursos-count');
+        if (count) {
+            count.textContent = visible + (visible === 1 ? ' curso encontrado' : ' cursos encontrados');
+        }
+    });
+</script>
 {% endblock %}

@@ -1,651 +1,571 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
-
-
-<!-- Mirrored from codescandy.com/geeks-bootstrap-5/pages/instructor-courses.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 17 May 2022 19:21:44 GMT -->
+<html lang="es">
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-          content="Geeks is a fully responsive and yet modern premium bootstrap 5 template & snippets. Geek is feature-rich components and beautifully designed pages that help you create the best possible website and web application projects. Bootstrap Snippet "/>
-    <meta name="keywords"
-          content="Geeks UI, bootstrap, bootstrap 5, Course, Sass, landing, Marketing, admin themes, bootstrap admin, bootstrap dashboard, ui kit, web app, multipurpose"/>
-
-
-    <!-- Favicon icon-->
+    <title>CAM — Plataforma Académica</title>
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon/favicon.ico' %}">
 
-
-    <!-- Libs CSS -->
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Feather icons -->
     <link href="{% static 'fonts/feather/feather.css' %}" rel="stylesheet">
-    <link href="{% static 'fonts/feather/feather.css' %}" rel="stylesheet">
+    <!-- Libs originales -->
     <link href="{% static 'libs/bootstrap-icons/font/bootstrap-icons.css' %}" rel="stylesheet"/>
-    <link href="{% static 'libs/dragula/dist/dragula.min.css" rel="stylesheet' %}"/>
-    <link href="{% static 'libs/%40mdi/font/css/materialdesignicons.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'libs/dropzone/dist/dropzone.css' %}" rel="stylesheet"/>
-    <link href="{% static 'libs/magnific-popup/dist/magnific-popup.css' %}" rel="stylesheet"/>
-    <link href="{% static 'libs/bootstrap-select/dist/css/bootstrap-select.min.css' %}" rel="stylesheet">
-    <link href="{% static 'libs/%40yaireo/tagify/dist/tagify.css' %}" rel="stylesheet">
-    <link href="{% static 'libs/tiny-slider/dist/tiny-slider.css' %}" rel="stylesheet">
-    <link href="{% static 'libs/tippy.js/dist/tippy.css' %}" rel="stylesheet">
     <link href="{% static 'libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css' %}" rel="stylesheet">
-    <link href="{% static 'libs/prismjs/themes/prism-okaidia.min.css' %}" rel="stylesheet">
-    <link href="{% static 'libs/simplebar/dist/simplebar.min.css' %}" rel="stylesheet">
-    <link href="{% static 'libs/nouislider/dist/nouislider.min.css' %}" rel="stylesheet">
-    <link href="{% static 'libs/glightbox/dist/css/glightbox.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/theme.min.css' %}" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    {% block estilos %}{% endblock %}
 
-    <!-- Theme CSS -->
-    <link rel="stylesheet" href="{% static 'css/theme.min.css' %}">
-    {% block estilos %}
-    {% endblock %}
-    <title>CAM</title>
+    <style>
+        /* ══ VARIABLES ══ */
+        :root {
+            --primary: #17385A;
+            --primary-dark: #0f2640;
+            --accent: #1192CF;
+            --accent-bg: #e8f5fb;
+            --sidebar-w: 240px;
+            --topbar-h: 58px;
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --muted: #64748b;
+            --radius: 10px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ══ TOPBAR ══ */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--topbar-h);
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            padding: 0 1.25rem;
+            z-index: 1050;
+            gap: .75rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
+        }
+
+        /* Logo */
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-box {
+            width: 34px;
+            height: 34px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: .95rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .logo-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .logo-sub {
+            font-size: .62rem;
+            color: rgba(255, 255, 255, .5);
+            font-weight: 400;
+        }
+
+        .topbar-space {
+            flex: 1;
+        }
+
+        /* Avatar dropdown en topbar */
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .15);
+            border-radius: 40px;
+            padding: .28rem .75rem .28rem .28rem;
+            cursor: pointer;
+            transition: background .15s;
+            color: #fff;
+        }
+
+        .topbar-user:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
+        .topbar-user img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, .25);
+        }
+
+        .topbar-user .tu-name {
+            font-size: .8rem;
+            font-weight: 600;
+            color: #fff;
+            max-width: 130px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .topbar-user .fe-chevron-down {
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .55);
+        }
+
+        /* Arreglo del dropdown de Bootstrap dentro del topbar */
+        .topbar .dropdown-menu {
+            min-width: 210px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .13);
+            padding: .4rem 0;
+            margin-top: .5rem !important;
+            /* Evitar que el tema.css lo aplaste */
+            background: #fff !important;
+            z-index: 1100 !important;
+        }
+
+        .topbar .dropdown-item {
+            font-size: .83rem;
+            padding: .5rem 1rem;
+            color: var(--text) !important;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .topbar .dropdown-item:hover {
+            background: var(--accent-bg);
+            color: var(--accent) !important;
+        }
+
+        .topbar .dropdown-item.active {
+            background: var(--accent) !important;
+            color: #fff !important;
+        }
+
+        .topbar .dropdown-item.text-danger {
+            color: #ef4444 !important;
+        }
+
+        .topbar .dropdown-item.text-danger:hover {
+            background: #fef2f2;
+        }
+
+        .topbar .dropdown-divider {
+            margin: .3rem 0;
+            border-color: var(--border);
+        }
+
+        /* Toggle mobile */
+        .sidebar-toggle {
+            display: none;
+            background: rgba(255, 255, 255, .1);
+            border: none;
+            color: #fff;
+            width: 34px;
+            height: 34px;
+            border-radius: 7px;
+            font-size: 1rem;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ══ LAYOUT ══ */
+        .layout {
+            display: flex;
+            padding-top: var(--topbar-h);
+            min-height: 100vh;
+        }
+
+        /* ══ SIDEBAR ══ */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: var(--topbar-h);
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 900;
+            transition: transform .25s ease;
+        }
+
+        /* Mini perfil */
+        .sb-profile {
+            padding: 1rem .9rem .9rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+        }
+
+        .sb-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-bg);
+            flex-shrink: 0;
+        }
+
+        .sb-name {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sb-email {
+            font-size: .7rem;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Nav */
+        .sb-nav {
+            flex: 1;
+            padding: .65rem .7rem .9rem;
+        }
+
+        .sb-label {
+            font-size: .62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            color: var(--muted);
+            padding: .55rem .5rem .25rem;
+            display: block;
+        }
+
+        .sb-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sb-nav li {
+            margin-bottom: 1px;
+        }
+
+        .sb-nav a {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .55rem .8rem;
+            border-radius: 8px;
+            font-size: .84rem;
+            font-weight: 500;
+            color: var(--muted);
+            text-decoration: none;
+            transition: background .12s, color .12s;
+        }
+
+        .sb-nav a i {
+            font-size: .9rem;
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sb-nav a:hover {
+            background: var(--accent-bg);
+            color: var(--accent);
+        }
+
+        .sb-nav li.active a {
+            background: var(--primary) !important;
+            color: #fff !important;
+        }
+
+        .sb-nav li.active a i {
+            color: #fff;
+        }
+
+        .sb-divider {
+            height: 1px;
+            background: var(--border);
+            margin: .4rem .5rem .6rem;
+        }
+
+        /* ══ MAIN ══ */
+        .main-wrap {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 1.5rem 1.75rem 2.5rem;
+        }
+
+        /* ══ FOOTER ══ */
+        .main-footer {
+            margin-left: var(--sidebar-w);
+            border-top: 1px solid var(--border);
+            background: var(--card);
+            padding: .65rem 1.75rem;
+            font-size: .75rem;
+            color: var(--muted);
+        }
+
+        /* ══ OVERLAY MOBILE ══ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .35);
+            z-index: 850;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 4px 0 20px rgba(0, 0, 0, .15);
+            }
+
+            .sidebar-toggle {
+                display: flex;
+            }
+
+            .main-wrap, .main-footer {
+                margin-left: 0;
+            }
+
+            .main-content {
+                padding: 1rem 1rem 2rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
-<!-- Page content -->
 
-<nav class="navbar navbar-expand-lg navbar-default">
-    <div class="container-fluid px-0">
-        <a class="navbar-brand" href="../index.html"
-        >
-            {#                        <img src="{% static 'images/brand/logo/logo.svg' %}" alt=""/>#}
-            {#            CAM#}
-        </a>
-        <!-- Mobile view nav wrap -->
-        <ul
-                class="navbar-nav navbar-right-wrap ms-auto d-lg-none d-flex nav-top-wrap"
-        >
-            <li class="dropdown stopevent">
-                <a
-                        class="btn btn-light btn-icon rounded-circle text-muted indicator indicator-primary"
-                        href="#"
-                        role="button"
-                        data-bs-toggle="dropdown"
-                >
-                    <i class="fe fe-bell"> </i>
-                </a>
-            </li>
-            <li class="dropdown ms-2">
-                <a
-                        class="rounded-circle"
-                        href="#"
-                        role="button"
-                        data-bs-toggle="dropdown"
-                >
-                    <div class="avatar avatar-md avatar-indicators avatar-online">
-                        <img
-                                alt="avatar"
-                                src="{{ persona_logeado.get_foto }}"
-                                class="rounded-circle"
-                        />
-                    </div>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end shadow">
-                    <div class="dropdown-item">
-                        <div class="d-flex">
-                            <div class="avatar avatar-md avatar-indicators avatar-online">
-                                <img
-                                        alt="avatar"
-                                        src="{{ persona_logeado.get_foto }}"
-                                        class="rounded-circle"
-                                />
-                            </div>
-                            <div class="ms-3 lh-1">
-                                <h5 class="mb-1">{{ persona_logeado }}</h5>
-                                <p class="mb-0 text-muted">{{ emailuser }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <ul class="list-unstyled">
-                        {% for perfil in mis_perfiles %}
-                            {% if perfil.is_profesor %}
-                                <li>
-                                    <a class="dropdown-item {% if identificadorperfil == 'is_profesor' %}active{% endif %}"
-                                       href="/moodle/?peticion=cambioperfil&tipoperfil=is_profesor">
-                                        <i class="fe fe-settings me-2"></i>Perfil docente
-                                    </a>
-                                </li>
-                            {% endif %}
-                            {% if perfil.is_alumno %}
-                                <li>
-                                    <a class="dropdown-item {% if identificadorperfil == 'is_alumno' %}active{% endif %}"
-                                       href="/moodle/?peticion=cambioperfil&tipoperfil=is_alumno">
-                                        <i class="fe fe-settings me-2"></i>Perfil alumno
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                    <div class="dropdown-divider"></div>
-                    <ul class="list-unstyled">
-                        <li>
-                            <a class="dropdown-item" href="{% url 'logout_usuario_a' %}">
-                                <i class="fe fe-power me-2"></i>Cerrar sesión
-                            </a>
-                        </li>
-                    </ul>
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
+    <button class="sidebar-toggle" id="sidebarToggle"><i class="fe fe-menu"></i></button>
+
+    <a href="/moodle/" class="topbar-logo">
+        <div class="logo-box">C</div>
+        <div>
+            <div class="logo-name">CAM</div>
+            <div class="logo-sub">Plataforma Académica</div>
+        </div>
+    </a>
+
+    <div class="topbar-space"></div>
+
+    <div class="dropdown">
+        <div class="topbar-user dropdown-toggle"
+             data-bs-toggle="dropdown"
+             data-bs-display="static"
+             aria-expanded="false"
+             style="cursor:pointer; list-style:none;">
+            <img src="{{ persona_logeado.get_foto }}" alt="avatar">
+            <span class="tu-name">{{ persona_logeado }}</span>
+            <i class="fe fe-chevron-down"></i>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <div class="px-3 py-2 border-bottom" style="border-color:var(--border)!important;">
+                    <div style="font-weight:600;font-size:.83rem;color:var(--text);">{{ persona_logeado }}</div>
+                    <div style="font-size:.73rem;color:var(--muted);">{{ emailuser }}</div>
                 </div>
+            </li>
+            {% for perfil in mis_perfiles %}
+                {% if perfil.is_profesor %}
+                    <li>
+                        <a class="dropdown-item {% if identificadorperfil == 'is_profesor' %}active{% endif %}"
+                           href="/moodle/?peticion=cambioperfil&tipoperfil=is_profesor">
+                            <i class="fe fe-briefcase"></i>Perfil docente
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perfil.is_alumno %}
+                    <li>
+                        <a class="dropdown-item {% if identificadorperfil == 'is_alumno' %}active{% endif %}"
+                           href="/moodle/?peticion=cambioperfil&tipoperfil=is_alumno">
+                            <i class="fe fe-user"></i>Perfil alumno
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <a class="dropdown-item text-danger" href="{% url 'logout_usuario_a' %}">
+                    <i class="fe fe-power"></i>Cerrar sesión
+                </a>
             </li>
         </ul>
-        <!-- Button -->
-        <button
-                class="navbar-toggler collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbar-default"
-                aria-controls="navbar-default"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <span class="icon-bar top-bar mt-0"></span>
-            <span class="icon-bar middle-bar"></span>
-            <span class="icon-bar bottom-bar"></span>
-        </button>
-        <!-- Collapse -->
-        <div class="collapse navbar-collapse" id="navbar-default">
-            <form class="mt-3 mt-lg-0 ms-lg-3 d-flex align-items-center">
-            </form>
-            <ul class="navbar-nav navbar-right-wrap ms-auto d-none d-lg-block">
-                {#                <li class="dropdown d-inline-block stopevent">#}
-                {#                    <a#}
-                {#                            class="btn btn-light btn-icon rounded-circle text-muted indicator indicator-primary"#}
-                {#                            href="#"#}
-                {#                            role="button"#}
-                {#                            id="dropdownNotificationSecond"#}
-                {#                            data-bs-toggle="dropdown"#}
-                {#                            aria-haspopup="true"#}
-                {#                            aria-expanded="false"#}
-                {#                    >#}
-                {#                        <i class="fe fe-bell"> </i>#}
-                {#                    </a>#}
-                {#                    <div#}
-                {#                            class="dropdown-menu dropdown-menu-end dropdown-menu-lg"#}
-                {#                            aria-labelledby="dropdownNotificationSecond"#}
-                {#                    >#}
-                {#                        <div>#}
-                {#                            <div#}
-                {#                                    class="border-bottom px-3 pb-3 d-flex justify-content-between align-items-center"#}
-                {#                            >#}
-                {#                                <span class="h5 mb-0">Notifications</span>#}
-                {#                                <a href="# " class="text-muted"#}
-                {#                                ><span class="align-middle"#}
-                {#                                ><i class="fe fe-settings me-1"></i></span#}
-                {#                                ></a>#}
-                {#                            </div>#}
-                {#                            <ul class="list-group list-group-flush  " style="height: 300px;" data-simplebar>#}
-                {#                                <li class="list-group-item bg-light">#}
-                {#                                    <div class="row">#}
-                {#                                        <div class="col">#}
-                {#                                            <a class="text-body" href="#">#}
-                {#                                                <div class="d-flex">#}
-                {#                                                    <img#}
-                {#                                                            src="../assets/images/avatar/avatar-1.jpg"#}
-                {#                                                            alt=""#}
-                {#                                                            class="avatar-md rounded-circle"#}
-                {#                                                    />#}
-                {#                                                    <div class="ms-3">#}
-                {#                                                        <h5 class="fw-bold mb-1">Kristin Watson:</h5>#}
-                {#                                                        <p class="mb-3 text-body">#}
-                {#                                                            Krisitn Watsan like your comment on course#}
-                {#                                                            Javascript Introduction!#}
-                {#                                                        </p>#}
-                {#                                                        <span class="fs-6 text-muted">#}
-                {#														<span#}
-                {#                                                        ><span#}
-                {#                                                                class="fe fe-thumbs-up text-success me-1"#}
-                {#                                                        ></span#}
-                {#                                                        >2 hours ago,</span#}
-                {#                                                        >#}
-                {#														<span class="ms-1">2:19 PM</span>#}
-                {#													</span>#}
-                {#                                                    </div>#}
-                {#                                                </div>#}
-                {#                                            </a>#}
-                {#                                        </div>#}
-                {#                                        <div class="col-auto text-center me-2">#}
-                {##}
-                {#                                            <a#}
-                {#                                                    href="#"#}
-                {#                                                    class="badge-dot bg-info"#}
-                {#                                                    data-bs-toggle="tooltip"#}
-                {#                                                    data-bs-placement="top"#}
-                {##}
-                {#                                                    title="Mark as read"#}
-                {#                                            >#}
-                {#                                            </a>#}
-                {#                                            <div>#}
-                {#                                                <a#}
-                {#                                                        href="#"#}
-                {#                                                        class="bg-transparent"#}
-                {#                                                        data-bs-toggle="tooltip"#}
-                {#                                                        data-bs-placement="top"#}
-                {##}
-                {#                                                        title="Remove"#}
-                {#                                                >#}
-                {#                                                    <i class="fe fe-x text-muted"></i>#}
-                {#                                                </a>#}
-                {#                                            </div>#}
-                {#                                        </div>#}
-                {#                                    </div>#}
-                {#                                </li>#}
-                {#                                <li class="list-group-item">#}
-                {#                                    <div class="row">#}
-                {#                                        <div class="col">#}
-                {#                                            <a class="text-body" href="#">#}
-                {#                                                <div class="d-flex">#}
-                {#                                                    <img#}
-                {#                                                            src="../assets/images/avatar/avatar-2.jpg"#}
-                {#                                                            alt=""#}
-                {#                                                            class="avatar-md rounded-circle"#}
-                {#                                                    />#}
-                {#                                                    <div class="ms-3">#}
-                {#                                                        <h5 class="fw-bold mb-1">Brooklyn Simmons</h5>#}
-                {#                                                        <p class="mb-3 text-body">#}
-                {#                                                            Just launched a new Courses React for Beginner.#}
-                {#                                                        </p>#}
-                {#                                                        <span class="fs-6 text-muted">#}
-                {#														<span#}
-                {#                                                        ><span#}
-                {#                                                                class="fe fe-thumbs-up text-success me-1"#}
-                {#                                                        ></span#}
-                {#                                                        >Oct 9,</span#}
-                {#                                                        >#}
-                {#														<span class="ms-1">1:20 PM</span>#}
-                {#													</span>#}
-                {#                                                    </div>#}
-                {#                                                </div>#}
-                {#                                            </a>#}
-                {#                                        </div>#}
-                {#                                        <div class="col-auto text-center me-2">#}
-                {#                                            <a#}
-                {#                                                    href="#"#}
-                {#                                                    class="badge-dot bg-secondary"#}
-                {#                                                    data-bs-toggle="tooltip"#}
-                {#                                                    data-bs-placement="top"#}
-                {##}
-                {#                                                    title="Mark as unread"#}
-                {#                                            >#}
-                {#                                            </a>#}
-                {#                                        </div>#}
-                {#                                    </div>#}
-                {#                                </li>#}
-                {#                            </ul>#}
-                {#                            <div class="border-top px-3 pt-3 pb-0">#}
-                {#                                <a#}
-                {#                                        href="notification-history.html"#}
-                {#                                        class="text-link fw-semi-bold"#}
-                {#                                >Ver todas las notificaciones</a#}
-                {#                                >#}
-                {#                            </div>#}
-                {#                        </div>#}
-                {#                    </div>#}
-                {#                </li>#}
+    </div>
+</header>
 
-                <li class="dropdown ms-2 d-inline-block">
-                    <a
-                            class="rounded-circle"
-                            href="#"
-                            data-bs-toggle="dropdown"
-                            data-bs-display="static"
-                            aria-expanded="false"
-                    >
-                        <div class="avatar avatar-md avatar-indicators avatar-online">
-                            <img
-                                    alt="avatar"
-                                    src="{{ persona_logeado.get_foto }}"
-                                    class="rounded-circle"
-                            />
-                        </div>
+<!-- Overlay mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ══ LAYOUT ══ -->
+<div class="layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="camSidebar">
+        <div class="sb-profile">
+            <img src="{{ persona_logeado.get_foto }}" alt="avatar">
+            <div style="min-width:0;">
+                <div class="sb-name">{{ persona_logeado }}</div>
+                <div class="sb-email">{{ emailuser }}</div>
+            </div>
+        </div>
+
+        <nav class="sb-nav">
+            <span class="sb-label">Menú</span>
+            {% if identificadorperfil == 'is_alumno' %}
+                <ul>
+                    <li class="{% if is_cursos %}active{% endif %}">
+                        <a href="/moodle/"><i class="fe fe-book"></i>Mis cursos</a>
+                    </li>
+                    <li class="{% if is_calificaciones %}active{% endif %}">
+                        <a href="?peticion=calificaciones&id={{ alumno.id }}"><i
+                                class="fe fe-star"></i>Calificaciones</a>
+                    </li>
+                    <li class="{% if is_mensajes %}active{% endif %}">
+                        <a href="?peticion=chats&id={{ alumno.id }}"><i class="fe fe-message-circle"></i>Mensajes</a>
+                    </li>
+                    <li class="{% if is_finanza %}active{% endif %}">
+                        <a href="?peticion=misfinanzas&id={{ alumno.id }}"><i class="fe fe-dollar-sign"></i>Mis finanzas</a>
+                    </li>
+                </ul>
+            {% else %}
+                <ul>
+                    <li class="{% if is_cursos %}active{% endif %}">
+                        <a href="/moodle/"><i class="fe fe-book"></i>Mis cursos</a>
+                    </li>
+                    <li class="{% if is_mensajes %}active{% endif %}">
+                        <a href="?peticion=chats&id={{ alumno.id }}"><i class="fe fe-message-circle"></i>Mensajes</a>
+                    </li>
+                    <li class="{% if is_finanza %}active{% endif %}">
+                        <a href="?peticion=misfinanzas&id={{ alumno.id }}"><i class="fe fe-dollar-sign"></i>Mis finanzas</a>
+                    </li>
+                </ul>
+            {% endif %}
+
+            <div class="sb-divider"></div>
+            <span class="sb-label">Configuración</span>
+            <ul>
+                <li class="{% if is_editperfil %}active{% endif %}">
+                    <a href="?peticion=editperfil&id={{ alumno.id }}"><i class="fe fe-settings"></i>Editar perfil</a>
+                </li>
+                <li class="{% if is_security %}active{% endif %}">
+                    <a href="?peticion=actseguridad&id={{ alumno.id }}"><i class="fe fe-shield"></i>Seguridad</a>
+                </li>
+                <li>
+                    <a href="{% url 'logout_usuario_a' %}" style="color:#ef4444!important;">
+                        <i class="fe fe-power" style="color:#ef4444;"></i>Cerrar sesión
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <div class="dropdown-item">
-                            <div class="d-flex">
-                                <div class="ms-3 lh-1">
-                                    <h5 class="mb-1">{{ persona_logeado }}</h5>
-                                    <p class="mb-0 text-muted">{{ emailuser }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <ul class="list-unstyled">
-                            <li class="dropdown-submenu dropstart-lg">
-                                <div class="dropdown-divider"></div>
-                                <ul class="list-unstyled">
-                                    {% for perfil in mis_perfiles %}
-                                        {% if perfil.is_profesor %}
-                                            <li>
-                                                <a class="dropdown-item {% if identificadorperfil == 'is_profesor' %}active{% endif %}"
-                                                   href="/moodle/?peticion=cambioperfil&tipoperfil=is_profesor">
-                                                    <i class="fe fe-settings me-2"></i>Perfil docente
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                        {% if perfil.is_alumno %}
-                                            <li>
-                                                <a class="dropdown-item {% if identificadorperfil == 'is_alumno' %}active{% endif %}"
-                                                   href="/moodle/?peticion=cambioperfil&tipoperfil=is_alumno">
-                                                    <i class="fe fe-settings me-2"></i>Perfil alumno
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                        {#                                        {% if perfil.is_administrador %}#}
-                                        {#                                            <li>#}
-                                        {#                                                <a class="dropdown-item" href="/?peticion=cambioperfil&tipoperfil=is_administrador">#}
-                                        {#                                                    <i class="fe fe-settings me-2"></i>Perfil administrador#}
-                                        {#                                                </a>#}
-                                        {#                                            </li>#}
-                                        {#                                        {% endif %}#}
-                                    {% endfor %}
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'logout_usuario_a' %}">
-                                            <i class="fe fe-power me-2"></i>Cerrar sesión
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
                 </li>
             </ul>
-        </div>
-    </div>
-</nav>
+        </nav>
+    </aside>
 
-<div class="pt-5 pb-5" style="padding: 20px">
-    <div class="" style="width: 100%;">
-        <div class="row align-items-center">
-            <!-- User info -->
-            <div class="col-xl-12 col-lg-12 col-md-12 col-12">
-                <!-- Bg -->
-                {#                <div class="pt-16 rounded-top-md" style="#}
-                {#                        background: url({% static 'images/background/profile-bg.jpg' %}) no-repeat;#}
-                {#                        background-size: cover;#}
-                {#                        "></div>#}
-                <div
-                        class="d-flex align-items-end justify-content-between bg-white px-4 pt-2 pb-4 rounded-none rounded-bottom-md shadow-sm">
-                    <div class="d-flex align-items-center">
-                        <div class="">
-                            <img src="{{ persona_logeado.get_foto }}"
-                                 class="avatar-xl rounded-circle border border-4 border-white position-relative"
-                                 alt=""/>
-                            {#                            <a href="#" class="position-absolute top-0 end-0" data-bs-toggle="tooltip"#}
-                            {#                               data-placement="top"#}
-                            {#                               title="Verified">#}
-                            {#                                <img src="../assets/images/svg/checked-mark.svg" alt="" height="30" width="30"/>#}
-                            {#                            </a>#}
-                        </div>
-                        <div class="lh-1">
-                            <h2 class="mb-0">{{ persona_logeado }}</h2>
-                            <p class="mb-0 d-block">{{ persona_logeado.email }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Content -->
-
-        <div class="row mt-0 mt-md-4">
-            <div class="col-lg-3 col-md-4 col-12">
-                <!-- Side navabar -->
-                <nav class="navbar navbar-expand-md navbar-light shadow-sm mb-4 mb-lg-0 sidenav">
-                    <!-- Menu -->
-                    <a class="d-xl-none d-lg-none d-md-none text-inherit fw-bold" href="#">Menu</a>
-                    <!-- Button -->
-                    <button class="navbar-toggler d-md-none icon-shape icon-sm rounded bg-primary text-light"
-                            type="button"
-                            data-bs-toggle="collapse" data-bs-target="#sidenav" aria-controls="sidenav"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class="fe fe-menu"></span>
-                    </button>
-                    <!-- Navbar Collapse -->
-                    <div class="collapse navbar-collapse" id="sidenav">
-                        <div class="navbar-nav flex-column">
-                            <!-- Navbar header -->
-                            <span class="navbar-header">Menú</span>
-                            {% if identificadorperfil == 'is_alumno' %}
-                                <ul class="list-unstyled ms-n2 mb-4">
-                                    <!-- Nav item -->
-                                    {#                                    <li class="nav-item">#}
-                                    {#                                        <a class="nav-link" href="dashboard-instructor.html"><i#}
-                                    {#                                                class="fe fe-home nav-icon"></i>Inicio</a>#}
-                                    {#                                    </li>#}
-                                    <!-- Nav item -->
-                                    <li class="nav-item {% if is_cursos %}active{% endif %}"
-                                        {% if not is_cursos %}onmouseenter="cambiarColor(this)"
-                                        onmouseleave="restaurarColor(this)"{% endif %}>
-                                        <a class="nav-link" href="/moodle/"
-                                           {% if is_cursos %}style="color: white !important;"{% endif %}><i
-                                                class="fe fe-book nav-icon"></i>Mis cursos</a>
-                                    </li>
-                                    <!-- Nav item -->
-                                    <li class="nav-item {% if is_calificaciones %}active{% endif %}"
-                                        {% if not is_calificaciones %}onmouseenter="cambiarColor(this)"
-                                        onmouseleave="restaurarColor(this)"{% endif %}>
-                                        <a class="nav-link" href="?peticion=calificaciones&id={{ alumno.id }}"
-                                           {% if is_calificaciones %}style="color: white !important;"{% endif %}><i
-                                                class="fe fe-star nav-icon"></i>Calificaciones</a>
-                                    </li>
-                                    <!-- Nav item -->
-                                    <li class="nav-item {% if is_mensajes %}active{% endif %}"
-                                        {% if not is_mensajes %}onmouseenter="cambiarColor(this)"
-                                        onmouseleave="restaurarColor(this)"{% endif %}>
-                                        <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"
-                                           {% if is_mensajes %}style="color: white !important;"{% endif %}><i
-                                                class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
-                                    </li>
-                                    <li class="nav-item {% if is_finanza %}active{% endif %}"
-                                        {% if not is_finanza %}onmouseenter="cambiarColor(this)"
-                                        onmouseleave="restaurarColor(this)"{% endif %}>
-                                        <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"
-                                           {% if is_finanza %}style="color: white !important;"{% endif %}><i
-                                                class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
-                                    </li>
-                                </ul>
-                            {% else %}
-                                <ul class="list-unstyled ms-n2 mb-4">
-                                    <!-- Nav item -->
-                                    {#                                    <li class="nav-item">#}
-                                    {#                                        <a class="nav-link" href="dashboard-instructor.html"><i#}
-                                    {#                                                class="fe fe-home nav-icon"></i>Inicio</a>#}
-                                    {#                                    </li>#}
-                                    <!-- Nav item -->
-                                    <li class="nav-item {% if is_cursos %}active{% endif %}"
-                                        {% if not is_cursos %}onmouseenter="cambiarColor(this)"
-                                        onmouseleave="restaurarColor(this)"{% endif %}>
-                                        <a class="nav-link" href="/moodle/"
-                                           {% if is_cursos %}style="color: white !important;"{% endif %}><i
-                                                class="fe fe-book nav-icon"></i>Mis cursos</a>
-                                    </li>
-                                    <!-- Nav item -->
-                                    <li class="nav-item {% if is_mensajes %}active{% endif %}"
-                                        {% if not is_mensajes %}onmouseenter="cambiarColor(this)"
-                                        onmouseleave="restaurarColor(this)"{% endif %}>
-                                        <a class="nav-link" href="?peticion=chats&id={{ alumno.id }}"
-                                           {% if is_mensajes %}style="color: white !important;"{% endif %}><i
-                                                class="fe fe-pie-chart nav-icon"></i>Mensajes</a>
-                                    </li>
-                                    <li class="nav-item {% if is_finanza %}active{% endif %}"
-                                        {% if not is_finanza %}onmouseenter="cambiarColor(this)"
-                                        onmouseleave="restaurarColor(this)"{% endif %}>
-                                        <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"
-                                           {% if is_finanza %}style="color: white !important;"{% endif %}><i
-                                                class="fe fe-dollar-sign nav-icon"></i>Mis finanzas</a>
-                                    </li>
-                                </ul>
-                            {% endif %}
-                            <!-- Navbar header -->
-                            <span class="navbar-header">Configuración</span>
-                            <ul class="list-unstyled ms-n2 mb-0">
-                                <!-- Nav item -->
-                                <li class="nav-item {% if is_editperfil %}active{% endif %}"
-                                    {% if not is_editperfil %}onmouseenter="cambiarColor(this)"
-                                    onmouseleave="restaurarColor(this)"{% endif %}>
-                                    <a class="nav-link" href="?peticion=editperfil&id={{ alumno.id }}"
-                                       {% if is_editperfil %}style="color: white !important;"{% endif %}><i
-                                            class="fe fe-settings nav-icon"></i>Editar perfil</a>
-                                </li>
-                                <!-- Nav item -->
-                                <li class="nav-item {% if is_security %}active{% endif %}"
-                                    {% if not is_security %}onmouseenter="cambiarColor(this)"
-                                    onmouseleave="restaurarColor(this)"{% endif %}>
-                                    <a class="nav-link" href="?peticion=actseguridad&id={{ alumno.id }}"
-                                       {% if is_security %}style="color: white !important;"{% endif %}><i
-                                            class="fe fe-user nav-icon"></i>Seguridad</a>
-                                </li>
-                                {#                                <li class="nav-item">#}
-                                {#                                    <a class="nav-link" href="?peticion=misfinanzas&id={{ alumno.id }}"><i class="fe fe-bell nav-icon"></i>Notificaciones</a>#}
-                                {#                                </li>#}
-                                <li class="nav-item {% if is_cerrasesion %}active{% endif %}"
-                                    {% if not is_cerrasesion %}onmouseenter="cambiarColor(this)"
-                                    onmouseleave="restaurarColor(this)"{% endif %}>
-                                    <a class="nav-link" href="{% url 'logout_usuario_a' %}"
-                                       {% if is_cerrasesion %}style="color: white !important;"{% endif %}><i
-                                            class="fe fe-power nav-icon"></i>Cerrar
-                                        sesión</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-            {% block contenido %}
-            {% endblock %}
-        </div>
-    </div>
-</div>
-<!-- Footer -->
-<!-- Footer -->
-<div class="footer">
-    <div class="container">
-        <div class="row align-items-center g-0 border-top py-2">
-            <!-- Desc -->
-            <div class="col-md-6 col-12 text-center text-md-start">
-                <span>© 2023 CAM. All Rights Reserved.</span>
-            </div>
+    <!-- ── MAIN ── -->
+    <div class="main-wrap">
+        <div class="main-content">
+            {% block contenido %}{% endblock %}
         </div>
     </div>
 </div>
 
-<!-- Scripts -->
-<!-- Libs JS -->
-{#<script src="{% static 'libs/jquery/dist/jquery.min.js' %}"></script>#}
-{#<script src="{% static '/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>#}
-{#<script src="{% static '/libs/odometer/odometer.min.js' %}"></script>#}
-{#<script src="{% static 'libs/magnific-popup/dist/jquery.magnific-popup.min.js' %}"></script>#}
-{#<script src="{% static 'libs/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>#}
-{#<script src="{% static 'libs/flatpickr/dist/flatpickr.min.js' %}"></script>#}
-{#<script src="{% static 'libs/inputmask/dist/jquery.inputmask.min.js' %}"></script>#}
-{#<script src="{% static 'libs/apexcharts/dist/apexcharts.min.js' %}"></script>#}
-{#<script src="{% static 'libs/quill/dist/quill.min.js' %}"></script>#}
-{#<script src="{% static 'libs/file-upload-with-preview/dist/file-upload-with-preview.min.js' %}"></script>#}
-{#<script src="{% static 'libs/dragula/dist/dragula.min.js' %}"></script>#}
-{#<script src="{% static 'libs/bs-stepper/dist/js/bs-stepper.min.js' %}"></script>#}
-{#<script src="{% static 'libs/dropzone/dist/min/dropzone.min.js' %}"></script>#}
-{#<script src="{% static 'libs/jQuery.print/jQuery.print.js' %}"></script>#}
-{#<script src="{% static 'libs/prismjs/prism.js' %}"></script>#}
-{#<script src="{% static 'libs/prismjs/components/prism-scss.min.js' %}"></script>#}
-{#<script src="{% static 'libs/%40yaireo/tagify/dist/tagify.min.js' %}"></script>#}
-{#<script src="{% static 'libs/tiny-slider/dist/min/tiny-slider.js' %}"></script>#}
-{#<script src="{% static 'libs/%40popperjs/core/dist/umd/popper.min.js' %}"></script>#}
-{#<script src="{% static 'libs/tippy.js/dist/tippy-bundle.umd.min.js' %}"></script>#}
-{#<script src="{% static 'libs/typed.js/lib/typed.min.js' %}"></script>#}
-{#<script src="{% static 'libs/jsvectormap/dist/js/jsvectormap.min.js' %}"></script>#}
-{#<script src="{% static 'libs/jsvectormap/dist/maps/world.js' %}"></script>#}
-{#<script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>#}
-{#<script src="{% static 'libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js' %}"></script>#}
-{#<script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>#}
-{#<script src="{% static 'libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>#}
-{#<script src="{% static 'libs/prismjs/plugins/toolbar/prism-toolbar.min.js' %}"></script>#}
-{#<script src="{% static 'libs/prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js' %}"></script>#}
-{#<script src="{% static 'libs/fullcalendar/main.min.js' %}"></script>#}
-{#<script src="{% static 'libs/%40lottiefiles/lottie-player/dist/lottie-player.js' %}"></script>#}
-{#<script src="{% static 'libs/simplebar/dist/simplebar.min.js' %}"></script>#}
-{#<script src="{% static 'libs/nouislider/dist/nouislider.min.js' %}"></script>#}
-{#<script src="{% static 'libs/wnumb/wNumb.min.js' %}"></script>#}
-{#<script src="{% static 'libs/glightbox/dist/js/glightbox.min.js' %}"></script>#}
+<!-- ══ FOOTER ══ -->
+<footer class="main-footer">
+    © 2024 CAM — Plataforma Académica. Todos los derechos reservados.
+</footer>
 
-<!-- CDN File for moment -->
-<script src='../../../cdn.jsdelivr.net/npm/moment%402.29.1/min/moment.min.js'></script>
-
-
-<!-- Theme JS -->
+<!-- Scripts originales -->
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/theme.min.js' %}"></script>
-<script src="{% static 'js/core/popper.min.js' %}"></script>
-<script src="{% static 'js/core/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/plugins/perfect-scrollbar.min.js' %}"></script>
 <script src="{% static 'js/plugins/smooth-scrollbar.min.js' %}"></script>
-
-<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="{% static 'js/material-dashboard.min.js' %}"></script>
-<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
-
 <script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
 <script src="{% static 'js/sweetalert2.min.js' %}"></script>
 <script src="{% static 'js/componentes.js' %}"></script>
 <script src="{% static 'js/jquery.blockUI.js' %}"></script>
 <script src="{% static 'js/jquery.toast.min.js' %}"></script>
 <script src="{% static 'js/imask.js' %}"></script>
-<script src="{% static 'js/jquery.bootstrap-duallistbox.min.js' %} "></script>
+<script src="{% static 'js/jquery.bootstrap-duallistbox.min.js' %}"></script>
 <script src="{% static 'js/ruc_jquery_validator.min.js' %}"></script>
+
 <script>
+    /* Sidebar toggle mobile */
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const camSidebar = document.getElementById('camSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-
-    function eliminar_registro(peticion, registro, id) {
-
-        Swal.fire({
-            title: '¿Estás seguro de eliminar este registro?',
-            text: "Está acción es irrevesible!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, bórralo!',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ reques.path }}',
-                    async: false,
-                    data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',
-                        peticion: peticion,
-                        id: id,
-                    },
-                    dataType: "json",
-                    beforeSend: function () {
-
-                    }
-                }).done(function (data) {
-                    if (data.respuesta === true) {
-                        Swal.fire(
-                            'Eliminado!',
-                            data.mensaje,
-                            'success'
-                        ).then(function () {
-                            location.reload();
-                        });
-                    } else {
-
-                        Swal.fire(data.mensaje);
-                    }
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    mensaje_alerta('Error al intentar conectar con el servidor', 'Error de conexiòn');
-                }).always(function () {
-                });
-
-
-            }
-
-        })
-
-
-    }
+    sidebarToggle?.addEventListener('click', () => {
+        camSidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('show');
+    });
+    sidebarOverlay?.addEventListener('click', () => {
+        camSidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('show');
+    });
 
     function Block_UI() {
         $.blockUI({
@@ -661,68 +581,58 @@
 
     }
 
+    /* Block UI al cargar */
     $(document).ready(function () {
-        Block_UI();
-        setTimeout($.unblockUI, 400);
-        // Obtén todos los elementos con clase "nav-item"
-        const elementosNav = document.querySelectorAll('.nav-item');
-
-        // Itera a través de los elementos y aplica estilos a los seleccionados
-        elementosNav.forEach(elemento => {
-            if (elemento.classList.contains('active')) {
-                // Aplica estilos a los elementos seleccionados
-                elemento.style.backgroundColor = '#17385A'; // Cambia el color de fondo
-                const enlace = elemento.querySelector('.nav-link');
-                enlace.style.color = 'white !important'; // Cambia el color del texto del enlace
-            }
+        $.blockUI({
+            message: '<div class="spinner-grow text-primary" role="status"></div>',
+            css: {backgroundColor: 'transparent', border: '0'}
         });
-
-
+        setTimeout($.unblockUI, 400);
     });
 
-    function cambiarColor(elemento) {
-        const enlace = elemento.querySelector('a.nav-link');
-        enlace.style.setProperty('background', '#1192CF', 'important');
-        enlace.style.setProperty('color', 'white', 'important');
-    }
-
-    function restaurarColor(elemento) {
-        const enlace = elemento.querySelector('a.nav-link');
-        enlace.style.setProperty('background', 'transparent', 'important');
-        enlace.style.setProperty('color', 'black', 'important');
+    /* Eliminar registro */
+    function eliminar_registro(peticion, registro, id) {
+        Swal.fire({
+            title: '¿Eliminar este registro?',
+            text: 'Esta acción es irreversible.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#1192CF',
+            cancelButtonColor: '#ef4444',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST', url: '{{ request.path }}', async: false,
+                    data: {csrfmiddlewaretoken: '{{ csrf_token }}', peticion, id},
+                    dataType: 'json'
+                }).done(function (data) {
+                    if (data.respuesta) {
+                        Swal.fire('Eliminado', data.mensaje, 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.mensaje, 'error');
+                    }
+                }).fail(function () {
+                    Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+                });
+            }
+        });
     }
 
     function solo_numeros(e) {
-        key = e.keyCode || e.which;
-        tecla = String.fromCharCode(key);
-        letras_validas = "1234567890";
-        if (letras_validas.indexOf(tecla) === -1) {
-            return false;
-        }
+        return "1234567890".includes(String.fromCharCode(e.keyCode || e.which));
     }
 
     function solo_digitos(e) {
-        key = e.keyCode || e.which;
-        tecla = String.fromCharCode(key);
-        letras_validas = "1234567890.";
-        if (letras_validas.indexOf(tecla) === -1) {
-            return false;
-        }
+        return "1234567890.".includes(String.fromCharCode(e.keyCode || e.which));
     }
 
     function solo_letras(e) {
-        key = e.keyCode || e.which;
-        tecla = String.fromCharCode(key);
-        letras_validas = "abcdefghijklmnopqrstuwxvyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
-        if (letras_validas.indexOf(tecla) === -1) {
-            return false;
-        }
+        return /[a-zA-Z ]/.test(String.fromCharCode(e.keyCode || e.which));
     }
 </script>
-{% block script %}
-{% endblock %}
+
+{% block script %}{% endblock %}
 </body>
-
-
-<!-- Mirrored from codescandy.com/geeks-bootstrap-5/pages/instructor-courses.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 17 May 2022 19:21:44 GMT -->
 </html>

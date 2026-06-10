@@ -1,516 +1,369 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block contenido %}
-    <script>
-        window.addEventListener('load', function () {
-            var div = document.getElementById('chat-body');
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-            // Desplázate hasta el final del div
-            div.scrollTop = div.scrollHeight;
-        });
-    </script>
-    <style>
+    .chat-wrap {
+        font-family: 'Inter', sans-serif;
+        height: calc(100vh - var(--topbar-h, 58px) - 3rem);
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
 
-        .logo {
-            width: 100px;
-            /* border: 2px solid black; */
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: slateblue;
-            line-height: 20px;
-        }
+    /* ── HEADER ── */
+    .chat-header {
+        display: flex;
+        align-items: center;
+        gap: .85rem;
+        padding: .85rem 1.15rem;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fafbfd;
+        flex-shrink: 0;
+    }
 
+    .chat-back {
+        width: 34px; height: 34px;
+        border-radius: 8px; background: #f1f5f9;
+        display: flex; align-items: center; justify-content: center;
+        color: #64748b; text-decoration: none;
+        transition: background .12s, color .12s; flex-shrink: 0;
+    }
+    .chat-back:hover { background: #e2e8f0; color: #1e293b; }
 
-        img {
-            object-fit: cover;
-            height: 100%;
-            width: 100%;
-            border-radius: 50%;
-        }
+    .chat-avatar {
+        width: 40px; height: 40px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0;
+        border: 2px solid #e8f5fb;
+    }
+    .chat-avatar-placeholder {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: linear-gradient(135deg, #afbdd8, #399be2);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: .95rem; font-weight: 700; flex-shrink: 0;
+    }
 
-        .chat-container, .chat-container2 {
-            width: 74%;
-            height: 370px;
-            /* border: 2px solid black; */
-            background-color: white;
-            border-radius: 30px;
-            padding: 10px 10px
-        }
+    .chat-header-info { flex: 1; min-width: 0; }
+    .chat-header-name {
+        font-size: .9rem; font-weight: 700; color: #1e293b;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .chat-header-status {
+        font-size: .72rem; color: #94a3b8;
+        display: flex; align-items: center; gap: .3rem; margin-top: .05rem;
+    }
+    .status-dot {
+        width: 7px; height: 7px; border-radius: 50%; background: #22c55e; flex-shrink: 0;
+    }
 
-        .sub-main {
-            /* border: 2px solid green; */
-            width: 200px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            flex-direction: column;
-        }
+    /* ── BODY ── */
+    .chat-body {
+        flex: 1; overflow-y: auto;
+        padding: 1.1rem 1.15rem;
+        display: flex; flex-direction: column; gap: .5rem;
+        background: #f8fafc;
+        scroll-behavior: smooth;
+    }
 
-        .sub-main p {
-            font-size: 18px;
-        }
+    /* Separador de fecha */
+    .chat-date-sep {
+        text-align: center; margin: .5rem 0;
+    }
+    .chat-date-sep span {
+        font-size: .68rem; font-weight: 600; color: #94a3b8;
+        background: #f1f5f9; padding: .2rem .75rem; border-radius: 20px;
+    }
 
-        .main-user {
-            width: 60px;
-            height: 60px;
-            /* border: 2px solid black; */
-            float: right;
-            border-radius: 50%;
-        }
+    /* Burbuja base */
+    .bubble-wrap {
+        display: flex; align-items: flex-end; gap: .5rem;
+        max-width: 72%;
+    }
 
-        .header {
-            width: 100%;
-            height: auto;
-            /* border: 2px solid red; */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
+    /* Enviado (yo) — derecha */
+    .bubble-wrap.sent {
+        margin-left: auto; flex-direction: row-reverse;
+    }
 
-        .friends-container {
-            width: 100%;
-            height: 90%;
-            /* border: 2px solid black; */
-            overflow: auto;
-        }
+    /* Recibido — izquierda */
+    .bubble-wrap.received { margin-right: auto; }
 
-        .friends {
-            width: 100%;
-            height: 80px;
-            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 10px;
-            padding: 0px 10px;
+    .bubble-avatar {
+        width: 28px; height: 28px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0; margin-bottom: 2px;
+    }
+    .bubble-avatar-ph {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: linear-gradient(135deg, #afbdd8, #399be2);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: .65rem; font-weight: 700; flex-shrink: 0;
+        margin-bottom: 2px;
+    }
 
-        }
+    .bubble {
+        padding: .6rem .9rem;
+        border-radius: 14px;
+        font-size: .85rem; line-height: 1.55;
+        word-break: break-word; white-space: pre-wrap;
+        max-width: 100%;
+    }
 
-        .pic, .pro-pic {
-            width: 50px;
-            height: 50px;
-            /* border: 1px solid black; */
-            border-radius: 50%;
-        }
+    /* Enviado */
+    .sent .bubble {
+        background: #1192CF; color: #fff;
+        border-bottom-right-radius: 4px;
+    }
 
-        .name {
-            flex-grow: 2;
-            /* border: 2px solid black; */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
+    /* Recibido */
+    .received .bubble {
+        background: #fff; color: #1e293b;
+        border: 1px solid #e2e8f0;
+        border-bottom-left-radius: 4px;
+    }
 
-        .name p {
-            font-size: 14px;
-        }
+    .bubble-time {
+        font-size: .65rem; margin-top: .25rem;
+        display: block; white-space: nowrap;
+    }
+    .sent .bubble-time     { color: rgba(255,255,255,.65); text-align: right; }
+    .received .bubble-time { color: #94a3b8; }
 
-        .time_new_msg {
-            width: auto;
-            height: 50px;
-            /* border: 2px solid black; */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
+    /* ── INPUT ── */
+    .chat-input-area {
+        display: flex; align-items: center; gap: .6rem;
+        padding: .8rem 1rem;
+        border-top: 1px solid #f1f5f9;
+        background: #fff; flex-shrink: 0;
+    }
 
-        .time_new_msg p {
-            font-size: 14px;
-        }
+    #id_body {
+        flex: 1;
+        border: 1.5px solid #e2e8f0; border-radius: 22px;
+        padding: .55rem 1rem;
+        font-size: .86rem; font-family: 'Inter', sans-serif;
+        color: #1e293b; background: #f8fafc;
+        outline: none; resize: none;
+        transition: border-color .15s, box-shadow .15s;
+        max-height: 100px; overflow-y: auto;
+    }
+    #id_body:focus {
+        border-color: #1192CF;
+        box-shadow: 0 0 0 3px rgba(17,146,207,.1);
+        background: #fff;
+    }
 
-        .msg {
-            width: 40px;
-            height: 40px;
-            background-color: slateblue;
-            border-radius: 50%;
-            text-align: center;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+    .btn-send {
+        width: 42px; height: 42px; border-radius: 50%;
+        background: #1192CF; color: #fff; border: none;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; cursor: pointer; flex-shrink: 0;
+        transition: background .15s, transform .1s;
+    }
+    .btn-send:hover { background: #0e7ab0; transform: scale(1.05); }
+    .btn-send:active { transform: scale(.97); }
 
-        }
+    /* Scrollbar chat */
+    .chat-body::-webkit-scrollbar { width: 4px; }
+    .chat-body::-webkit-scrollbar-track { background: transparent; }
+    .chat-body::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
 
-        .footer {
-            width: 100%;
-            height: 40px;
-            /* border: 1px solid black; */
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-        }
+    /* Sin mensajes */
+    .chat-empty {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        color: #94a3b8; text-align: center; gap: .5rem;
+    }
+    .chat-empty i { font-size: 2.5rem; }
+    .chat-empty p { font-size: .85rem; margin: 0; }
+</style>
 
-        svg {
-            cursor: pointer;
-        }
+<div class="chat-wrap">
 
+    <!-- ── HEADER ── -->
+    <div class="chat-header">
+        <a href="?peticion=chats" class="chat-back">
+            <i class="fe fe-arrow-left"></i>
+        </a>
 
-        .identity {
-            width: 100%;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            /* border: 2px solid black; */
-
-        }
-
-
-        .sub-container {
-
-            height: 100%;
-            width: 100%;
-            /* border: 2px solid blue; */
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-direction: column;
-
-        }
-
-
-        .chat-body {
-            width: 100%;
-            height: 280px;
-            /* border: 2px solid slateblue; */
-            overflow: auto;
-            /* display: flex;
-            align-items: flex-start;
-            justify-content: center; */
-        }
-
-        #myform {
-            width: 100%;
-            height: auto;
-            /* border: 2px solid black; */
-            /* display: flex;
-            justify-content: space-between;
-            align-items: center; */
-            flex-grow: 2;
-
-        }
-
-        #input {
-            flex-grow: 2;
-            height: 30px;
-            /* border: 2px solid slateblue; */
-            border-radius: 10px;
-            padding: 0px 10px;
-            font-size: 16px;
-            font-family: sans-serif !important;
-        }
-
-        .chat-container2 {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-direction: column;
-        }
-
-        button {
-            background: slateblue;
-            color: white;
-            width: 100px;
-            height: 40px;
-            border: none;
-            cursor: pointer;
-            border-radius: 10px;
-            font-size: 14px;
-            margin-top: 10px;
-
-        }
-
-        .chat-box-received {
-            width: 200px;
-            height: auto;
-            font-size: 14px;
-            background-color: slateblue;
-            color: white;
-            margin-left: auto;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            padding: 10px 10px;
-            border-radius: 10px;
-        {#float: left;#} clear: both;
-            width: 50%
-        }
-
-        .chat-box-sent {
-            width: 200px;
-            height: auto;
-            font-size: 14px;
-            background-color: slateblue;
-            color: white;
-            margin-left: auto;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            padding: 10px 10px;
-            border-radius: 10px;
-        {#float: left;#} clear: both;
-            width: 50%;
-            background-color: rebeccapurple;
-            color: white;
-            float: left;
-            clear: both;
-            width: 50%;
-        }
-
-        {#.chat-box-sent {#}
-        {#    background-color: rebeccapurple;#}
-        {#    color: white;#}
-        {#    float: left;#}
-        {#    clear: both;#}
-        {#    width: 50%;#}
-        {##}
-        {#}#}
-
-        .forms {
-            border: 1px solid slateblue;
-
-            width: 100%;
-            border-radius: 5px;
-            padding: 10px 10px;
-            font-size: 18px;
-        }
-    </style>
-    <div class="chat-container2" style="height:100%">
-        <div class="identity">
-            <div>
-                <a href="?peticion=chats">
-                    <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="26"
-                            height="26"
-                            fill="currentColor"
-                            class="bi bi-house"
-                            viewBox="0 0 16 16"
-                    >
-                        <path
-                                fill-rule="evenodd"
-                                d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5zm11-11V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"
-                        />
-                        <path
-                                fill-rule="evenodd"
-                                d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"
-                        />
-                    </svg>
-                </a>
+        {% if friend.profile.pic %}
+            <img src="/media/{{ friend.profile.pic }}" alt="{{ friend.profile.name }}" class="chat-avatar">
+        {% else %}
+            <div class="chat-avatar-placeholder">
+                {{ friend.profile.name|slice:":1"|upper }}
             </div>
+        {% endif %}
 
-            <h3>{{ friend.profile.name }}</h3>
-
-            <div class="pro-pic">
-                <img src="/media/{{ friend.profile.pic }}" alt="">
+        <div class="chat-header-info">
+            <div class="chat-header-name">{{ friend.profile.name }}</div>
+            <div class="chat-header-status">
+                <span class="status-dot"></span> En línea
             </div>
-
-
         </div>
-
-        <div class="sub-container">
-
-
-            <div class="chat-body" id="chat-body" style="overflow: auto;">
-
-
-                {% for chat in chats %}
-
-                    {% if chat.msg_sender == user and chat.msg_receiver == profile %}
-
-                        <div class="chat-box-received">
-                            <a style="word-wrap: break-word;width:99%">{{ chat }}<h5 style="color: white;font-size: 10px">{{ chat.fecha_creacion|date:"d-m-Y H:i" }}</h5></a>
-                        </div>
-
-                    {% elif chat.msg_sender == profile and chat.msg_receiver == user %}
-                        <div class="chat-box-sent" style="">
-                            <a style="word-wrap: break-word;width:99%">{{ chat }}<h5 style="color: white;font-size: 10px">{{ chat.fecha_creacion|date:"d-m-Y H:i" }}</h5></a>
-                        </div>
-
-                    {% endif %}
-
-
-
-
-
-                {% endfor %}
-
-
-
-
-                <div class="chat-box-sent" id="chat-box-sent" style="display: none">
-
-                </div>
-
-
-            </div>
-
-            <form action="" id="myform" method="POST">
-                {% csrf_token %}
-
-                {{ form.body }}
-
-                <button type="submit" id="submit" class="btn btn-success"
-                        style="float: right;height: 20%;padding-top:6px">Enviar
-                </button>
-            </form>
-
-
-        </div>
-
-
     </div>
 
-    <script>
+    <!-- ── MENSAJES ── -->
+    <div class="chat-body" id="chat-body">
+        {% if chats %}
+            {% for chat in chats %}
 
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+                {% if chat.msg_sender == user and chat.msg_receiver == profile %}
+                <!-- Enviado por mí -->
+                <div class="bubble-wrap sent" id="bw-{{ forloop.counter }}">
+                    <div>
+                        <div class="bubble">{{ chat }}</div>
+                        <span class="bubble-time">{{ chat.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+
+                {% elif chat.msg_sender == profile and chat.msg_receiver == user %}
+                <!-- Recibido -->
+                <div class="bubble-wrap received" id="bw-{{ forloop.counter }}">
+                    {% if friend.profile.pic %}
+                        <img src="/media/{{ friend.profile.pic }}" class="bubble-avatar" alt="">
+                    {% else %}
+                        <div class="bubble-avatar-ph">{{ friend.profile.name|slice:":1"|upper }}</div>
+                    {% endif %}
+                    <div>
+                        <div class="bubble">{{ chat }}</div>
+                        <span class="bubble-time">{{ chat.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+                {% endif %}
+
+            {% endfor %}
+        {% else %}
+            <div class="chat-empty">
+                <i class="fe fe-message-circle"></i>
+                <p>Aún no hay mensajes. ¡Sé el primero en escribir!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- ── INPUT ── -->
+    <div class="chat-input-area">
+        <form id="myform" method="POST" style="display:contents;">
+            {% csrf_token %}
+            <textarea id="id_body" name="body"
+                      placeholder="Escribe un mensaje…"
+                      rows="1"
+                      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();document.getElementById('btn-send').click();}"></textarea>
+            <button type="submit" id="btn-send" class="btn-send">
+                <i class="fe fe-send"></i>
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    /* Scroll al fondo al cargar */
+    window.addEventListener('load', function () {
+        var div = document.getElementById('chat-body');
+        div.scrollTop = div.scrollHeight;
+    });
+
+    /* Auto-resize textarea */
+    var textarea = document.getElementById('id_body');
+    textarea.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+    });
+
+    /* CSRF */
+    function getCookie(name) {
+        let val = null;
+        if (document.cookie) {
+            document.cookie.split(';').forEach(c => {
+                c = c.trim();
+                if (c.startsWith(name + '=')) val = decodeURIComponent(c.slice(name.length + 1));
+            });
+        }
+        return val;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    /* Enviar mensaje */
+    document.getElementById('myform').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const msg = document.getElementById('id_body').value.trim();
+        if (!msg) return;
+
+        fetch("{% url 'sent_msg' friend.profile.id %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+            body: JSON.stringify({ msg })
+        })
+        .then(r => r.json())
+        .then(data => {
+            appendBubble('sent', data.new_chat_message, data.fecha_envio);
+            document.getElementById('id_body').value = '';
+            document.getElementById('id_body').style.height = 'auto';
+        })
+        .catch(console.error);
+    });
+
+    /* Agregar burbuja al DOM */
+    function appendBubble(type, text, time) {
+        const body = document.getElementById('chat-body');
+
+        // Quita empty si existe
+        const empty = body.querySelector('.chat-empty');
+        if (empty) empty.remove();
+
+        const wrap = document.createElement('div');
+        wrap.className = 'bubble-wrap ' + type;
+
+        if (type === 'received') {
+            {% if friend.profile.pic %}
+            const av = document.createElement('img');
+            av.src = '/media/{{ friend.profile.pic }}';
+            av.className = 'bubble-avatar';
+            wrap.appendChild(av);
+            {% else %}
+            const avph = document.createElement('div');
+            avph.className = 'bubble-avatar-ph';
+            avph.textContent = '{{ friend.profile.name|slice:":1"|upper }}';
+            wrap.appendChild(avph);
+            {% endif %}
+        }
+
+        const inner = document.createElement('div');
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = text;
+        const timeEl = document.createElement('span');
+        timeEl.className = 'bubble-time';
+        timeEl.textContent = time;
+        inner.appendChild(bubble);
+        inner.appendChild(timeEl);
+        wrap.appendChild(inner);
+        body.appendChild(wrap);
+        body.scrollTop = body.scrollHeight;
+    }
+
+    /* Polling mensajes nuevos */
+    let counter = {{ num }};
+
+    setInterval(function () {
+        fetch("{% url 'rec_msg' friend.profile.id %}")
+            .then(r => r.json())
+            .then(data => {
+                if (data.length > 0 && counter !== data.length) {
+                    const text = data[data.length - 2];
+                    const time = data[data.length - 1];
+                    appendBubble('received', text, time);
                 }
-            }
-            return cookieValue;
-        }
-
-        const csrftoken = getCookie('csrftoken');
-
-        let form = document.getElementById("myform")
-
-        form.addEventListener("submit", sendChat)
-
-        function sendChat(e) {
-            e.preventDefault()
-            let chatMessage = document.getElementById("id_body").value
-            console.log(chatMessage)
-
-            const data = {msg: chatMessage};
-
-            let url = "{% url 'sent_msg' friend.profile.id %}"
-
-            fetch(url, {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify(data),
+                counter = data.length;
             })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    let chat_body = document.getElementById('chat-body')
-                    let chatMessageBox = document.createElement("div")
-                    chatMessageBox.classList.add("chat-box-received")
-                    let aElement = document.createElement("a");
-                    aElement.style.wordWrap = "break-word";
-                    aElement.style.width = "99%";
-                    aElement.innerHTML = data.new_chat_message;
-                    let h5Element = document.createElement("h5");
-                    h5Element.style.color = "white";
-                    h5Element.style.fontSize = "10px";
-                    h5Element.innerText = data.fecha_envio;
-                    aElement.appendChild(h5Element);
-                    chatMessageBox.appendChild(aElement);
-                    chat_body.append(chatMessageBox)
-                    document.getElementById("id_body").value = ""
-                    var div = document.getElementById('chat-body');
-
-                    // Desplázate hasta el final del div
-                    div.scrollTop = div.scrollHeight;
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-
-
-        }
-
-
-        setInterval(receiveMessages, 2000)
-
-
-        let counter = {{num}}
-            function receiveMessages() {
-
-
-                let url = "{% url 'rec_msg' friend.profile.id %}"
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Success:', data);
-
-
-                        if (data.length == 0) {
-                        } else {
-                            let lastMsg = data[data.length - 2]
-                            let fecha = data[data.length - 1]
-
-                            if (counter == data.length) {
-                                console.log("there is no new chat")
-                            } else {
-
-
-                                let chat_body = document.getElementById('chat-body')
-                                let chatMessageBox = document.createElement("div")
-
-                                chatMessageBox.classList.add("chat-box-sent")
-                                let aElement = document.createElement("a");
-                                aElement.style.wordWrap = "break-word";
-                                aElement.style.width = "99%";
-                                aElement.innerHTML = lastMsg;
-                                let h5Element = document.createElement("h5");
-                                h5Element.style.color = "white";
-                                h5Element.style.fontSize = "10px";
-                                h5Element.innerText = fecha;
-                                aElement.appendChild(h5Element);
-                                chatMessageBox.appendChild(aElement);
-                                chat_body.append(chatMessageBox)
-                                document.getElementById("id_body").value = ""
-                                console.log()
-
-                                var div = document.getElementById('chat-body');
-
-                                // Desplázate hasta el final del div
-                                div.scrollTop = div.scrollHeight;
-
-
-                            }
-
-                        }
-
-                        counter = data.length
-
-
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
-
-            }
-
-
-    </script>
-
-
-
+            .catch(() => {});
+    }, 2000);
+</script>
 
 {% endblock %}

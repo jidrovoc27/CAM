@@ -1,114 +1,291 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load adiciones %}
-{#{% load humanize %}#}
+
 {% block contenido %}
-    <div class="col-lg-9 col-md-8 col-12">
-        <!-- Card -->
-        <div class="card mb-4">
-            <!-- Card header -->
-            <div class="card-header">
-                <h3 class="mb-0">{{ cursoA }}</h3>
-            </div>
-            <!-- Card body -->
-            <div class="card-body">
-                <!-- Form -->
-                <form class="row">
-                    <div class="col-lg-3 col-md-5 col-12">
-                        <select class="selectpicker" data-width="100%">
-                            <option value="">Date Created</option>
-                            <option value="Newest">Newest</option>
-                            <option value="High Rated">High Rated</option>
-                            <option value="Law Rated">Law Rated</option>
-                            <option value="High Earned">High Earned</option>
-                        </select>
-                    </div>
-                </form>
-                <h5 class="mb-0">{{ actividad }}</h5><br>
-                <p class="mb-0">{{ actividad.descripcion }}</p>
-            </div>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    .act-wrap { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 1rem; }
+
+    /* ── CARD BASE ── */
+    .act-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+
+    .act-card-header {
+        padding: .9rem 1.25rem;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fafbfd;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+
+    .act-card-header .hdr-icon {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .9rem; color: #fff; flex-shrink: 0;
+    }
+
+    .hdr-icon-task   { background: linear-gradient(135deg,#60a5fa,#2563eb); }
+    .hdr-icon-entreg { background: linear-gradient(135deg,#34d399,#059669); }
+
+    .act-card-header h5 {
+        font-size: .92rem; font-weight: 700;
+        color: #1e293b; margin: 0;
+    }
+
+    .act-card-body { padding: 1.1rem 1.25rem; }
+
+    /* ── INFO ACTIVIDAD ── */
+    .act-nombre {
+        font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 .5rem;
+    }
+
+    .act-descripcion {
+        font-size: .85rem; color: #475569; line-height: 1.65; margin: 0;
+    }
+
+    /* ── GRID DE ESTADO ── */
+    .entrega-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .65rem;
+    }
+
+    @media (max-width: 600px) { .entrega-grid { grid-template-columns: 1fr; } }
+
+    .entrega-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+    }
+
+    .entrega-item.full-width { grid-column: 1 / -1; }
+
+    .ei-label {
+        font-size: .67rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .08em;
+        color: #94a3b8;
+    }
+
+    .ei-value {
+        font-size: .88rem; font-weight: 500; color: #1e293b;
+    }
+
+    /* Badges de estado */
+    .badge-ok      { color: #15803d; }
+    .badge-warn    { color: #dc2626; font-weight: 600; }
+    .badge-pending { color: #92400e; }
+    .badge-nota    {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 36px; height: 36px; border-radius: 50%;
+        background: #eff6ff; color: #1192CF;
+        font-weight: 700; font-size: .95rem;
+    }
+
+    /* Tiempo restante */
+    .tiempo-pill {
+        display: inline-flex; align-items: center; gap: .35rem;
+        background: #fef9c3; color: #854d0e;
+        font-size: .78rem; font-weight: 600;
+        padding: .25rem .7rem; border-radius: 20px;
+    }
+
+    /* Comentario */
+    .comentario-input {
+        width: 100%; border: 1px solid #e2e8f0; border-radius: 8px;
+        padding: .5rem .8rem; font-size: .84rem;
+        font-family: 'Inter', sans-serif; color: #475569;
+        background: #f8fafc; outline: none; resize: none;
+    }
+
+    /* Botones acción */
+    .act-actions {
+        display: flex; justify-content: flex-end;
+        gap: .6rem; padding: .9rem 1.25rem;
+        border-top: 1px solid #f1f5f9;
+        background: #fafbfd;
+    }
+
+    .btn-entregar {
+        display: inline-flex; align-items: center; gap: .4rem;
+        background: #1192CF; color: #fff;
+        font-size: .82rem; font-weight: 600;
+        padding: .5rem 1.1rem; border-radius: 8px;
+        text-decoration: none; border: none; cursor: pointer;
+        transition: background .15s, transform .1s;
+    }
+    .btn-entregar:hover { background: #0e7ab0; color: #fff; transform: translateY(-1px); }
+
+    .btn-editar {
+        display: inline-flex; align-items: center; gap: .4rem;
+        background: #fff; color: #475569;
+        font-size: .82rem; font-weight: 600;
+        padding: .5rem 1.1rem; border-radius: 8px;
+        text-decoration: none; border: 1px solid #e2e8f0;
+        transition: background .15s, color .15s;
+    }
+    .btn-editar:hover { background: #f8fafc; color: #1e293b; }
+
+    .btn-descargar {
+        display: inline-flex; align-items: center; gap: .4rem;
+        background: #dcfce7; color: #15803d;
+        font-size: .82rem; font-weight: 600;
+        padding: .4rem .9rem; border-radius: 8px;
+        text-decoration: none; border: none;
+        transition: background .15s;
+    }
+    .btn-descargar:hover { background: #bbf7d0; }
+</style>
+
+<div class="act-wrap">
+
+    <!-- ── CARD: INFO ACTIVIDAD ── -->
+    <div class="act-card">
+        <div class="act-card-header">
+            <div class="hdr-icon hdr-icon-task"><i class="fe fe-file-text"></i></div>
+            <h5>{{ cursoA }}</h5>
         </div>
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="mb-0">Entrega</h5><br>
-                <div class="table-responsive border-0 overflow-y-hidden">
-                    <table class="table mb-0 text-nowrap">
-                        <thead class="table-light">
-                        <tr>
-                            <th scope="col" class="border-0" style="width: 15%">Estado de la entrega</th>
-                            <th scope="col" class="border-0 text-left" style="background: white">{% if nota %}
-                                Entregado{% else %}No entregado{% endif %}</th>
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0" style="width: 15%">Estado de la calificación</th>
-                            <th scope="col" class="border-0 text-left" style="background: white">{% if nota %}
-                                {% if nota.estado == 2 %}{{ nota.nota }}{% else %}---{% endif %}{% else %}
-                                <span style="color: red">Sin calificar</span>{% endif %}</th>
+        <div class="act-card-body">
+            <p class="act-nombre">{{ actividad }}</p>
+            {% if actividad.descripcion %}
+                <p class="act-descripcion">{{ actividad.descripcion }}</p>
+            {% endif %}
+        </div>
+    </div>
 
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0" style="width: 15%">Revisión</th>
-                            <th scope="col" class="border-0 text-left"
-                                style="background: white">
-                                {% if nota %}{{ nota.get_estado_display }}{% else %}---{% endif %}</th>
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0" style="width: 15%">Fecha de entrega</th>
-                            <th scope="col" class="border-0 text-left" style="background: white">{% if nota %}
-                                {{ nota.fechasubida|date:"d-m-Y" }}{% else %}
-                                <span style="color: red">Tarea no subida</span>{% endif %}</th>
+    <!-- ── CARD: ESTADO DE ENTREGA ── -->
+    <div class="act-card">
+        <div class="act-card-header">
+            <div class="hdr-icon hdr-icon-entreg"><i class="fe fe-upload"></i></div>
+            <h5>Estado de entrega</h5>
+        </div>
+        <div class="act-card-body">
+            <div class="entrega-grid">
 
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0" style="width: 15%">Tiempo restante</th>
-                            <th scope="col" class="border-0 text-left"
-                                style="background: white">{{ tiemporestante }}</th>
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0" style="width: 15%">Tarea</th>
-                            <th scope="col" class="border-0 text-left" style="background: white">
-                                {% if nota %}
-                                    {% if nota.tarea %}
-                                        <a class="btn btn-success" href="/media/{{ nota.tarea }}"
-                                           target="_blank">Descargar</a>
-                                    {% else %}
-                                        <span style="color: red">Sin archivo</span>
-                                    {% endif %}
-                                {% else %}
-                                    <span style="color: red">Sin archivo</span>
-                                {% endif %}
-                            </th>
-
-                        </tr>
-                        <tr>
-                            <th scope="col" class="border-0" style="width: 15%;vertical-align: center">Comentarios</th>
-                            <th scope="col" class="border-0 text-left" style="background: white">
-                                <input readonly type="text" class="form-control"
-                                       {% if nota %}value="{{ nota.comentario }}"{% endif %}>
-
-                            </th>
-                        </tr>
-                        </thead>
-                    </table>
-                    <br>
-                    {% if puedesubirtarea %}
+                <!-- Entrega -->
+                <div class="entrega-item">
+                    <span class="ei-label">Entrega</span>
+                    <span class="ei-value {% if nota %}badge-ok{% else %}badge-warn{% endif %}">
                         {% if nota %}
-                            {% if nota.estado == 1 %}
-                                <div class="col-6 text-end" style="float: right">
-                                <a class="btn btn-outline-dark btn-sm mb-0"
-                                   href="?peticion=edit_tarea&nota={{ nota.id }}&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
-                                        class="material-icons text-sm"></i>Editar entrega</a>
+                            <i class="fe fe-check-circle"></i> Entregado
+                        {% else %}
+                            <i class="fe fe-x-circle"></i> No entregado
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Calificación -->
+                <div class="entrega-item">
+                    <span class="ei-label">Calificación</span>
+                    <span class="ei-value">
+                        {% if nota %}
+                            {% if nota.estado == 2 %}
+                                <span class="badge-nota">{{ nota.nota }}</span>
+                            {% else %}
+                                <span class="badge-pending">Pendiente</span>
                             {% endif %}
                         {% else %}
-                            <div class="col-6 text-end" style="float: right">
-                                <a class="btn btn-outline-dark btn-sm mb-0"
-                                   href="?peticion=add_tarea&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}"><i
-                                        class="material-icons text-sm"></i>Agregar entrega</a>
-                            </div>
+                            <span class="badge-warn">Sin calificar</span>
                         {% endif %}
-                    {% endif %}
-                    </div>
+                    </span>
                 </div>
+
+                <!-- Revisión -->
+                <div class="entrega-item">
+                    <span class="ei-label">Revisión</span>
+                    <span class="ei-value">
+                        {% if nota %}
+                            {{ nota.get_estado_display }}
+                        {% else %}
+                            <span style="color:#94a3b8;">—</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Fecha de entrega -->
+                <div class="entrega-item">
+                    <span class="ei-label">Fecha de entrega</span>
+                    <span class="ei-value">
+                        {% if nota %}
+                            <i class="fe fe-calendar" style="color:#94a3b8;font-size:.8rem;"></i>
+                            {{ nota.fechasubida|date:"d/m/Y" }}
+                        {% else %}
+                            <span class="badge-warn"><i class="fe fe-alert-circle"></i> No subida</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Tiempo restante -->
+                <div class="entrega-item">
+                    <span class="ei-label">Tiempo restante</span>
+                    <span class="ei-value">
+                        {% if tiemporestante %}
+                            <span class="tiempo-pill">
+                                <i class="fe fe-clock"></i>{{ tiemporestante }}
+                            </span>
+                        {% else %}
+                            <span style="color:#94a3b8;">—</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Archivo -->
+                <div class="entrega-item">
+                    <span class="ei-label">Archivo entregado</span>
+                    <span class="ei-value">
+                        {% if nota and nota.tarea %}
+                            <a class="btn-descargar" href="/media/{{ nota.tarea }}" target="_blank">
+                                <i class="fe fe-download"></i> Descargar
+                            </a>
+                        {% else %}
+                            <span class="badge-warn"><i class="fe fe-paperclip"></i> Sin archivo</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Comentarios -->
+                <div class="entrega-item full-width">
+                    <span class="ei-label">Comentarios del docente</span>
+                    <input class="comentario-input" type="text" readonly
+                           value="{% if nota and nota.comentario %}{{ nota.comentario }}{% endif %}"
+                           placeholder="Sin comentarios aún…">
+                </div>
+
             </div>
         </div>
+
+        <!-- Botón acción -->
+        {% if puedesubirtarea %}
+        <div class="act-actions">
+            {% if nota %}
+                {% if nota.estado == 1 %}
+                <a class="btn-editar"
+                   href="?peticion=edit_tarea&nota={{ nota.id }}&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}">
+                    <i class="fe fe-edit-2"></i> Editar entrega
+                </a>
+                {% endif %}
+            {% else %}
+                <a class="btn-entregar"
+                   href="?peticion=add_tarea&id={{ actividad.id }}&inscrito={{ inscrito.id }}&curso={{ cursoA.id }}">
+                    <i class="fe fe-upload"></i> Agregar entrega
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
 {% endblock %}

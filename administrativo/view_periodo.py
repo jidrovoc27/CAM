@@ -280,7 +280,7 @@ def view_periodo(request):
 
                         return JsonResponse({"respuesta": True, "mensaje": "Registro guardado correctamente."})
                     else:
-                        return JsonResponse({"respuesta": False, "mensaje": form.errors.items()})
+                        return JsonResponse({"respuesta": False, "mensaje": str(form.errors)})
                 except Exception as ex:
                     return JsonResponse({"respuesta": False, "mensaje": "Ha ocurrido un error al enviar los datos."})
 

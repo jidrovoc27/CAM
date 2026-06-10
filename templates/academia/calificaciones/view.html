@@ -1,79 +1,222 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load adiciones %}
+
 {% block contenido %}
-    <div class="col-lg-9 col-md-8 col-12">
-        <!-- Card -->
-        <div class="card mb-4">
-            <!-- Card header -->
-            <div class="card-header">
-                <h3 class="mb-0">Cursos que estoy tomando</h3>
-            </div>
-            <!-- Card body -->
-            <div class="card-body">
-                <!-- Form -->
-                <form class="row">
-                    <div class="col-lg-3 col-md-5 col-12">
-                        <select class="selectpicker" data-width="100%">
-                            <option value="">Date Created</option>
-                            <option value="Newest">Newest</option>
-                            <option value="High Rated">High Rated</option>
-                            <option value="Law Rated">Law Rated</option>
-                            <option value="High Earned">High Earned</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <!-- Table -->
-            <div class="table-responsive border-0 overflow-y-hidden">
-                <table class="table mb-0 text-nowrap">
-                    <thead class="table-light">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    .calif-wrap { font-family: 'Inter', sans-serif; }
+
+    /* Header */
+    .page-header {
+        margin-bottom: 1.25rem;
+    }
+    .page-header h4 {
+        font-size: 1.05rem; font-weight: 700; color: #1e293b; margin: 0 0 .15rem;
+    }
+    .page-header p {
+        font-size: .8rem; color: #64748b; margin: 0;
+    }
+
+    /* Card */
+    .calif-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+
+    /* Tabla */
+    .calif-table { width: 100%; border-collapse: collapse; }
+
+    .calif-table thead tr {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .calif-table thead th {
+        font-size: .7rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .07em;
+        color: #94a3b8; padding: .75rem 1.1rem; white-space: nowrap;
+    }
+
+    .calif-table tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background .1s;
+    }
+    .calif-table tbody tr:last-child { border-bottom: none; }
+    .calif-table tbody tr:hover { background: #f8faff; }
+
+    .calif-table tbody td {
+        padding: .85rem 1.1rem;
+        vertical-align: middle;
+    }
+
+    /* Celda curso */
+    .curso-cell { display: flex; align-items: center; gap: .9rem; }
+
+    .curso-thumb {
+        width: 68px; height: 48px;
+        border-radius: 8px; object-fit: cover; flex-shrink: 0;
+    }
+    .curso-thumb-placeholder {
+        width: 68px; height: 48px;
+        border-radius: 8px; flex-shrink: 0;
+        background: linear-gradient(135deg, #afbdd8, #399be2);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1.1rem;
+    }
+
+    .curso-nombre {
+        font-size: .87rem; font-weight: 600; color: #1e293b;
+        text-decoration: none; display: block;
+        transition: color .12s; line-height: 1.3;
+    }
+    .curso-nombre:hover { color: #1192CF; }
+
+    /* Nota circular */
+    .nota-circle {
+        width: 46px; height: 46px;
+        border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: .88rem; font-weight: 700;
+        margin: 0 auto;
+    }
+
+    .nota-alta    { background: #dcfce7; color: #15803d; }
+    .nota-media   { background: #fef9c3; color: #854d0e; }
+    .nota-baja    { background: #fee2e2; color: #dc2626; }
+    .nota-vacia   { background: #f1f5f9; color: #94a3b8; }
+
+    /* Footer contador */
+    .card-footer-count {
+        font-size: .75rem; color: #94a3b8;
+        padding: .6rem 1.1rem;
+        border-top: 1px solid #f1f5f9;
+        background: #fafbfd;
+    }
+
+    /* Sin cursos */
+    .sin-cursos {
+        text-align: center; padding: 3rem 1rem; color: #94a3b8;
+    }
+    .sin-cursos i { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
+    .sin-cursos p { font-size: .85rem; margin: 0; }
+</style>
+
+<div class="calif-wrap">
+
+    <div class="page-header">
+        <h4>Mis Calificaciones</h4>
+        <p>Resumen de notas por curso</p>
+    </div>
+
+    <div class="calif-card">
+        <div style="overflow-x:auto;">
+            <table class="calif-table">
+                <thead>
                     <tr>
-                        <th scope="col" class="border-0">Curso</th>
-                        <th scope="col" class="border-0 text-center">Calificación</th>
-                        {#                                <th scope="col" class="border-0"></th>#}
+                        <th>Curso</th>
+                        <th style="text-align:center; width:120px;">Promedio final</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {% for micurso in miscursos %}
+                </thead>
+                <tbody>
+                {% for micurso in miscursos %}
+                    {% with inscritocurso=micurso|args:alumno.id|call:'traer_inscrito' %}
+                    {% with examenes_recuperacion=micurso|args:inscritocurso.id|call:'detalleexamenes_recuperacion' %}
+
+                    {% if not examenes_recuperacion %}
+                        {% with promedio=inscritocurso|args:micurso.id|call:'calcularpromedio' %}
                         <tr>
-                            <td class="border-top-0">
-                                <div class="d-lg-flex">
+                            <td>
+                                <div class="curso-cell">
+                                    {% if micurso.fondocursos %}
+                                        <img src="/media/{{ micurso.fondocursos }}"
+                                             alt="{{ micurso }}" class="curso-thumb">
+                                    {% else %}
+                                        <div class="curso-thumb-placeholder">
+                                            <i class="fe fe-book"></i>
+                                        </div>
+                                    {% endif %}
                                     <div>
-                                        <a href="#">
-                                            <img src="/media/{{ micurso.fondocursos }}" alt=""
-                                                 class="rounded img-4by3-lg"/></a>
-                                    </div>
-                                    <div class="ms-lg-3 mt-2 mt-lg-0">
-                                        <h4 class="mb-1 h5">
-                                            <a href="?peticion=detallecalificacion&id={{ micurso.id }}"
-                                               class="text-inherit">
-                                                {{ micurso }}
-                                            </a>
-                                        </h4>
+                                        <a href="?peticion=detallecalificacion&id={{ micurso.id }}"
+                                           class="curso-nombre">{{ micurso }}</a>
                                     </div>
                                 </div>
                             </td>
-                            <td class="border-top-0 text-center">
-                                {% with inscritocurso=micurso|args:alumno.id|call:'traer_inscrito' %}
-                                    {% with examenes_recuperacion=micurso|args:inscritocurso.id|call:'detalleexamenes_recuperacion' %}
-                                        {% if not examenes_recuperacion %}
-                                            {% with modelo=inscritocurso|args:micurso.id|call:'calcularpromedio' %}
-                                                {{ modelo|floatformat:2 }}
-                                            {% endwith %}
-                                        {% else %}
-                                            {% with modelo=inscritocurso|args:micurso.id|call:'calcularpromedio_recuperacion' %}
-                                                {{ modelo|floatformat:2 }}
-                                            {% endwith %}
-                                        {% endif %}
-                                    {% endwith %}
-                                {% endwith %}
+                            <td style="text-align:center;">
+                                {% if promedio %}
+                                    <span class="nota-circle
+                                        {% if promedio >= 70 %}nota-alta
+                                        {% elif promedio >= 50 %}nota-media
+                                        {% else %}nota-baja{% endif %}">
+                                        {{ promedio|floatformat:2 }}
+                                    </span>
+                                {% else %}
+                                    <span class="nota-circle nota-vacia">—</span>
+                                {% endif %}
                             </td>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                        {% endwith %}
+                    {% else %}
+                        {% with promedio=inscritocurso|args:micurso.id|call:'calcularpromedio_recuperacion' %}
+                        <tr>
+                            <td>
+                                <div class="curso-cell">
+                                    {% if micurso.fondocursos %}
+                                        <img src="/media/{{ micurso.fondocursos }}"
+                                             alt="{{ micurso }}" class="curso-thumb">
+                                    {% else %}
+                                        <div class="curso-thumb-placeholder">
+                                            <i class="fe fe-book"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <a href="?peticion=detallecalificacion&id={{ micurso.id }}"
+                                           class="curso-nombre">{{ micurso }}</a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align:center;">
+                                {% if promedio %}
+                                    <span class="nota-circle
+                                        {% if promedio >= 70 %}nota-alta
+                                        {% elif promedio >= 50 %}nota-media
+                                        {% else %}nota-baja{% endif %}">
+                                        {{ promedio|floatformat:2 }}
+                                    </span>
+                                {% else %}
+                                    <span class="nota-circle nota-vacia">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endwith %}
+                    {% endif %}
+
+                    {% endwith %}
+                    {% endwith %}
+                {% empty %}
+                    <tr>
+                        <td colspan="2">
+                            <div class="sin-cursos">
+                                <i class="fe fe-inbox"></i>
+                                <p>No hay calificaciones disponibles aún.</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
+
+        {% if miscursos %}
+        <div class="card-footer-count">
+            {{ miscursos|length }} curso{{ miscursos|length|pluralize }} en total
+        </div>
+        {% endif %}
     </div>
+
+</div>
 {% endblock %}

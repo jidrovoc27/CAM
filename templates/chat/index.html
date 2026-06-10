@@ -1,312 +1,187 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block contenido %}
-    <style>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        .logo {
-            width: 100px;
-            /* border: 2px solid black; */
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: slateblue;
-            line-height: 20px;
-        }
+    .msg-wrap { font-family: 'Inter', sans-serif; }
 
+    /* Header */
+    .page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 1.25rem; flex-wrap: wrap; gap: .75rem;
+    }
+    .page-header h4 { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin: 0 0 .15rem; }
+    .page-header p  { font-size: .8rem; color: #64748b; margin: 0; }
 
-        img {
-            object-fit: cover;
-            height: 100%;
-            width: 100%;
-            border-radius: 50%;
-        }
+    .btn-add-contact {
+        display: inline-flex; align-items: center; gap: .45rem;
+        background: #1192CF; color: #fff;
+        font-size: .82rem; font-weight: 600;
+        padding: .5rem 1rem; border-radius: 8px;
+        text-decoration: none; transition: background .15s, transform .1s;
+    }
+    .btn-add-contact:hover { background: #0e7ab0; color: #fff; transform: translateY(-1px); }
 
-        .chat-container, .chat-container2 {
-            width: 74%;
-            height: 370px;
-            /* border: 2px solid black; */
-            background-color: white;
-            border-radius: 30px;
-            padding: 10px 10px
-        }
+    /* Card lista */
+    .contacts-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
 
-        .sub-main {
-            /* border: 2px solid green; */
-            width: 200px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            flex-direction: column;
-        }
+    /* Ítem contacto */
+    .contact-item {
+        display: flex; align-items: center; gap: .9rem;
+        padding: .85rem 1.15rem;
+        border-bottom: 1px solid #f1f5f9;
+        text-decoration: none;
+        transition: background .1s;
+        color: inherit;
+    }
+    .contact-item:last-child { border-bottom: none; }
+    .contact-item:hover { background: #f8faff; }
 
-        .sub-main p {
-            font-size: 18px;
-        }
+    /* Avatar */
+    .contact-avatar {
+        width: 44px; height: 44px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0;
+        border: 2px solid #e8f5fb;
+    }
+    .contact-avatar-placeholder {
+        width: 44px; height: 44px; border-radius: 50%;
+        background: linear-gradient(135deg, #afbdd8, #399be2);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1rem; font-weight: 700;
+        flex-shrink: 0;
+    }
 
-        .main-user {
-            width: 60px;
-            height: 60px;
-            /* border: 2px solid black; */
-            float: right;
-            border-radius: 50%;
-        }
+    /* Info */
+    .contact-info { flex: 1; min-width: 0; }
+    .contact-name {
+        font-size: .87rem; font-weight: 600; color: #1e293b;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        display: block;
+    }
+    .contact-sub {
+        font-size: .75rem; color: #94a3b8; margin-top: .1rem;
+        display: flex; align-items: center; gap: .3rem;
+    }
 
-        .header {
-            width: 100%;
-            height: auto;
-            /* border: 2px solid red; */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
+    /* Badge de mensajes nuevos */
+    .msg-badge {
+        min-width: 24px; height: 24px; padding: 0 .45rem;
+        background: #1192CF; color: #fff;
+        border-radius: 20px;
+        font-size: .72rem; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        transition: transform .15s;
+    }
+    .msg-badge.zero { background: #f1f5f9; color: #94a3b8; }
+    .contact-item:hover .msg-badge { transform: scale(1.1); }
 
-        .friends-container {
-            width: 100%;
-            height: 90%;
-            /* border: 2px solid black; */
-            overflow: auto;
-        }
+    /* Flecha */
+    .contact-arrow {
+        color: #cbd5e1; font-size: .75rem; flex-shrink: 0;
+        transition: color .12s, transform .12s;
+    }
+    .contact-item:hover .contact-arrow { color: #1192CF; transform: translateX(3px); }
 
-        .friends {
-            width: 100%;
-            height: 80px;
-            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 10px;
-            padding: 0px 10px;
+    /* Vacío */
+    .contacts-empty {
+        text-align: center; padding: 3rem 1rem; color: #94a3b8;
+    }
+    .contacts-empty i { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
+    .contacts-empty p { font-size: .85rem; margin: 0 0 1rem; }
 
-        }
+    /* Footer contador */
+    .contacts-footer {
+        font-size: .75rem; color: #94a3b8;
+        padding: .6rem 1.15rem;
+        border-top: 1px solid #f1f5f9;
+        background: #fafbfd;
+    }
+</style>
 
-        .pic, .pro-pic {
-            width: 50px;
-            height: 50px;
-            /* border: 1px solid black; */
-            border-radius: 50%;
-        }
+<div class="msg-wrap">
 
-        .name {
-            flex-grow: 2;
-            /* border: 2px solid black; */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .name p {
-            font-size: 14px;
-        }
-
-        .time_new_msg {
-            width: auto;
-            height: 50px;
-            /* border: 2px solid black; */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .time_new_msg p {
-            font-size: 14px;
-        }
-
-        .msg {
-            width: 40px;
-            height: 40px;
-            background-color: slateblue;
-            border-radius: 50%;
-            text-align: center;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-
-        }
-
-        .footer {
-            width: 100%;
-            height: 40px;
-            /* border: 1px solid black; */
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-        }
-
-        svg {
-            cursor: pointer;
-        }
-
-
-        .identity {
-            width: 100%;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            /* border: 2px solid black; */
-
-        }
-
-
-        .sub-container {
-
-            height: 100%;
-            width: 100%;
-            /* border: 2px solid blue; */
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-direction: column;
-
-        }
-
-
-        .chat-body {
-            width: 100%;
-            height: 280px;
-            /* border: 2px solid slateblue; */
-            overflow: auto;
-            /* display: flex;
-            align-items: flex-start;
-            justify-content: center; */
-        }
-
-        #myform {
-            width: 100%;
-            height: auto;
-            /* border: 2px solid black; */
-            /* display: flex;
-            justify-content: space-between;
-            align-items: center; */
-            flex-grow: 2;
-
-        }
-
-        #input {
-            flex-grow: 2;
-            height: 30px;
-            /* border: 2px solid slateblue; */
-            border-radius: 10px;
-            padding: 0px 10px;
-            font-size: 16px;
-            font-family: sans-serif !important;
-        }
-
-        .chat-container2 {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-direction: column;
-        }
-
-
-        .chat-box-received, .chat-box-sent {
-            width: 200px;
-            height: auto;
-            font-size: 14px;
-            background-color: slateblue;
-            color: white;
-            margin-left: auto;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            padding: 10px 10px;
-            border-radius: 10px;
-        }
-
-        .chat-box-sent {
-            background-color: rebeccapurple;
-            color: white;
-            float: left;
-
-        }
-    </style>
-    <div class="chat-container">
-        <div class="footer">
-            <div>
-                <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="26"
-                        height="26"
-                        fill="currentColor"
-                        class="bi bi-person-plus"
-                        viewBox="0 0 16 16"
-                >
-                    <path
-                            d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"
-                    />
-                    <path
-                            fill-rule="evenodd"
-                            d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"
-                    />
-                </svg>
-                <a  href="?peticion=add_profile">Agregar contacto</a>
-            </div>
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h4>Mensajes</h4>
+            <p>Conversaciones con tus contactos</p>
         </div>
-        <div class="friends-container">
-
-            {% for friend in friends %}
-
-                <a href="?peticion=chat&pk={{ friend.profile.id }}" style="color:black; text-decoration: none">
-                    <div class="friends">
-                        <div class="pic">
-                            <img src="/media/{{ friend.profile.pic }}" alt=""/>
-                        </div>
-                        <div class="name">
-                            <h5>{{ friend.profile.name }}</h5>
-                            <p>Ver mensajes</p>
-                        </div>
-                        <div class="time_new_msg">
-                            {% comment %} <p>7:30am</p> {% endcomment %}
-
-                            <div class="msg">0</div>
-
-
-                        </div>
-                    </div>
-                </a>
-
-            {% endfor %}
-
-
-        </div>
-
-
+        <a href="?peticion=add_profile" class="btn-add-contact">
+            <i class="fe fe-user-plus"></i> Agregar contacto
+        </a>
     </div>
 
-    <script>
+    <!-- Lista de contactos -->
+    <div class="contacts-card">
+        {% if friends %}
+            {% for friend in friends %}
+            <a href="?peticion=chat&pk={{ friend.profile.id }}" class="contact-item">
 
-        setInterval(getNotification, 1000)
+                {% if friend.profile.pic %}
+                    <img src="/media/{{ friend.profile.pic }}"
+                         alt="{{ friend.profile.name }}"
+                         class="contact-avatar">
+                {% else %}
+                    <div class="contact-avatar-placeholder">
+                        {{ friend.profile.name|slice:":1"|upper }}
+                    </div>
+                {% endif %}
 
-        function getNotification() {
-            let url = "{% url 'notification' %}"
+                <div class="contact-info">
+                    <span class="contact-name">{{ friend.profile.name }}</span>
+                    <span class="contact-sub">
+                        <i class="fe fe-message-circle"></i> Ver conversación
+                    </span>
+                </div>
 
-            fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data)
-                    let chatNotificationBtn = document.getElementsByClassName("msg")
-                    for (let i = 0; i < data.length; i++) {
-                        chatNotificationBtn[i].innerText = data[i]
-                    }
-                })
-                .catch(error => console.log(error))
-        }
+                <div class="msg msg-badge zero">0</div>
 
-    </script>
+                <i class="fe fe-chevron-right contact-arrow"></i>
+            </a>
+            {% endfor %}
 
+            <div class="contacts-footer">
+                {{ friends|length }} contacto{{ friends|length|pluralize }}
+            </div>
 
+        {% else %}
+            <div class="contacts-empty">
+                <i class="fe fe-inbox"></i>
+                <p>No tienes contactos aún.</p>
+                <a href="?peticion=add_profile" class="btn-add-contact">
+                    <i class="fe fe-user-plus"></i> Agregar primer contacto
+                </a>
+            </div>
+        {% endif %}
+    </div>
 
+</div>
+
+<script>
+    setInterval(getNotification, 3000);
+
+    function getNotification() {
+        fetch("{% url 'notification' %}")
+            .then(res => res.json())
+            .then(data => {
+                const badges = document.querySelectorAll('.msg.msg-badge');
+                badges.forEach((badge, i) => {
+                    const count = data[i] ?? 0;
+                    badge.textContent = count;
+                    badge.classList.toggle('zero', count === 0);
+                });
+            })
+            .catch(() => {});
+    }
+</script>
 
 {% endblock %}
