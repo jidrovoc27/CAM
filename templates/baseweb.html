@@ -1,15 +1,15 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Start your development with LeadMark landing page.">
-    <meta name="author" content="Devcrud">
-    <title>LeadMark Landing page | Free Bootstrap 4.3.x landing page</title>
-    <!-- font icons -->
+    <meta name="description" content="Centro de Capacitación Profesional y Continua.">
+    <meta name="author" content="Centro de Capacitación">
+    <title>Centro de Capacitación | Educación Continua</title>
+
     <link rel="stylesheet" href="{% static 'vendors/themify-icons/css/themify-icons.css' %}">
-    <!-- Bootstrap + LeadMark main styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/leadmark.css' %}">
 
     <script>
@@ -34,211 +34,333 @@
                 error: function () {
                     alert("Error de conexión.");
                 },
-
             });
         }
     </script>
 
-</head>
-<body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
+    <style>
+        :root {
+            --primary-color: #0f172a; /* Azul Marino Profundo */
+            --accent-color: #10b981;  /* Verde Esmeralda Educativo */
+            --text-muted: #64748b;
+        }
 
-<!-- page Navigation -->
-<nav class="navbar custom-navbar navbar-expand-md navbar-light fixed-top" data-spy="affix" data-offset-top="10">
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #334155;
+            background-color: #f8fafc;
+        }
+
+        /* Navbar Customization */
+        .navbar {
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Cards and Portfolio Customization */
+        .portfolio-item {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: #fff;
+            margin-bottom: 30px;
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
+        }
+
+        .portfolio-item img {
+            height: 240px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .portfolio-item .content-holder {
+            background: rgba(15, 23, 42, 0.9) !important; /* Capa oscura elegante */
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        #testmonial .card {
+            border-left: 4px solid var(--accent-color);
+        }
+
+        #testmonial img {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e2e8f0;
+        }
+
+        /* Buttons and Badges */
+        .btn-success {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            border-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-light:hover {
+            color: var(--primary-color) !important;
+            background-color: #fff;
+        }
+
+        .badge-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 6px;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .filters a {
+            color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: #e2e8f0;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .filters a.active, .filters a:hover {
+            background: var(--accent-color);
+            color: #fff !important;
+        }
+
+        /* Contact Section Specifics */
+        #contact {
+            background: linear-gradient(rgba(15,23,42,.95), rgba(15,23,42,.95)), url('/static/imgs/contact-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body id="home" data-spy="scroll" data-target=".navbar" data-offset="40">
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm" style="background: rgba(15,23,42,.95); backdrop-filter: blur(15px);">
     <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="{% static 'imgs/logo.svg' %}" alt="">
+        <a class="navbar-brand font-weight-bold" href="#home">
+            <i class="fas fa-graduation-cap text-success"></i>
+            <span>Centro de Capacitación</span>
         </a>
-        <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse"
-                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#service">Our Service</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#portfolio">Nuestros cursos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#blog">Cursos actuales</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Contact</a>
-                </li>
-                <li class="nav-item">
-                    <a href="components.html" class="ml-4 nav-link btn btn-primary btn-sm rounded">Components</a>
+            <ul class="navbar-nav ml-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="#about">Nosotros</a></li>
+                <li class="nav-item"><a class="nav-link" href="#portfolio">Cursos</a></li>
+                <li class="nav-item"><a class="nav-link" href="#blog">Novedades</a></li>
+                <li class="nav-item"><a class="nav-link" href="#testmonial">Docentes</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contacto</a></li>
+                <li class="nav-item ml-lg-3 mt-2 mt-lg-0">
+                    <a href="#portfolio" class="btn btn-success btn-sm text-white">Inscribirme</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
-<!-- End Of Second Navigation -->
 
-<!-- Page Header -->
-<header class="header">
-    <div class="overlay">
-        <h1 class="subtitle">LeadMark Landing Page</h1>
-        <h1 class="title">We Are Creative</h1>
-    </div>
-    <div class="shape">
-        <svg viewBox="0 0 1500 200">
-            <path d="m 0,240 h 1500.4828 v -71.92164 c 0,0 -286.2763,-81.79324 -743.19024,-81.79324 C 300.37862,86.28512 0,168.07836 0,168.07836 Z"/>
-        </svg>
-    </div>
-    <div class="mouse-icon">
-        <div class="wheel"></div>
+<header style="min-height:100vh; background: linear-gradient(rgba(15,23,42,.85), rgba(15,23,42,.85)), url('/static/imgs/header.jpg'); background-size:cover; background-position:center; display:flex; align-items:center;">
+    <div class="container mt-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-center text-lg-left">
+                <span class="badge badge-success px-3 py-2 text-uppercase letter-spacing">
+                    <i class="fas fa-certificate mr-1"></i> Formación Profesional Garantizada
+                </span>
+                <h1 class="display-4 text-white font-weight-bold mt-4 line-height-sm">
+                    Aprende habilidades que transforman tu futuro
+                </h1>
+                <p class="lead text-light opacity-80 mt-4">
+                    Capacítate con docentes especializados, obtén certificaciones oficiales y potencia tu perfil en el mercado laboral actual.
+                </p>
+                <div class="mt-5">
+                    <a href="#portfolio" class="btn btn-success btn-lg mr-3 shadow">
+                        Explorar Catálogo
+                    </a>
+                    <a href="#contact" class="btn btn-outline-light btn-lg">
+                        Solicitar Asesoría
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+                <img src="{% static 'imgs/education.png' %}" class="img-fluid animated fadeInRight" alt="Ilustración Educación">
+            </div>
+        </div>
     </div>
 </header>
-<!-- End Of Page Header -->
 
-<!-- Service Section -->
-<section id="service" class="section pt-0">
+<section class="py-5 bg-white border-bottom">
     <div class="container">
-        <h6 class="section-title text-center">Our Service</h6>
-        <h6 class="section-subtitle text-center mb-5 pb-3">Voluptates architecto provident deserunt.</h6>
+        <div class="row text-center">
+            <div class="col-md-3 col-6 my-3">
+                <h2 class="font-weight-bold text-success display-4">{{ cursosdisponibles.count }}</h2>
+                <p class="text-muted font-weight-medium mb-0">Cursos Activos</p>
+            </div>
+            <div class="col-md-3 col-6 my-3">
+                <h2 class="font-weight-bold text-success display-4">{{ docentes.count }}</h2>
+                <p class="text-muted font-weight-medium mb-0">Docentes Expertos</p>
+            </div>
+            <div class="col-md-3 col-6 my-3">
+                <h2 class="font-weight-bold text-success display-4">500+</h2>
+                <p class="text-muted font-weight-medium mb-0">Alumnos Graduados</p>
+            </div>
+            <div class="col-md-3 col-6 my-3">
+                <h2 class="font-weight-bold text-success display-4">95%</h2>
+                <p class="text-muted font-weight-medium mb-0">Tasa de Satisfacción</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card mb-4 mb-md-0">
-                    <div class="card-body">
-                        <small class="text-primary font-weight-bold">01</small>
-                        <h5 class="card-title mt-3"> Beatae quo </h5>
-                        <p class="mb-0">Lorem ipsum dolor sit amet, cquasi cupiditate voluptate debitis saepe dolorem
-                            totam dolor repudiandae quo nihil, repellendus nesciunt ab fuga quae, minima reprehenderit
-                            sequi fugit.</p>
-                    </div>
-                </div>
+<section id="about" class="py-6 bg-light" style="padding: 80px 0;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <img src="{% static 'imgs/about.jpg' %}" class="img-fluid rounded shadow-lg" alt="Acerca de nosotros">
             </div>
-            <div class="col-md-4">
-                <div class="card mb-4 mb-md-0">
-                    <div class="card-body">
-                        <small class="text-primary font-weight-bold">02</small>
-                        <h5 class="card-title mt-3">Delectus Suscipit</h5>
-                        <p class="mb-0">Lorem ipsum dolor sit amet, cquasi cupiditate voluptate debitis saepe dolorem
-                            totam dolor repudiandae quo nihil, repellendus nesciunt ab fuga quae, minima reprehenderit
-                            sequi fugit.</p>
+            <div class="col-lg-6 pl-lg-5">
+                <h2 class="font-weight-bold text-dark">Formación Estratégica para tu Crecimiento Académico</h2>
+                <p class="mt-4 text-muted lead">
+                    Nuestro centro ofrece programas metodológicos diseñados con altos estándares educativos, enfocados en el desarrollo de competencias prácticas y herramientas aplicables al entorno real.
+                </p>
+                <div class="row mt-4">
+                    <div class="col-md-6 my-2">
+                        <div class="card p-2 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="font-weight-bold text-dark"><i class="fas fa-award text-success mr-2"></i>Certificación</h5>
+                                <p class="text-muted small mb-0">Documentos curriculares válidos con respaldo institucional confiable.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-4 mb-md-0">
-                    <div class="card-body">
-                        <small class="text-primary font-weight-bold">03</small>
-                        <h5 class="card-title mt-3">Itaque harum</h5>
-                        <p class="mb-0">Lorem ipsum dolor sit amet, cquasi cupiditate voluptate debitis saepe dolorem
-                            totam dolor repudiandae quo nihil, repellendus nesciunt ab fuga quae, minima reprehenderit
-                            sequi fugit.</p>
+                    <div class="col-md-6 my-2">
+                        <div class="card p-2 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="font-weight-bold text-dark"><i class="fas fa-chalkboard-teacher text-success mr-2"></i>Especialistas</h5>
+                                <p class="text-muted small mb-0">Docencia guiada por líderes activos dentro de cada sector industrial.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- End OF Service Section -->
 
-<!-- About Section -->
-<section class="section" id="about">
+<section id="portfolio" class="py-6 bg-white" style="padding: 80px 0;">
     <div class="container">
-        <div class="row justify-content-between">
-            <div class="col-md-6 pr-md-5 mb-4 mb-md-0">
-                <h6 class="section-title mb-0">About Company</h6>
-                <h6 class="section-subtitle mb-4">Architecto provident deserunt</h6>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate molestiae temporibus et tenetur
-                    unde quasi, cum nemo quo, molestias architecto alias voluptatibus corrupti corporis earum.
-                    Necessitatibus maxime modi ipsam, quod!</p>
-                <img src="{% static 'imgs/about.jpg" alt="" class="w-100 mt-3 shadow-sm' %}">
-            </div>
-            <div class="col-md-6 pl-md-5">
-                <div class="row">
-                    <div class="col-6">
-                        <img src="{% static 'imgs/about-1.jpg" alt="" class="w-100 shadow-sm' %}">
-                    </div>
-                    <div class="col-6">
-                        <img src="{% static 'imgs/about-2.jpg" alt="" class="w-100 shadow-sm' %}">
-                    </div>
-                    <div class="col-12 mt-4">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo iusto quidem laborum atque,
-                            sapiente ipsa excepturi fuga cum sed in assumenda eos quasi harum culpa laboriosam nulla,
-                            incidunt quae. Voluptatum.</p>
-                        <p><b>Aliquid fuga sunt velit, temporibus molestias ab. Ipsa nesciunt totam, aliquid
-                            dignissimos.</b><br>
-                        </p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nesciunt ut a dolorem, consectetur,
-                            eos suscipit consequatur magnam est dolore obcaecati adipisci expedita, vero, iste ducimus
-                            qui numquam animi facilis officia?</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- End OF About Section -->
+        <h2 class="section-title text-center">Nuestra Oferta Académica</h2>
+        <p class="section-subtitle text-center">Explora las distintas modalidades y áreas de estudio preparadas especialmente para tus metas.</p>
 
-<!-- Portfolio Section -->
-<section id="portfolio" class="section portfolio-section">
-    <div class="container">
-        <h6 class="section-title text-center">Nuestros cursos</h6>
-        <h6 class="section-subtitle mb-5 text-center">Catálogo</h6>
         <div class="filters">
-            <a href="#" data-filter=".new" class="active">
-                Actuales
-            </a>
-            <a href="#" data-filter=".advertising">
-                Ofertados
-            </a>
-            <a href="#" data-filter=".branding">
-                Próximos
-            </a>
+            <a href="#" data-filter="*" class="active">Todos</a>
+            <a href="#" data-filter=".new">Actuales</a>
+            <a href="#" data-filter=".advertising">Ofertados</a>
+            <a href="#" data-filter=".branding">Próximos</a>
         </div>
-        <div class="portfolio-container">
+
+        <div class="row portfolio-container">
             {% for cursoactual in cursosdisponibles %}
                 <div class="col-md-6 col-lg-4 web new">
                     <div class="portfolio-item">
-                        <img src="/media/{{ cursoactual.fondoweb }}" class="img-fluid"
-                             alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder" style="background: #4e555b; opacity: 90%">
-                            <a class="img-popup" href="/media/{{ cursoactual.fondoweb }}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">{{ cursoactual }}</h6>
-                                <a style="cursor: pointer" class="btn btn-success" onclick="detalle_curso('detallecurso','{{ cursoactual.id }}','{{ cursoactual }}')"><i class="fa fa-archive"></i>Click
-                                    para ver más detalles!</a>
+                        <img src="/media/{{ cursoactual.fondoweb }}" alt="Imagen de {{ cursoactual }}">
+                        <div class="content-holder">
+                            <div class="text-holder p-3 text-center">
+                                <h6 class="title text-white font-weight-bold mb-3">{{ cursoactual }}</h6>
+                                <button type="button" class="btn btn-success btn-sm" onclick="detalle_curso('detallecurso','{{ cursoactual.id }}','{{ cursoactual }}')">
+                                    <i class="fas fa-info-circle mr-1"></i> Ver Detalles del Curso
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
+
             {% for ofertado in cursosofertados %}
                 <div class="col-md-6 col-lg-4 advertising">
                     <div class="portfolio-item">
-                        <img src="/media/{{ ofertado.fondoweb }}" class="img-fluid"
-                             alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder" style="background: #4e555b; opacity: 90%">
-                            <a class="img-popup" href="/media/{{ ofertado.fondoweb }}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">{{ ofertado }}</h6>
-                                <a style="cursor: pointer" class="btn btn-success" onclick="detalle_curso('detallecurso','{{ ofertado.id }}', '{{ ofertado }}')"><i class="fa fa-archive"></i>Click
-                                    para ver más detalles!</a>
+                        <img src="/media/{{ ofertado.fondoweb }}" alt="Imagen de {{ ofertado }}">
+                        <div class="content-holder">
+                            <div class="text-holder p-3 text-center">
+                                <h6 class="title text-white font-weight-bold mb-3">{{ ofertado }}</h6>
+                                <button type="button" class="btn btn-success btn-sm" onclick="detalle_curso('detallecurso','{{ ofertado.id }}', '{{ ofertado }}')">
+                                    <i class="fas fa-info-circle mr-1"></i> Ver Detalles del Curso
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
+
             {% for futuro in cursosproximos %}
                 <div class="col-md-6 col-lg-4 branding">
                     <div class="portfolio-item">
-                        <img src="/media/{{ futuro.fondoweb }}" class="img-fluid"
-                             alt="Download free bootstrap 4 admin dashboard, free boootstrap 4 templates">
-                        <div class="content-holder" style="background: #4e555b; opacity: 90%">
-                            <a class="img-popup" href="{% static 'imgs/branding-2.jpg' %}"></a>
-                            <div class="text-holder">
-                                <h6 class="title">{{ futuro }}</h6>
-                                <a style="cursor: pointer" class="btn btn-success" onclick="detalle_curso('detallecurso','{{ futuro.id }}', '{{ futuro }}')"><i class="fa fa-archive"></i>Click
-                                    para ver más detalles!</a>
+                        <img src="/media/{{ futuro.fondoweb }}" alt="Imagen de {{ futuro }}">
+                        <div class="content-holder">
+                            <div class="text-holder p-3 text-center">
+                                <h6 class="title text-white font-weight-bold mb-3">{{ futuro }}</h6>
+                                <button type="button" class="btn btn-success btn-sm" onclick="detalle_curso('detallecurso','{{ futuro.id }}', '{{ futuro }}')">
+                                    <i class="fas fa-info-circle mr-1"></i> Ver Detalles del Curso
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -247,167 +369,181 @@
         </div>
     </div>
 </section>
-<!-- End of portfolio section -->
 
-<!-- Blog Section -->
-<section class="section" id="blog">
+{#<section class="py-6 bg-light" id="blog" style="padding: 80px 0;">#}
+{#    <div class="container">#}
+{#        <h2 class="section-title text-center">Últimas Convocatorias Abiertas</h2>#}
+{#        <p class="section-subtitle text-center">Entérate de las noticias académicas relevantes, nuevos talleres y aperturas de matrículas inmediatas.</p>#}
+{##}
+{#        <div class="row">#}
+{#            <div class="col-md-4 my-3">#}
+{#                <div class="card border-0 shadow-sm h-100">#}
+{#                    <img src="{% static 'imgs/blog-1.jpg' %}" alt="Noticia 1" class="card-img-top" style="height: 200px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">#}
+{#                    <div class="card-body d-flex flex-column justify-content-between">#}
+{#                        <div>#}
+{#                            <h5 class="card-title font-weight-bold text-dark">Lanzamiento de Becas Parciales</h5>#}
+{#                            <p class="text-muted small">Iniciamos el periodo de aplicaciones para subsidios de estudio técnico este ciclo académico.</p>#}
+{#                        </div>#}
+{#                        <a href="#contact" class="font-weight-bold text-success small mt-3">Saber más <i class="fas fa-arrow-right ml-1"></i></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-md-4 my-3">#}
+{#                <div class="card border-0 shadow-sm h-100">#}
+{#                    <img src="{% static 'imgs/blog-2.jpg' %}" alt="Noticia 2" class="card-img-top" style="height: 200px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">#}
+{#                    <div class="card-body d-flex flex-column justify-content-between">#}
+{#                        <div>#}
+{#                            <h5 class="card-title font-weight-bold text-dark">Convenios Institucionales</h5>#}
+{#                            <p class="text-muted small">Alianzas estratégicas empresariales que facilitan la inserción laboral directa de egresados.</p>#}
+{#                        </div>#}
+{#                        <a href="#contact" class="font-weight-bold text-success small mt-3">Saber más <i class="fas fa-arrow-right ml-1"></i></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-md-4 my-3">#}
+{#                <div class="card border-0 shadow-sm h-100">#}
+{#                    <img src="{% static 'imgs/blog-3.jpg' %}" alt="Noticia 3" class="card-img-top" style="height: 200px; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;">#}
+{#                    <div class="card-body d-flex flex-column justify-content-between">#}
+{#                        <div>#}
+{#                            <h5 class="card-title font-weight-bold text-dark">Nuevos Talleres Prácticos</h5>#}
+{#                            <p class="text-muted small">Incrementamos laboratorios interactivos semanales de actualización de software y tecnología.</p>#}
+{#                        </div>#}
+{#                        <a href="#contact" class="font-weight-bold text-success small mt-3">Saber más <i class="fas fa-arrow-right ml-1"></i></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</section>#}
+
+<section class="py-6 bg-white" id="testmonial" style="padding: 80px 0;">
     <div class="container">
-        <h6 class="section-title mb-0 text-center">Últimos cursos ofertados</h6>
-        <h6 class="section-subtitle mb-5 text-center">Tienes la oportunidad en tus manos!</h6>
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card border-0 mb-4">
-                    <img src="{% static 'imgs/blog-1.jpg' %}" alt="" class="card-img-top w-100">
-                    <div class="card-body">
-                        <h6 class="card-title">Pariatur Omnis Harum quae sint.</h6>
-                        <p>Fuga quae ratione inventore Perferendis porro.</p>
-                        <a href="javascript:void(0)" class="small text-muted">Go To The Article</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 mb-4">
-                    <img src="{% static 'imgs/blog-2.jpg' %}" alt="" class="card-img-top w-100">
-                    <div class="card-body">
-                        <h6 class="card-title"> Harum Quae Porro</h6>
-                        <p>Fuga quae ratione inventore Perferendis porro.</p>
-                        <a href="javascript:void(0)" class="small text-muted">Go To The Article</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 mb-4">
-                    <img src="{% static 'imgs/blog-3.jpg' %}" alt="" class="card-img-top w-100">
-                    <div class="card-body">
-                        <h6 class="card-title">Qui optio neque alias</h6>
-                        <p>Fuga quae ratione inventore Perferendis porro.</p>
-                        <a href="javascript:void(0)" class="small text-muted">Go To The Article</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- End of Blog Section -->
-
-<!-- Testmonial Section -->
-<section class="section" id="testmonial">
-    <div class="container">
-        <h6 class="section-title text-center mb-0">Docentes</h6>
-        <h6 class="section-subtitle mb-5 text-center">Nuestros docentes</h6>
+        <h2 class="section-title text-center">Cuerpo Docente</h2>
+        <p class="section-subtitle text-center">Conoce a los profesionales de la educación encargados de guiar tu camino hacia el éxito laboral.</p>
         <div class="row">
             {% for docente in docentes %}
-                <div class="col-md-4 my-3 my-md-0">
-                    <div class="card">
+                <div class="col-md-4 my-3">
+                    <div class="card h-100 border-0 p-3 shadow-sm">
                         <div class="card-body">
-                            <div class="media align-items-center mb-3">
-                                <img class="mr-3" src="/media/{{ docente.persona.foto }}" alt="">
+                            <div class="media align-items-center">
+                                <img class="mr-3" src="/media/{{ docente.persona.foto }}" alt="Foto de {{ docente }}">
                                 <div class="media-body">
-                                    <h6 class="mt-1 mb-0">{{ docente }}</h6>
-                                    <small class="text-muted mb-0">{{ docente.cargo }}</small>
+                                    <h6 class="mt-0 font-weight-bold text-dark mb-1">{{ docente }}</h6>
+                                    <span class="badge badge-success py-1 px-2 mb-0" style="font-size:0.75rem;">{{ docente.cargo }}</span>
                                 </div>
                             </div>
-                            {#                                <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus enim modi, id dicta reiciendis itaque.</p>#}
                         </div>
                     </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">Nuestros docentes estarán disponibles próximamente.</p>
                 </div>
             {% endfor %}
         </div>
     </div>
 </section>
-<!-- End of Testmonial Section -->
 
-<!-- Contact Section -->
-<section id="contact" class="section has-img-bg pb-0">
-    <div class="container">
+<section id="contact" class="section pt-5 pb-0">
+    <div class="container py-5">
         <div class="row align-items-center">
-            <div class="col-md-5 my-3">
-                <h6 class="mb-0">Phone</h6>
-                <p class="mb-4">+ 123-456-7890</p>
+            <div class="col-md-5 my-3 text-white">
+                <h3 class="font-weight-bold mb-4 text-success">Canales de Atención</h3>
 
-                <h6 class="mb-0">Address</h6>
-                <p class="mb-4">12345 Fake ST NoWhere AB Country</p>
-
-                <h6 class="mb-0">Email</h6>
-                <p class="mb-0">info@website.com</p>
-                <p></p>
-            </div>
-            <div class="col-md-7">
-                <form>
-                    <h4 class="mb-4">Drop Us A Line</h4>
-                    <div class="form-row">
-                        <div class="form-group col-sm-4">
-                            <input type="text" class="form-control text-white rounded-0 bg-transparent" name="name"
-                                   placeholder="Name">
-                        </div>
-                        <div class="form-group col-sm-4">
-                            <input type="email" class="form-control text-white rounded-0 bg-transparent" name="Email"
-                                   placeholder="Email">
-                        </div>
-                        <div class="form-group col-sm-4">
-                            <input type="text" class="form-control text-white rounded-0 bg-transparent" name="subject"
-                                   placeholder="Subject">
-                        </div>
-                        <div class="form-group col-12">
-                            <textarea name="message" id="" cols="30" rows="4"
-                                      class="form-control text-white rounded-0 bg-transparent"
-                                      placeholder="Message"></textarea>
-
-                        </div>
-                        <div class="form-group col-12 mb-0">
-                            <button type="submit" class="btn btn-primary rounded w-md mt-3">Send</button>
-                        </div>
+                <div class="d-flex align-items-start mb-4">
+                    <i class="fas fa-phone-alt fa-lg mt-1 text-success mr-3"></i>
+                    <div>
+                        <h6 class="mb-0 font-weight-bold">Teléfono de Soporte</h6>
+                        <p class="text-light opacity-80">+123-456-7890</p>
                     </div>
+                </div>
+
+                <div class="d-flex align-items-start mb-4">
+                    <i class="fas fa-map-marker-alt fa-lg mt-1 text-success mr-3"></i>
+                    <div>
+                        <h6 class="mb-0 font-weight-bold">Campus Central</h6>
+                        <p class="text-light opacity-80">Av. de la Educación Continua Nro. 456, Ciudad Educativa</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-envelope fa-lg mt-1 text-success mr-3"></i>
+                    <div>
+                        <h6 class="mb-0 font-weight-bold">Correo Electrónico Oficial</h6>
+                        <p class="text-light opacity-80 mb-0">admisiones@tuinstituto.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7 my-3">
+                <div class="bg-white p-4 p-md-5 rounded shadow-lg text-dark">
+                    <form autocomplete="off">
+                        <h4 class="mb-4 font-weight-bold text-dark text-center text-md-left">¿Tienes dudas? Déjanos un mensaje</h4>
+                        <div class="form-row">
+                            <div class="form-group col-sm-6">
+                                <label class="small font-weight-bold text-muted">Nombre Completo</label>
+                                <input type="text" class="form-control bg-light border-0 rounded" name="name" placeholder="Ej. Juan Pérez" required style="color:#222;">
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label class="small font-weight-bold text-muted">Correo Electrónico</label>
+                                <input type="email" class="form-control bg-light border-0 rounded" name="Email" placeholder="Ej. juan@correo.com" required style="color:#222;">
+                            </div>
+                            <div class="form-group col-12">
+                                <label class="small font-weight-bold text-muted">Asunto de Consulta</label>
+                                <input type="text" class="form-control bg-light border-0 rounded" name="subject" placeholder="Ej. Información sobre Matrículas" required style="color:#222;">
+                            </div>
+                            <div class="form-group col-12">
+                                <label class="small font-weight-bold text-muted">Mensaje o Comentarios</label>
+                                <textarea name="message" cols="30" rows="4" class="form-control bg-light border-0 rounded" placeholder="Escribe aquí detalladamente tus dudas..." required style="color:#222;"></textarea>
+                            </div>
+                            <div class="form-group col-12 mb-0 text-right">
+                                <button type="submit" class="btn btn-success btn-block py-3 shadow-sm">Enviar Solicitud de Información</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 py-4 border-top border-secondary text-center text-md-left">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 small text-light opacity-70">
+                        &copy; <script>document.write(new Date().getFullYear())</script> Centro de Capacitación Académica. Todos los derechos reservados.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-right mt-2 mt-md-0">
+                    <p class="mb-0 small text-light opacity-50">Desarrollado profesionalmente para plataformas académicas.</p>
+                </div>
+            </div>
+        </footer>
+        </div>
+</section>
+
+<div class="modal fade" id="modalGeneric" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content border-0 style" style="border-radius:16px; overflow:hidden;">
+            <div class="modal-header bg-dark text-white border-0 py-3">
+                <h5 class="modal-title font-weight-bold text-uppercase text-white">Detalle</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="font-size:1.8rem;">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body bg-light p-4">
+                <form method="POST" autocomplete="off" action="{{ request.path }}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="contenido-modal">
+                        </div>
                 </form>
             </div>
         </div>
-        <!-- Page Footer -->
-        <footer class="mt-5 py-4 border-top border-secondary">
-            <p class="mb-0 small">&copy;
-                <script>document.write(new Date().getFullYear())</script>
-                , LeadMark Created By <a href="https://www.devcrud.com" target="_blank">DevCrud.</a> All rights reserved
-            </p>
-        </footer>
-        <!-- End of Page Footer -->
     </div>
-</section>
+</div>
 
-<div class="modal fade" id="modalGeneric">
-
-        <div class="modal-dialog modal-dialog-centered  modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-uppercase"></h5>
-                    <button type="button" class="btn-close text-dark" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" autocomplete="off" action="{{ request.path }}" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class=" contenido-modal">
-
-                        </div>
-                    </form>
-
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-<!-- core  -->
 <script src="{% static 'vendors/jquery/jquery-3.4.1.js' %}"></script>
 <script src="{% static 'vendors/bootstrap/bootstrap.bundle.js' %}"></script>
-
-<!-- bootstrap 3 affix -->
 <script src="{% static 'vendors/bootstrap/bootstrap.affix.js' %}"></script>
-
-<!-- Isotope -->
 <script src="{% static 'vendors/isotope/isotope.pkgd.js' %}"></script>
-
-<!-- LeadMark js -->
 <script src="{% static 'js/leadmark.js' %}"></script>
 
 </body>
